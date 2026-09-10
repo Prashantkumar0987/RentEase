@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RentEase - Properties</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            RentEase
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="properties.html">Properties</a>
+            <a href="#">How It Works</a>
+            <a href="#">About</a>
+        </nav>
+
+        <div class="nav-buttons">
+
+            <button id="loginBtn">
+                Login
+            </button>
+
+            <button id="signupBtn">
+                Sign Up
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- PAGE HEADER -->
+
+    <section class="properties-header">
+
+        <p class="hero-tag">
+            EXPLORE PROPERTIES
+        </p>
+
+        <h1>
+            Find Your Perfect Home
+        </h1>
+
+        <p>
+            Explore verified properties available for rent.
+        </p>
+
+    </section>
+
+
+    <!-- FILTER SECTION -->
+
+    <section class="property-filters">
+
+        <input
+            type="text"
+            id="searchLocation"
+            placeholder="Search by location..."
+        >
+
+
+        <select id="filterType">
+
+            <option value="">
+                All Types
+            </option>
+
+            <option value="Apartment">
+                Apartment
+            </option>
+
+            <option value="House">
+                House
+            </option>
+
+            <option value="PG">
+                PG
+            </option>
+
+            <option value="Room">
+                Room
+            </option>
+
+        </select>
+
+
+        <select id="filterBudget">
+
+            <option value="">
+                Any Budget
+            </option>
+
+            <option value="10000">
+                Under ₹10,000
+            </option>
+
+            <option value="15000">
+                Under ₹15,000
+            </option>
+
+            <option value="20000">
+                Under ₹20,000
+            </option>
+
+        </select>
+
+    </section>
+
+
+    <!-- PROPERTY LIST -->
+
+    <section class="properties-container">
+
+        <div
+            id="propertyList"
+            class="property-grid"
+        >
+
+            <!-- JavaScript property cards will appear here -->
+
+        </div>
+
+    </section>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

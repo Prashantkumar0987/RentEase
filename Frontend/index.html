@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>RentEase - Rental Management Platform</title>
+    <title>RentEase - Find Your Perfect Home</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Navbar -->
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
     <header class="navbar">
 
         <div class="logo">
@@ -21,94 +23,203 @@
         </div>
 
         <nav>
-            <a href="#">Home</a>
-            <a href="#">Properties</a>
+            <a href="index.html">Home</a>
+            <a href="properties.html">Properties</a>
+            <a href="#">How It Works</a>
             <a href="#">About</a>
-            <a href="#">Contact</a>
         </nav>
 
-        <div class="auth-buttons">
-            <button class="login-btn">Login</button>
-            <button class="signup-btn">Sign Up</button>
+        <div class="nav-buttons">
+            <button id="loginBtn">Login</button>
+            <button id="signupBtn">Sign Up</button>
         </div>
 
     </header>
 
 
-    <!-- Hero Section -->
-    <main>
+    <!-- =========================
+         HERO SECTION
+    ========================== -->
 
-        <section class="hero">
+    <section class="hero">
 
-            <div class="hero-content">
+        <div class="hero-content">
 
-                <h1>
-                    Find a place
-                    <span>you can call home.</span>
-                </h1>
+            <p class="hero-tag">
+                FIND YOUR NEXT HOME
+            </p>
 
-                <p>
-                    Discover rental properties, manage your
-                    tenancy and handle maintenance requests
-                    from one simple platform.
-                </p>
+            <h1>
+                Find a place you can call home.
+            </h1>
 
-                <div class="hero-buttons">
+            <p>
+                Discover verified rental properties that match
+                your location, budget and lifestyle.
+            </p>
 
-                    <button class="primary-btn">
-                        Find a Property
-                    </button>
 
-                    <button class="secondary-btn">
-                        List Your Property
-                    </button>
+            <!-- =========================
+                 SEARCH FORM
+            ========================== -->
+
+            <form id="propertySearch" class="search-box">
+
+                <!-- Location -->
+
+                <div class="search-field">
+
+                    <label for="location">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="Enter city or area"
+                    >
 
                 </div>
 
-            </div>
 
-        </section>
+                <!-- Property Type -->
 
+                <div class="search-field">
 
-        <!-- Features -->
-        <section class="features">
+                    <label for="propertyType">
+                        Property Type
+                    </label>
 
-            <h2>Everything you need in one place</h2>
+                    <select id="propertyType">
 
-            <div class="feature-container">
+                        <option value="">
+                            Select Type
+                        </option>
 
-                <div class="feature-card">
-                    <h3>📊 Find Properties</h3>
-                    <p>
-                        Search and explore properties
-                        based on your requirements.
-                    </p>
+                        <option value="Apartment">
+                            Apartment
+                        </option>
+
+                        <option value="House">
+                            House
+                        </option>
+
+                        <option value="PG">
+                            PG
+                        </option>
+
+                        <option value="Room">
+                            Room
+                        </option>
+
+                    </select>
+
                 </div>
 
-                <div class="feature-card">
-                    <h3>💰 Rent Management</h3>
-                    <p>
-                        Keep track of rent payments
-                        and rental history.
-                    </p>
+
+                <!-- Budget -->
+
+                <div class="search-field">
+
+                    <label for="budget">
+                        Maximum Budget
+                    </label>
+
+                    <select id="budget">
+
+                        <option value="">
+                            Select Budget
+                        </option>
+
+                        <option value="5000">
+                            ₹5,000
+                        </option>
+
+                        <option value="10000">
+                            ₹10,000
+                        </option>
+
+                        <option value="15000">
+                            ₹15,000
+                        </option>
+
+                        <option value="20000">
+                            ₹20,000
+                        </option>
+
+                    </select>
+
                 </div>
 
-                <div class="feature-card">
-                    <h3>🛠️ Maintenance</h3>
-                    <p>
-                        Report and track maintenance
-                        issues easily.
-                    </p>
-                </div>
 
-            </div>
+                <!-- Search Button -->
 
-        </section>
+                <button
+                    type="submit"
+                    id="searchBtn"
+                >
+                    Search
+                </button>
 
-    </main>
+            </form>
 
+
+            <!-- Search Message -->
+
+            <p id="searchMessage"></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         TRUST SECTION
+    ========================== -->
+
+    <section class="trust-section">
+
+        <div class="trust-card">
+
+            <h3>✓ Verified Properties</h3>
+
+            <p>
+                Find reliable and verified rental properties.
+            </p>
+
+        </div>
+
+
+        <div class="trust-card">
+
+            <h3>🔒 Secure Platform</h3>
+
+            <p>
+                Your account and property information stay secure.
+            </p>
+
+        </div>
+
+
+        <div class="trust-card">
+
+            <h3>⚡ Easy Maintenance</h3>
+
+            <p>
+                Raise and track maintenance complaints easily.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
 
     <script src="script.js"></script>
 
 </body>
+
 </html>

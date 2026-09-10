@@ -1,202 +1,820 @@
+/* =========================================================
+   RENT EASE
+   Complete CSS - Day 1 + Day 2 + Day 3
+========================================================= */
+
+
+/* =========================================================
+   1. RESET
+========================================================= */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+
 body {
-    font-family: Arial, sans-serif;
-    background: #f5f7fb;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f8f9fa;
     color: #222;
-}
-
-
-/* Navbar */
-
-.navbar {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 7%;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-}
-
-.logo {
-    font-size: 26px;
-    font-weight: bold;
-}
-
-nav {
-    display: flex;
-    gap: 30px;
-}
-
-nav a {
-    text-decoration: none;
-    color: #333;
-    font-size: 16px;
-}
-
-nav a:hover {
-    color: #2563eb;
-}
-
-
-/* Auth Buttons */
-
-.auth-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.auth-buttons button {
-    padding: 10px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.login-btn {
-    background: transparent;
-    border: 1px solid #2563eb;
-    color: #2563eb;
-}
-
-.signup-btn {
-    background: #2563eb;
-    border: 1px solid #2563eb;
-    color: white;
-}
-
-
-/* Hero */
-
-.hero {
-    min-height: 550px;
-    display: flex;
-    align-items: center;
-    padding: 60px 7%;
-    background: linear-gradient(
-        135deg,
-        #eff6ff,
-        #ffffff
-    );
-}
-
-.hero-content {
-    max-width: 650px;
-}
-
-.hero h1 {
-    font-size: 55px;
-    line-height: 1.1;
-    margin-bottom: 25px;
-}
-
-.hero h1 span {
-    display: block;
-}
-
-.hero p {
-    font-size: 18px;
-    line-height: 1.7;
-    margin-bottom: 30px;
-    color: #555;
-}
-
-
-/* Hero Buttons */
-
-.hero-buttons {
-    display: flex;
-    gap: 15px;
-}
-
-.primary-btn,
-.secondary-btn {
-    padding: 14px 24px;
-    border-radius: 7px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.primary-btn {
-    border: none;
-    background: #2563eb;
-    color: white;
-}
-
-.secondary-btn {
-    border: 1px solid #2563eb;
-    background: white;
-    color: #2563eb;
-}
-
-
-/* Features */
-
-.features {
-    padding: 70px 7%;
-    text-align: center;
-    background: white;
-}
-
-.features h2 {
-    font-size: 32px;
-    margin-bottom: 40px;
-}
-
-.feature-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-}
-
-.feature-card {
-    padding: 30px;
-    border-radius: 12px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-}
-
-.feature-card h3 {
-    margin-bottom: 15px;
-    font-size: 21px;
-}
-
-.feature-card p {
-    color: #666;
     line-height: 1.6;
 }
 
 
-/* Responsive */
+/* =========================================================
+   2. NAVBAR
+========================================================= */
 
-@media (max-width: 768px) {
+.navbar {
+    width: 100%;
+    padding: 18px 7%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: white;
+
+    border-bottom: 1px solid #eee;
+}
+
+
+/* Logo */
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+
+/* Navigation */
+
+.navbar nav {
+    display: flex;
+    gap: 30px;
+}
+
+
+.navbar nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+
+    transition: 0.3s;
+}
+
+
+.navbar nav a:hover {
+    color: #000;
+}
+
+
+/* Navbar Buttons */
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+
+.nav-buttons button {
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 7px;
+
+    background-color: #222;
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition: 0.3s;
+}
+
+
+.nav-buttons button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   3. HERO SECTION
+========================================================= */
+
+.hero {
+    min-height: 600px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 80px 20px;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.55),
+            rgba(0, 0, 0, 0.55)
+        ),
+        url("https://images.unsplash.com/photo-1560185008-b033106af5c3")
+        center / cover no-repeat;
+}
+
+
+.hero-content {
+    width: 100%;
+    max-width: 900px;
+
+    text-align: center;
+
+    color: white;
+}
+
+
+/* Hero Tag */
+
+.hero-tag {
+    display: inline-block;
+
+    margin-bottom: 15px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    letter-spacing: 2px;
+}
+
+
+/* Hero Heading */
+
+.hero h1 {
+    font-size: 55px;
+    line-height: 1.1;
+
+    margin-bottom: 20px;
+}
+
+
+/* Hero Paragraph */
+
+.hero p {
+    max-width: 650px;
+
+    margin: 0 auto 30px;
+
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   4. SEARCH BOX
+========================================================= */
+
+.search-box {
+    max-width: 900px;
+
+    margin: 30px auto 0;
+
+    padding: 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        1.5fr
+        1fr
+        1fr
+        auto;
+
+    gap: 15px;
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    text-align: left;
+}
+
+
+/* Search Field */
+
+.search-field {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.search-field label {
+    color: #333;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.search-field input,
+.search-field select {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+
+/* Focus */
+
+.search-field input:focus,
+.search-field select:focus {
+
+    border-color: #555;
+}
+
+
+/* Search Button */
+
+#searchBtn {
+
+    align-self: end;
+
+    padding: 13px 25px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background-color: #222;
+
+    color: white;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+
+#searchBtn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+/* Search Message */
+
+#searchMessage {
+
+    min-height: 25px;
+
+    margin-top: 15px;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   5. TRUST SECTION
+========================================================= */
+
+.trust-section {
+
+    max-width: 1100px;
+
+    margin: 60px auto;
+
+    padding: 0 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 25px;
+}
+
+
+.trust-card {
+
+    padding: 30px;
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0, 0, 0, 0.06);
+}
+
+
+.trust-card h3 {
+
+    margin-bottom: 10px;
+
+    font-size: 18px;
+}
+
+
+.trust-card p {
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   6. PROPERTIES PAGE HEADER
+========================================================= */
+
+.properties-header {
+
+    text-align: center;
+
+    padding: 60px 20px 30px;
+
+    background-color: #f8f9fa;
+}
+
+
+.properties-header .hero-tag {
+
+    color: #555;
+
+    margin-bottom: 10px;
+}
+
+
+.properties-header h1 {
+
+    font-size: 42px;
+
+    line-height: 1.2;
+
+    margin-bottom: 12px;
+}
+
+
+.properties-header p {
+
+    color: #666;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   7. PROPERTY FILTERS
+========================================================= */
+
+.property-filters {
+
+    max-width: 1100px;
+
+    margin: 20px auto 40px;
+
+    padding: 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        1fr
+        1fr;
+
+    gap: 15px;
+}
+
+
+/* Input and Select */
+
+.property-filters input,
+.property-filters select {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    background-color: white;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+
+/* Focus */
+
+.property-filters input:focus,
+.property-filters select:focus {
+
+    border-color: #555;
+
+}
+
+
+/* =========================================================
+   8. PROPERTY GRID
+========================================================= */
+
+.properties-container {
+
+    width: 100%;
+
+    padding-bottom: 70px;
+}
+
+
+.property-grid {
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    padding: 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 25px;
+}
+
+
+/* =========================================================
+   9. PROPERTY CARD
+========================================================= */
+
+.property-card {
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0, 0, 0, 0.08);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* Card Hover */
+
+.property-card:hover {
+
+    transform:
+        translateY(-5px);
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================================
+   10. PROPERTY IMAGE
+========================================================= */
+
+.property-card img {
+
+    width: 100%;
+
+    height: 210px;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   11. PROPERTY INFORMATION
+========================================================= */
+
+.property-info {
+
+    padding: 20px;
+}
+
+
+.property-info h3 {
+
+    margin-bottom: 8px;
+
+    font-size: 19px;
+
+    line-height: 1.3;
+}
+
+
+/* Location */
+
+.property-location {
+
+    margin-bottom: 10px;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+
+/* Rent */
+
+.property-rent {
+
+    margin-bottom: 12px;
+
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+/* Property Type */
+
+.property-type {
+
+    display: inline-block;
+
+    padding: 5px 12px;
+
+    border-radius: 20px;
+
+    background-color: #eee;
+
+    color: #333;
+
+    font-size: 13px;
+
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   12. NO PROPERTY MESSAGE
+========================================================= */
+
+.no-property {
+
+    grid-column: 1 / -1;
+
+    padding: 50px;
+
+    text-align: center;
+
+    font-size: 20px;
+
+    color: #666;
+
+    background-color: white;
+
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   13. RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    /* Navbar */
 
     .navbar {
-        padding: 0 5%;
+
+        padding: 18px 4%;
+
     }
 
-    nav {
-        display: none;
+
+    .navbar nav {
+
+        gap: 15px;
+
     }
 
-    .hero {
-        padding: 50px 5%;
-    }
+
+    /* Hero */
 
     .hero h1 {
-        font-size: 40px;
+
+        font-size: 45px;
+
     }
 
-    .feature-container {
-        grid-template-columns: 1fr;
+
+    /* Search */
+
+    .search-box {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
     }
 
-    .hero-buttons {
+
+    #searchBtn {
+
+        width: 100%;
+
+    }
+
+
+    /* Property Grid */
+
+    .property-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+
+    /* Filters */
+
+    .property-filters {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+    }
+
+
+    /* Trust */
+
+    .trust-section {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+    }
+
+}
+
+
+/* =========================================================
+   14. RESPONSIVE - MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    /* Navbar */
+
+    .navbar {
+
         flex-direction: column;
+
+        gap: 18px;
+
+        padding: 20px;
+
     }
+
+
+    .navbar nav {
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        gap: 15px;
+
+    }
+
+
+    .nav-buttons {
+
+        width: 100%;
+
+        justify-content: center;
+
+    }
+
+
+    /* Hero */
+
+    .hero {
+
+        min-height: 650px;
+
+        padding: 50px 15px;
+
+    }
+
+
+    .hero h1 {
+
+        font-size: 38px;
+
+    }
+
+
+    .hero p {
+
+        font-size: 15px;
+
+    }
+
+
+    /* Search */
+
+    .search-box {
+
+        grid-template-columns: 1fr;
+
+        padding: 15px;
+
+    }
+
+
+    /* Trust */
+
+    .trust-section {
+
+        grid-template-columns: 1fr;
+
+        margin-top: 40px;
+
+    }
+
+
+    /* Properties Header */
+
+    .properties-header {
+
+        padding: 45px 20px 25px;
+
+    }
+
+
+    .properties-header h1 {
+
+        font-size: 32px;
+
+    }
+
+
+    /* Filters */
+
+    .property-filters {
+
+        grid-template-columns: 1fr;
+
+        margin: 10px 20px 30px;
+
+        padding: 10px 0;
+
+    }
+
+
+    /* Property Grid */
+
+    .property-grid {
+
+        grid-template-columns: 1fr;
+
+        padding: 15px;
+
+    }
+
+
+    /* Property Image */
+
+    .property-card img {
+
+        height: 220px;
+
+    }
+
 }
