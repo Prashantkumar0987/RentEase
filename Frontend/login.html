@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - RentEase</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            RentEase
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="properties.html">Properties</a>
+            <a href="#">How It Works</a>
+            <a href="#">About</a>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="login.html" class="nav-login">
+                Login
+            </a>
+
+            <a href="signup.html" class="nav-signup">
+                Sign Up
+            </a>
+        </div>
+
+    </nav>
+
+
+    <!-- LOGIN SECTION -->
+
+    <main class="auth-container">
+
+        <div class="auth-card">
+
+            <h1>Welcome Back</h1>
+
+            <p class="auth-subtitle">
+                Login to your RentEase account
+            </p>
+
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="loginEmail">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Enter your email"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="loginPassword">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Enter your password"
+                    >
+
+                </div>
+
+
+                <button type="submit" class="auth-btn">
+                    Login
+                </button>
+
+                <p id="loginMessage"></p>
+
+            </form>
+
+
+            <p class="auth-switch">
+                Don't have an account?
+                <a href="signup.html">
+                    Create Account
+                </a>
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

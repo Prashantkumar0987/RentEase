@@ -931,3 +931,159 @@ body {
         grid-template-columns: 1fr;
     }
 }
+/* ==========================================
+   DAY 5 - LOGIN & SIGNUP
+   ========================================== */
+
+.auth-container {
+    min-height: calc(100vh - 80px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px 20px;
+
+    background: #f5f7fa;
+}
+
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+
+.auth-card h1 {
+    text-align: center;
+
+    margin-bottom: 10px;
+
+    font-size: 30px;
+}
+
+
+.auth-subtitle {
+    text-align: center;
+
+    color: #777;
+
+    margin-bottom: 30px;
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: 600;
+}
+
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+
+    border-color: #333;
+}
+
+
+.auth-btn {
+    width: 100%;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #222;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.auth-btn:hover {
+    opacity: 0.85;
+}
+
+
+.auth-switch {
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #666;
+}
+
+
+.auth-switch a {
+    color: #222;
+
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+#loginMessage,
+#signupMessage {
+    text-align: center;
+
+    margin-top: 15px;
+
+    font-weight: 600;
+}
+
+
+.nav-login,
+.nav-signup {
+    text-decoration: none;
+
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+
+    .auth-card {
+        padding: 25px 20px;
+    }
+
+}

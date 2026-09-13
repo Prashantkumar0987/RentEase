@@ -572,3 +572,128 @@ if (propertyDetails) {
         `;
     }
 }
+// ==========================================
+// DAY 5 - LOGIN
+// ==========================================
+
+const loginForm = document.querySelector("#loginForm");
+
+if (loginForm) {
+
+    loginForm.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const email =
+            document.querySelector("#loginEmail").value.trim();
+
+        const password =
+            document.querySelector("#loginPassword").value.trim();
+
+        const loginMessage =
+            document.querySelector("#loginMessage");
+
+
+        if (email === "") {
+
+            loginMessage.textContent =
+                "Please enter your email.";
+
+            return;
+        }
+
+
+        if (password === "") {
+
+            loginMessage.textContent =
+                "Please enter your password.";
+
+            return;
+        }
+
+
+        loginMessage.textContent =
+            "Login successful! Backend coming soon.";
+
+    });
+}
+
+const signupForm =
+    document.querySelector("#signupForm");
+
+if (signupForm) {
+
+    signupForm.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+
+        const name =
+            document.querySelector("#signupName").value.trim();
+
+        const email =
+            document.querySelector("#signupEmail").value.trim();
+
+        const password =
+            document.querySelector("#signupPassword").value.trim();
+
+        const confirmPassword =
+            document.querySelector("#confirmPassword").value.trim();
+
+        const role =
+            document.querySelector("#userRole").value;
+
+        const signupMessage =
+            document.querySelector("#signupMessage");
+
+
+        if (name === "") {
+
+            signupMessage.textContent =
+                "Please enter your name.";
+
+            return;
+        }
+
+
+        if (email === "") {
+
+            signupMessage.textContent =
+                "Please enter your email.";
+
+            return;
+        }
+
+
+        if (password === "") {
+
+            signupMessage.textContent =
+                "Please enter a password.";
+
+            return;
+        }
+
+
+        if (password !== confirmPassword) {
+
+            signupMessage.textContent =
+                "Passwords do not match.";
+
+            return;
+        }
+
+
+        if (role === "") {
+
+            signupMessage.textContent =
+                "Please select your role.";
+
+            return;
+        }
+
+
+        signupMessage.textContent =
+            "Account created successfully! Backend coming soon.";
+
+    });
+}
