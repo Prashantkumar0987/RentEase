@@ -297,6 +297,12 @@ function displayProperties(propertyArray) {
                 <span class="property-type">
                     ${property.type}
                 </span>
+                <a
+                    href="property-details.html?id=${property.id}"
+                    class="details-btn"
+                >
+                    View Details
+                </a>
 
             </div>
 
@@ -437,4 +443,132 @@ if (filterBudget) {
         filterProperties
     );
 
+}
+// ==========================================
+// DAY 4 - PROPERTY DETAILS
+// ==========================================
+
+const propertyDetails = document.querySelector("#propertyDetails");
+
+if (propertyDetails) {
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const propertyId = Number(urlParams.get("id"));
+
+    console.log("Property ID:", propertyId);
+
+    const selectedProperty = properties.find(function(property) {
+        return property.id === propertyId;
+    });
+
+    console.log("Selected Property:", selectedProperty);
+
+    if (!selectedProperty) {
+
+        propertyDetails.innerHTML = `
+            <div class="no-property">
+                <h2>Property not found</h2>
+                <p>Please select a property from the Properties page.</p>
+            </div>
+        `;
+
+    } else {
+
+        propertyDetails.innerHTML = `
+
+            <div class="details-card">
+
+                <img
+                    src="${selectedProperty.image}"
+                    alt="${selectedProperty.title}"
+                    class="details-image"
+                >
+
+                <div class="details-content">
+
+                    <span class="property-type">
+                        ${selectedProperty.type}
+                    </span>
+
+                    <h1>
+                        ${selectedProperty.title}
+                    </h1>
+
+                    <p class="property-location">
+                        📍 ${selectedProperty.location}
+                    </p>
+
+                    <h2 class="details-rent">
+                        ₹${selectedProperty.rent.toLocaleString("en-IN")}
+                        / month
+                    </h2>
+
+                    <div class="property-features">
+
+                        <div>
+                            🛏️
+                            <strong>
+                                ${selectedProperty.bedrooms || 2}
+                            </strong>
+                            Bedrooms
+                        </div>
+
+                        <div>
+                            🚿
+                            <strong>
+                                ${selectedProperty.bathrooms || 2}
+                            </strong>
+                            Bathrooms
+                        </div>
+
+                        <div>
+                            📐
+                            <strong>
+                                ${selectedProperty.area || "1200 sq.ft"}
+                            </strong>
+                        </div>
+
+                        <div>
+                            🛋️
+                            <strong>
+                                ${selectedProperty.furnished || "Semi-Furnished"}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <h2>About Property</h2>
+
+                    <p>
+                        ${selectedProperty.description ||
+                        "This is a comfortable and well-maintained property suitable for rental."}
+                    </p>
+
+                    <h2>Amenities</h2>
+
+                    <div class="amenities">
+
+                        ${(selectedProperty.amenities || [
+                            "Parking",
+                            "WiFi",
+                            "Security",
+                            "Lift"
+                        ]).map(function(amenity) {
+
+                            return `<span>${amenity}</span>`;
+
+                        }).join("")}
+
+                    </div>
+
+                    <button class="contact-owner-btn">
+                        Contact Owner
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    }
 }
