@@ -612,8 +612,11 @@ if (loginForm) {
         }
 
 
-        loginMessage.textContent =
-            "Login successful! Backend coming soon.";
+        loginMessage.textContent = "Login successful! Redirecting...";
+
+        setTimeout(function() {
+            window.location.href = "tenant-dashboard.html";
+        }, 1000);
 
     });
 }

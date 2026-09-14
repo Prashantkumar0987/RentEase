@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tenant Dashboard - RentEase</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <div class="logo">
+            RentEase
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="properties.html">Properties</a>
+            <a href="tenant-dashboard.html" class="active">Dashboard</a>
+            <a href="login.html">Logout</a>
+        </div>
+
+    </nav>
+
+
+    <!-- Dashboard -->
+    <main class="dashboard-container">
+
+        <!-- Welcome Section -->
+        <section class="dashboard-welcome">
+
+            <div>
+                <p class="dashboard-label">TENANT DASHBOARD</p>
+
+                <h1>
+                    Welcome back, Prashant 👋
+                </h1>
+
+                <p>
+                    Manage your rental property, rent payments and
+                    maintenance requests from one place.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- Summary Cards -->
+        <section class="dashboard-stats">
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">💰</div>
+
+                <div>
+                    <p>Monthly Rent</p>
+                    <h2>₹15,000</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">📅</div>
+
+                <div>
+                    <p>Next Payment</p>
+                    <h2>5 Oct</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">🔧</div>
+
+                <div>
+                    <p>Maintenance</p>
+                    <h2>2 Open</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">🏠</div>
+
+                <div>
+                    <p>Rental Status</p>
+                    <h2>Active</h2>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Main Dashboard Grid -->
+        <section class="dashboard-grid">
+
+
+            <!-- Current Property -->
+            <div class="dashboard-card property-dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <h2>🏠 Current Property</h2>
+
+                    <a href="property-details.html?id=1">
+                        View Details
+                    </a>
+
+                </div>
+
+
+                <img
+                    src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
+                    alt="Current rental property"
+                >
+
+
+                <div class="dashboard-property-info">
+
+                    <h3>Modern 2BHK Apartment</h3>
+
+                    <p>📍 Kolkata</p>
+
+                    <p>
+                        🛏️ 2 Bedrooms &nbsp;
+                        🚿 2 Bathrooms
+                    </p>
+
+                    <strong>
+                        ₹15,000 / month
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Rent Information -->
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <h2>💰 Rent Information</h2>
+
+                </div>
+
+                <div class="rent-info">
+
+                    <div>
+                        <span>Monthly Rent</span>
+                        <strong>₹15,000</strong>
+                    </div>
+
+                    <div>
+                        <span>Last Payment</span>
+                        <strong>₹15,000</strong>
+                    </div>
+
+                    <div>
+                        <span>Next Due Date</span>
+                        <strong>5 Oct 2026</strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong class="rent-paid">
+                            Paid
+                        </strong>
+                    </div>
+
+                </div>
+
+                <button class="dashboard-action-btn">
+                    View Rent History
+                </button>
+
+            </div>
+
+
+            <!-- Maintenance -->
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <h2>🔧 Maintenance Requests</h2>
+
+                    <span class="request-count">
+                        2 Open
+                    </span>
+
+                </div>
+
+
+                <div class="maintenance-item">
+
+                    <div>
+                        <h3>Water Leakage</h3>
+                        <p>Reported: 10 Sep 2026</p>
+                    </div>
+
+                    <span class="status-pending">
+                        Pending
+                    </span>
+
+                </div>
+
+
+                <div class="maintenance-item">
+
+                    <div>
+                        <h3>Fan Repair</h3>
+                        <p>Reported: 8 Sep 2026</p>
+                    </div>
+
+                    <span class="status-progress">
+                        In Progress
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="dashboard-action-btn"
+                    id="maintenanceBtn"
+                >
+                    Report New Issue
+                </button>
+
+            </div>
+
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <h2>⚡ Quick Actions</h2>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <button class="quick-action">
+                        💳 Pay Rent
+                    </button>
+
+                    <button class="quick-action">
+                        🔧 Report Issue
+                    </button>
+
+                    <button class="quick-action">
+                        📄 Rent History
+                    </button>
+
+                    <button class="quick-action">
+                        👤 My Profile
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
