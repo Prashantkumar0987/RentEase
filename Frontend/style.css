@@ -1469,3 +1469,531 @@ body {
     }
 
 }
+/* =========================================
+   DAY 7 - OWNER DASHBOARD
+========================================= */
+
+
+.owner-dashboard-container {
+
+    width: 90%;
+
+    max-width: 1200px;
+
+    margin: 40px auto;
+
+}
+
+
+/* Welcome */
+
+.owner-welcome {
+
+    background:
+        linear-gradient(
+            135deg,
+            #334155,
+            #475569
+        );
+
+    color: white;
+
+    padding: 35px;
+
+    border-radius: 20px;
+
+    margin-bottom: 30px;
+
+}
+
+
+.owner-label {
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+
+    opacity: 0.8;
+
+}
+
+
+.owner-welcome h1 {
+
+    margin: 10px 0;
+
+    font-size: 32px;
+
+}
+
+
+.owner-welcome p {
+
+    margin: 0;
+
+}
+
+
+/* Statistics */
+
+.owner-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+
+}
+
+
+.owner-stat-card {
+
+    background: white;
+
+    padding: 22px;
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.08);
+
+}
+
+
+.owner-stat-icon {
+
+    font-size: 30px;
+
+}
+
+
+.owner-stat-card p {
+
+    margin: 0 0 5px;
+
+    color: #666;
+
+    font-size: 14px;
+
+}
+
+
+.owner-stat-card h2 {
+
+    margin: 0;
+
+    font-size: 21px;
+
+}
+
+
+/* Main Grid */
+
+.owner-dashboard-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 25px;
+
+}
+
+
+.owner-card {
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.08);
+
+}
+
+
+.owner-card-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+
+}
+
+
+.owner-card-header h2 {
+
+    margin: 0;
+
+    font-size: 20px;
+
+}
+
+
+.owner-card-header a {
+
+    text-decoration: none;
+
+    color: #2563eb;
+
+    font-size: 14px;
+
+}
+
+
+/* Properties */
+
+.owner-property-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+.owner-property-item h3 {
+
+    margin: 0 0 5px;
+
+    font-size: 16px;
+
+}
+
+
+.owner-property-item p {
+
+    margin: 0 0 8px;
+
+    color: #777;
+
+    font-size: 13px;
+
+}
+
+
+.owner-property-item strong {
+
+    font-size: 17px;
+
+    color: #2563eb;
+
+}
+
+
+.occupied,
+.vacant {
+
+    font-size: 12px;
+
+    padding: 5px 10px;
+
+    border-radius: 15px;
+
+}
+
+
+.occupied {
+
+    background: #dcfce7;
+
+    color: #166534;
+
+}
+
+
+.vacant {
+
+    background: #fef3c7;
+
+    color: #92400e;
+
+}
+
+
+/* Rent */
+
+.rent-summary {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+}
+
+
+.rent-summary div {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+.rent-summary span {
+
+    color: #666;
+
+}
+
+
+.rent-summary strong {
+
+    font-size: 17px;
+
+}
+
+
+.collected {
+
+    color: green;
+
+}
+
+
+.pending {
+
+    color: #dc2626;
+
+}
+
+
+/* Buttons */
+
+.owner-action-btn {
+
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+}
+
+
+.owner-action-btn:hover {
+
+    opacity: 0.9;
+
+}
+
+
+/* Maintenance */
+
+.owner-maintenance-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+.owner-maintenance-item h3 {
+
+    margin: 0 0 5px;
+
+    font-size: 15px;
+
+}
+
+
+.owner-maintenance-item p {
+
+    margin: 0;
+
+    font-size: 13px;
+
+    color: #777;
+
+}
+
+
+.owner-request-count {
+
+    font-size: 12px;
+
+    padding: 6px 10px;
+
+    border-radius: 15px;
+
+    background: #fff3cd;
+
+}
+
+
+.owner-pending,
+.owner-progress,
+.owner-completed {
+
+    font-size: 11px;
+
+    padding: 6px 9px;
+
+    border-radius: 15px;
+
+}
+
+
+.owner-pending {
+
+    background: #fff3cd;
+
+}
+
+
+.owner-progress {
+
+    background: #dbeafe;
+
+}
+
+
+.owner-completed {
+
+    background: #dcfce7;
+
+}
+
+
+/* Quick Actions */
+
+.owner-quick-actions {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 15px;
+
+}
+
+
+.owner-quick-action {
+
+    padding: 18px;
+
+    border: 1px solid #ddd;
+
+    background: #f8fafc;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+}
+
+
+.owner-quick-action:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.08);
+
+}
+
+
+/* Responsive */
+
+@media (max-width: 900px) {
+
+    .owner-stats {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .owner-dashboard-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .owner-welcome h1 {
+
+        font-size: 25px;
+
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .owner-stats {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .owner-quick-actions {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .owner-dashboard-container {
+
+        width: 94%;
+
+    }
+
+}

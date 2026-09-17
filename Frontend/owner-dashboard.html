@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Owner Dashboard - RentEase</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- Navbar -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            RentEase
+        </div>
+
+        <div class="nav-links">
+
+            <a href="index.html">Home</a>
+
+            <a href="properties.html">Properties</a>
+
+            <a
+                href="owner-dashboard.html"
+                class="active"
+            >
+                Dashboard
+            </a>
+
+            <a href="login.html">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- Main Dashboard -->
+
+    <main class="owner-dashboard-container">
+
+
+        <!-- Welcome Section -->
+
+        <section class="owner-welcome">
+
+            <p class="owner-label">
+                OWNER DASHBOARD
+            </p>
+
+            <h1>
+                Welcome back, Property Owner 👋
+            </h1>
+
+            <p>
+                Manage your properties, tenants,
+                rent collection and maintenance
+                requests from one place.
+            </p>
+
+        </section>
+
+
+
+        <!-- Statistics -->
+
+        <section class="owner-stats">
+
+
+            <div class="owner-stat-card">
+
+                <div class="owner-stat-icon">
+                    🏠
+                </div>
+
+                <div>
+
+                    <p>Total Properties</p>
+
+                    <h2>6</h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="owner-stat-card">
+
+                <div class="owner-stat-icon">
+                    👥
+                </div>
+
+                <div>
+
+                    <p>Total Tenants</p>
+
+                    <h2>4</h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="owner-stat-card">
+
+                <div class="owner-stat-icon">
+                    💰
+                </div>
+
+                <div>
+
+                    <p>Monthly Rent</p>
+
+                    <h2>₹54,000</h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="owner-stat-card">
+
+                <div class="owner-stat-icon">
+                    🔑
+                </div>
+
+                <div>
+
+                    <p>Vacant Properties</p>
+
+                    <h2>2</h2>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Dashboard Grid -->
+
+        <section class="owner-dashboard-grid">
+
+
+            <!-- Properties -->
+
+            <div class="owner-card owner-properties-card">
+
+                <div class="owner-card-header">
+
+                    <h2>
+                        🏠 My Properties
+                    </h2>
+
+                    <a href="properties.html">
+                        View All
+                    </a>
+
+                </div>
+
+
+                <div class="owner-property-item">
+
+                    <div>
+
+                        <h3>
+                            Modern 2BHK Apartment
+                        </h3>
+
+                        <p>
+                            📍 Kolkata
+                        </p>
+
+                        <span class="occupied">
+                            Occupied
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        ₹15,000
+                    </strong>
+
+                </div>
+
+
+
+                <div class="owner-property-item">
+
+                    <div>
+
+                        <h3>
+                            Premium Family House
+                        </h3>
+
+                        <p>
+                            📍 Haldia
+                        </p>
+
+                        <span class="occupied">
+                            Occupied
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        ₹12,000
+                    </strong>
+
+                </div>
+
+
+
+                <div class="owner-property-item">
+
+                    <div>
+
+                        <h3>
+                            Luxury 3BHK Apartment
+                        </h3>
+
+                        <p>
+                            📍 New Town
+                        </p>
+
+                        <span class="vacant">
+                            Vacant
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        ₹20,000
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Rent Collection -->
+
+            <div class="owner-card">
+
+                <div class="owner-card-header">
+
+                    <h2>
+                        💰 Rent Collection
+                    </h2>
+
+                </div>
+
+
+                <div class="rent-summary">
+
+                    <div>
+
+                        <span>
+                            Expected Rent
+                        </span>
+
+                        <strong>
+                            ₹54,000
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Collected
+                        </span>
+
+                        <strong class="collected">
+                            ₹39,000
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Pending
+                        </span>
+
+                        <strong class="pending">
+                            ₹15,000
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="owner-action-btn"
+                    id="rentHistoryBtn"
+                >
+                    View Rent History
+                </button>
+
+            </div>
+
+
+
+            <!-- Maintenance -->
+
+            <div class="owner-card">
+
+                <div class="owner-card-header">
+
+                    <h2>
+                        🔧 Maintenance Requests
+                    </h2>
+
+                    <span class="owner-request-count">
+                        3 Open
+                    </span>
+
+                </div>
+
+
+                <div class="owner-maintenance-item">
+
+                    <div>
+
+                        <h3>
+                            Water Leakage
+                        </h3>
+
+                        <p>
+                            Tenant: Rahul
+                        </p>
+
+                    </div>
+
+                    <span class="owner-pending">
+                        Pending
+                    </span>
+
+                </div>
+
+
+
+                <div class="owner-maintenance-item">
+
+                    <div>
+
+                        <h3>
+                            Fan Repair
+                        </h3>
+
+                        <p>
+                            Tenant: Amit
+                        </p>
+
+                    </div>
+
+                    <span class="owner-progress">
+                        In Progress
+                    </span>
+
+                </div>
+
+
+
+                <div class="owner-maintenance-item">
+
+                    <div>
+
+                        <h3>
+                            Kitchen Tap
+                        </h3>
+
+                        <p>
+                            Tenant: Priya
+                        </p>
+
+                    </div>
+
+                    <span class="owner-completed">
+                        Completed
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Quick Actions -->
+
+            <div class="owner-card">
+
+                <div class="owner-card-header">
+
+                    <h2>
+                        ⚡ Quick Actions
+                    </h2>
+
+                </div>
+
+
+                <div class="owner-quick-actions">
+
+                    <button class="owner-quick-action">
+                        ➕ Add Property
+                    </button>
+
+                    <button class="owner-quick-action">
+                        👥 Manage Tenants
+                    </button>
+
+                    <button class="owner-quick-action">
+                        💰 Rent Records
+                    </button>
+
+                    <button class="owner-quick-action">
+                        🔧 Maintenance
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
