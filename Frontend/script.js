@@ -41,72 +41,36 @@ if (signupBtn) {
 // DAY 2 - PROPERTY SEARCH
 // ==========================================
 
-const searchForm =
+const propertySearch =
     document.querySelector("#propertySearch");
 
-const locationInput =
-    document.querySelector("#location");
+if (propertySearch) {
 
-const propertyType =
-    document.querySelector("#propertyType");
-
-const budget =
-    document.querySelector("#budget");
-
-const searchMessage =
-    document.querySelector("#searchMessage");
-
-
-if (searchForm) {
-
-    searchForm.addEventListener("submit", function (event) {
+    propertySearch.addEventListener("submit", function (event) {
 
         event.preventDefault();
 
-
         const location =
-            locationInput.value.trim();
+            document.querySelector("#location").value.trim();
 
-        const type =
-            propertyType.value;
+        const propertyType =
+            document.querySelector("#propertyType").value;
 
-        const maxBudget =
-            budget.value;
+        const budget =
+            document.querySelector("#budget").value;
 
+        const searchData = {
+            location: location,
+            propertyType: propertyType,
+            budget: budget
+        };
 
-        // Validation
+        localStorage.setItem(
+            "renteaseSearch",
+            JSON.stringify(searchData)
+        );
 
-        if (location === "") {
-
-            searchMessage.textContent =
-                "Please enter a location.";
-
-            return;
-        }
-
-
-        if (type === "") {
-
-            searchMessage.textContent =
-                "Please select a property type.";
-
-            return;
-        }
-
-
-        if (maxBudget === "") {
-
-            searchMessage.textContent =
-                "Please select your maximum budget.";
-
-            return;
-        }
-
-
-        // Success Message
-
-        searchMessage.textContent =
-            `Searching properties in ${location} for ${type} under ₹${maxBudget}...`;
+        window.location.href = "properties.html";
 
     });
 
@@ -699,4 +663,119 @@ if (signupForm) {
             "Account created successfully! Backend coming soon.";
 
     });
+}
+/* ============================= */
+/* DAY 8 - DOM PRACTICE */
+/* ============================= */
+
+
+/* --------------------------------
+   1. Change Message
+--------------------------------- */
+
+const domButton = document.querySelector("#domButton");
+
+if (domButton) {
+
+    domButton.addEventListener("click", function () {
+
+        const domMessage =
+            document.querySelector("#domMessage");
+
+        domMessage.textContent =
+            "DOM successfully changed the webpage!";
+
+    });
+
+}
+
+
+/* --------------------------------
+   2. Show Tenant Name
+--------------------------------- */
+
+const nameButton =
+    document.querySelector("#nameButton");
+
+if (nameButton) {
+
+    nameButton.addEventListener("click", function () {
+
+        const tenantName =
+            document.querySelector("#tenantName").value.trim();
+
+        const nameOutput =
+            document.querySelector("#nameOutput");
+
+
+        // Check empty input
+
+        if (tenantName === "") {
+
+            nameOutput.textContent =
+                "Please enter your name.";
+
+            return;
+        }
+
+
+        // Display name
+
+        nameOutput.textContent =
+            "Welcome, " + tenantName + "!";
+
+    });
+
+}
+// =========================
+// DAY 9 - LOAD SAVED SEARCH
+// =========================
+
+if (
+    searchLocation &&
+    filterType &&
+    filterBudget
+) {
+
+    const savedSearch =
+        localStorage.getItem("renteaseSearch");
+
+    if (savedSearch) {
+
+        const searchData =
+            JSON.parse(savedSearch);
+
+        searchLocation.value =
+            searchData.location || "";
+
+        filterType.value =
+            searchData.propertyType || "";
+
+        filterBudget.value =
+            searchData.budget || "";
+
+        filterProperties();
+
+    }
+
+}
+// =========================
+// DAY 10 - RESET FILTERS
+// =========================
+
+const resetFilters =
+    document.querySelector("#resetFilters");
+
+if (resetFilters) {
+
+    resetFilters.addEventListener("click", function () {
+
+        searchLocation.value = "";
+        filterType.value = "";
+        filterBudget.value = "";
+
+        filterProperties();
+
+    });
+
 }

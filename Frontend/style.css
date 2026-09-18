@@ -1997,3 +1997,60 @@ body {
     }
 
 }
+/* ============================= */
+/* DAY 8 - DOM PRACTICE */
+/* ============================= */
+
+.dom-practice,
+.dom-input-practice {
+    width: 90%;
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.dom-practice h2,
+.dom-input-practice h2 {
+    margin-bottom: 15px;
+}
+
+.dom-practice p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.dom-practice button,
+.dom-input-practice button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    cursor: pointer;
+}
+
+.dom-practice button:hover,
+.dom-input-practice button:hover {
+    opacity: 0.85;
+}
+
+.dom-input-practice input {
+    width: 70%;
+    padding: 12px;
+    margin: 15px 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+}
+
+.dom-input-practice input:focus {
+    border-color: #222;
+}
+
+#nameOutput {
+    margin-top: 20px;
+}
