@@ -779,3 +779,41 @@ if (resetFilters) {
     });
 
 }
+// =========================
+// DAY 11 - PROPERTY SORTING
+// =========================
+
+const sortProperties =
+    document.querySelector("#sortProperties");
+
+if (sortProperties) {
+
+    sortProperties.addEventListener("change", function () {
+
+        const sortValue =
+            sortProperties.value;
+
+        const sortedProperties =
+            [...properties];
+
+        if (sortValue === "lowToHigh") {
+
+            sortedProperties.sort(function (a, b) {
+                return a.rent - b.rent;
+            });
+
+        }
+
+        if (sortValue === "highToLow") {
+
+            sortedProperties.sort(function (a, b) {
+                return b.rent - a.rent;
+            });
+
+        }
+
+        displayProperties(sortedProperties);
+
+    });
+
+}
