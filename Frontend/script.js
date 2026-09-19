@@ -1,40 +1,7 @@
 // ==========================================
 // RENT EASE - JAVASCRIPT
+// DAY 1 TO DAY 12
 // ==========================================
-
-
-// ==========================================
-// DAY 1 - LOGIN BUTTON
-// ==========================================
-
-const loginBtn = document.querySelector("#loginBtn");
-
-if (loginBtn) {
-
-    loginBtn.addEventListener("click", function () {
-
-        alert("Login page coming soon!");
-
-    });
-
-}
-
-
-// ==========================================
-// DAY 1 - SIGNUP BUTTON
-// ==========================================
-
-const signupBtn = document.querySelector("#signupBtn");
-
-if (signupBtn) {
-
-    signupBtn.addEventListener("click", function () {
-
-        alert("Signup page coming soon!");
-
-    });
-
-}
 
 
 // ==========================================
@@ -59,16 +26,19 @@ if (propertySearch) {
         const budget =
             document.querySelector("#budget").value;
 
+
         const searchData = {
             location: location,
             propertyType: propertyType,
             budget: budget
         };
 
+
         localStorage.setItem(
             "renteaseSearch",
             JSON.stringify(searchData)
         );
+
 
         window.location.href = "properties.html";
 
@@ -85,95 +55,60 @@ const properties = [
 
     {
         id: 1,
-
         title: "Modern 2BHK Apartment",
-
         location: "Kolkata",
-
         type: "Apartment",
-
         rent: 15000,
-
         image:
             "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
     },
 
-
     {
         id: 2,
-
         title: "Premium Family House",
-
         location: "Haldia",
-
         type: "House",
-
         rent: 12000,
-
         image:
             "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
     },
 
-
     {
         id: 3,
-
         title: "Affordable Student PG",
-
         location: "Durgapur",
-
         type: "PG",
-
         rent: 7000,
-
         image:
             "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"
     },
 
-
     {
         id: 4,
-
         title: "Single Room Near College",
-
         location: "Kolkata",
-
         type: "Room",
-
         rent: 8000,
-
         image:
             "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
     },
 
-
     {
         id: 5,
-
         title: "Luxury 3BHK Apartment",
-
         location: "New Town",
-
         type: "Apartment",
-
         rent: 20000,
-
         image:
             "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
     },
 
-
     {
         id: 6,
-
         title: "Budget Friendly House",
-
         location: "Haldia",
-
         type: "House",
-
         rent: 9000,
-
         image:
             "https://images.unsplash.com/photo-1570129477492-45c003edd2be"
     }
@@ -195,19 +130,13 @@ const propertyList =
 
 function displayProperties(propertyArray) {
 
-    // Check if property page exists
-
     if (!propertyList) {
         return;
     }
 
 
-    // Clear previous cards
-
     propertyList.innerHTML = "";
 
-
-    // If no property found
 
     if (propertyArray.length === 0) {
 
@@ -220,8 +149,6 @@ function displayProperties(propertyArray) {
         return;
     }
 
-
-    // Create cards
 
     propertyArray.forEach(function (property) {
 
@@ -239,28 +166,25 @@ function displayProperties(propertyArray) {
                 alt="${property.title}"
             >
 
-
             <div class="property-info">
 
                 <h3>
                     ${property.title}
                 </h3>
 
-
                 <p class="property-location">
                     📍 ${property.location}
                 </p>
-
 
                 <p class="property-rent">
                     ₹${property.rent.toLocaleString("en-IN")}
                     / month
                 </p>
 
-
                 <span class="property-type">
                     ${property.type}
                 </span>
+
                 <a
                     href="property-details.html?id=${property.id}"
                     class="details-btn"
@@ -307,7 +231,11 @@ const filterBudget =
 
 function filterProperties() {
 
-    if (!searchLocation) {
+    if (
+        !searchLocation ||
+        !filterType ||
+        !filterBudget
+    ) {
         return;
     }
 
@@ -361,8 +289,6 @@ function filterProperties() {
         });
 
 
-    // Display filtered properties
-
     displayProperties(filteredProperties);
 
 }
@@ -408,33 +334,60 @@ if (filterBudget) {
     );
 
 }
+
+
 // ==========================================
 // DAY 4 - PROPERTY DETAILS
 // ==========================================
 
-const propertyDetails = document.querySelector("#propertyDetails");
+const propertyDetails =
+    document.querySelector("#propertyDetails");
+
 
 if (propertyDetails) {
 
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams =
+        new URLSearchParams(window.location.search);
 
-    const propertyId = Number(urlParams.get("id"));
+
+    const propertyId =
+        Number(urlParams.get("id"));
+
 
     console.log("Property ID:", propertyId);
 
-    const selectedProperty = properties.find(function(property) {
-        return property.id === propertyId;
-    });
 
-    console.log("Selected Property:", selectedProperty);
+    const selectedProperty =
+        properties.find(function (property) {
+
+            return property.id === propertyId;
+
+        });
+
+
+    console.log(
+        "Selected Property:",
+        selectedProperty
+    );
+
 
     if (!selectedProperty) {
 
         propertyDetails.innerHTML = `
+
             <div class="no-property">
-                <h2>Property not found</h2>
-                <p>Please select a property from the Properties page.</p>
+
+                <h2>
+                    Property not found
+                </h2>
+
+                <p>
+                    Please select a property
+                    from the Properties page.
+                </p>
+
             </div>
+
         `;
 
     } else {
@@ -449,24 +402,29 @@ if (propertyDetails) {
                     class="details-image"
                 >
 
+
                 <div class="details-content">
 
                     <span class="property-type">
                         ${selectedProperty.type}
                     </span>
 
+
                     <h1>
                         ${selectedProperty.title}
                     </h1>
+
 
                     <p class="property-location">
                         📍 ${selectedProperty.location}
                     </p>
 
+
                     <h2 class="details-rent">
                         ₹${selectedProperty.rent.toLocaleString("en-IN")}
                         / month
                     </h2>
+
 
                     <div class="property-features">
 
@@ -478,6 +436,7 @@ if (propertyDetails) {
                             Bedrooms
                         </div>
 
+
                         <div>
                             🚿
                             <strong>
@@ -486,12 +445,14 @@ if (propertyDetails) {
                             Bathrooms
                         </div>
 
+
                         <div>
                             📐
                             <strong>
                                 ${selectedProperty.area || "1200 sq.ft"}
                             </strong>
                         </div>
+
 
                         <div>
                             🛋️
@@ -502,14 +463,22 @@ if (propertyDetails) {
 
                     </div>
 
-                    <h2>About Property</h2>
+
+                    <h2>
+                        About Property
+                    </h2>
+
 
                     <p>
                         ${selectedProperty.description ||
                         "This is a comfortable and well-maintained property suitable for rental."}
                     </p>
 
-                    <h2>Amenities</h2>
+
+                    <h2>
+                        Amenities
+                    </h2>
+
 
                     <div class="amenities">
 
@@ -518,13 +487,20 @@ if (propertyDetails) {
                             "WiFi",
                             "Security",
                             "Lift"
-                        ]).map(function(amenity) {
+                        ])
+                            .map(function (amenity) {
 
-                            return `<span>${amenity}</span>`;
+                                return `
+                                    <span>
+                                        ${amenity}
+                                    </span>
+                                `;
 
-                        }).join("")}
+                            })
+                            .join("")}
 
                     </div>
+
 
                     <button class="contact-owner-btn">
                         Contact Owner
@@ -533,203 +509,336 @@ if (propertyDetails) {
                 </div>
 
             </div>
+
         `;
+
     }
+
 }
+
+
 // ==========================================
-// DAY 5 - LOGIN
+// DAY 5 + DAY 12 - LOGIN
 // ==========================================
 
-const loginForm = document.querySelector("#loginForm");
+const loginForm =
+    document.querySelector("#loginForm");
+
 
 if (loginForm) {
 
-    loginForm.addEventListener("submit", function(event) {
+    loginForm.addEventListener(
+        "submit",
+        function (event) {
 
-        event.preventDefault();
-
-        const email =
-            document.querySelector("#loginEmail").value.trim();
-
-        const password =
-            document.querySelector("#loginPassword").value.trim();
-
-        const loginMessage =
-            document.querySelector("#loginMessage");
+            event.preventDefault();
 
 
-        if (email === "") {
+            const email =
+                document.querySelector("#loginEmail")
+                    .value
+                    .trim();
+
+
+            const password =
+                document.querySelector("#loginPassword")
+                    .value
+                    .trim();
+
+
+            const loginMessage =
+                document.querySelector("#loginMessage");
+
+
+            // Check email
+
+            if (email === "") {
+
+                loginMessage.textContent =
+                    "Please enter your email.";
+
+                return;
+            }
+
+
+            // Check email format
+
+            if (!email.includes("@")) {
+
+                loginMessage.textContent =
+                    "Please enter a valid email.";
+
+                return;
+            }
+
+
+            // Check password
+
+            if (password === "") {
+
+                loginMessage.textContent =
+                    "Please enter your password.";
+
+                return;
+            }
+
+
+            // Check password length
+
+            if (password.length < 6) {
+
+                loginMessage.textContent =
+                    "Password must be at least 6 characters.";
+
+                return;
+            }
+
+
+            // Login successful
 
             loginMessage.textContent =
-                "Please enter your email.";
+                "Login successful! Redirecting...";
 
-            return;
+
+            setTimeout(function () {
+
+                window.location.href =
+                    "tenant-dashboard.html";
+
+            }, 1000);
+
         }
+    );
 
-
-        if (password === "") {
-
-            loginMessage.textContent =
-                "Please enter your password.";
-
-            return;
-        }
-
-
-        loginMessage.textContent = "Login successful! Redirecting...";
-
-        setTimeout(function() {
-            window.location.href = "tenant-dashboard.html";
-        }, 1000);
-
-    });
 }
+
+
+// ==========================================
+// DAY 5 + DAY 12 - SIGNUP
+// ==========================================
 
 const signupForm =
     document.querySelector("#signupForm");
 
+
 if (signupForm) {
 
-    signupForm.addEventListener("submit", function(event) {
+    signupForm.addEventListener(
+        "submit",
+        function (event) {
 
-        event.preventDefault();
-
-
-        const name =
-            document.querySelector("#signupName").value.trim();
-
-        const email =
-            document.querySelector("#signupEmail").value.trim();
-
-        const password =
-            document.querySelector("#signupPassword").value.trim();
-
-        const confirmPassword =
-            document.querySelector("#confirmPassword").value.trim();
-
-        const role =
-            document.querySelector("#userRole").value;
-
-        const signupMessage =
-            document.querySelector("#signupMessage");
+            event.preventDefault();
 
 
-        if (name === "") {
+            const name =
+                document.querySelector("#signupName")
+                    .value
+                    .trim();
+
+
+            const email =
+                document.querySelector("#signupEmail")
+                    .value
+                    .trim();
+
+
+            const password =
+                document.querySelector("#signupPassword")
+                    .value
+                    .trim();
+
+
+            const confirmPassword =
+                document.querySelector("#confirmPassword")
+                    .value
+                    .trim();
+
+
+            const role =
+                document.querySelector("#userRole")
+                    .value;
+
+
+            const signupMessage =
+                document.querySelector("#signupMessage");
+
+
+            // Check name
+
+            if (name === "") {
+
+                signupMessage.textContent =
+                    "Please enter your name.";
+
+                return;
+            }
+
+
+            // Check name length
+
+            if (name.length < 3) {
+
+                signupMessage.textContent =
+                    "Name must be at least 3 characters.";
+
+                return;
+            }
+
+
+            // Check email
+
+            if (email === "") {
+
+                signupMessage.textContent =
+                    "Please enter your email.";
+
+                return;
+            }
+
+
+            // Check email format
+
+            if (!email.includes("@")) {
+
+                signupMessage.textContent =
+                    "Please enter a valid email.";
+
+                return;
+            }
+
+
+            // Check password
+
+            if (password === "") {
+
+                signupMessage.textContent =
+                    "Please enter a password.";
+
+                return;
+            }
+
+
+            // Check password length
+
+            if (password.length < 6) {
+
+                signupMessage.textContent =
+                    "Password must be at least 6 characters.";
+
+                return;
+            }
+
+
+            // Check confirm password
+
+            if (password !== confirmPassword) {
+
+                signupMessage.textContent =
+                    "Passwords do not match.";
+
+                return;
+            }
+
+
+            // Check role
+
+            if (role === "") {
+
+                signupMessage.textContent =
+                    "Please select your role.";
+
+                return;
+            }
+
+
+            // Signup successful
 
             signupMessage.textContent =
-                "Please enter your name.";
+                "Account created successfully!";
 
-            return;
         }
+    );
 
-
-        if (email === "") {
-
-            signupMessage.textContent =
-                "Please enter your email.";
-
-            return;
-        }
-
-
-        if (password === "") {
-
-            signupMessage.textContent =
-                "Please enter a password.";
-
-            return;
-        }
-
-
-        if (password !== confirmPassword) {
-
-            signupMessage.textContent =
-                "Passwords do not match.";
-
-            return;
-        }
-
-
-        if (role === "") {
-
-            signupMessage.textContent =
-                "Please select your role.";
-
-            return;
-        }
-
-
-        signupMessage.textContent =
-            "Account created successfully! Backend coming soon.";
-
-    });
 }
-/* ============================= */
-/* DAY 8 - DOM PRACTICE */
-/* ============================= */
 
 
-/* --------------------------------
-   1. Change Message
---------------------------------- */
+// ==========================================
+// DAY 8 - DOM PRACTICE
+// ==========================================
 
-const domButton = document.querySelector("#domButton");
+
+// ==========================================
+// 1. CHANGE MESSAGE
+// ==========================================
+
+const domButton =
+    document.querySelector("#domButton");
+
 
 if (domButton) {
 
-    domButton.addEventListener("click", function () {
+    domButton.addEventListener(
+        "click",
+        function () {
 
-        const domMessage =
-            document.querySelector("#domMessage");
+            const domMessage =
+                document.querySelector("#domMessage");
 
-        domMessage.textContent =
-            "DOM successfully changed the webpage!";
 
-    });
+            domMessage.textContent =
+                "DOM successfully changed the webpage!";
+
+        }
+    );
 
 }
 
 
-/* --------------------------------
-   2. Show Tenant Name
---------------------------------- */
+// ==========================================
+// 2. SHOW TENANT NAME
+// ==========================================
 
 const nameButton =
     document.querySelector("#nameButton");
 
+
 if (nameButton) {
 
-    nameButton.addEventListener("click", function () {
+    nameButton.addEventListener(
+        "click",
+        function () {
 
-        const tenantName =
-            document.querySelector("#tenantName").value.trim();
+            const tenantName =
+                document.querySelector("#tenantName")
+                    .value
+                    .trim();
 
-        const nameOutput =
-            document.querySelector("#nameOutput");
+
+            const nameOutput =
+                document.querySelector("#nameOutput");
 
 
-        // Check empty input
+            if (tenantName === "") {
 
-        if (tenantName === "") {
+                nameOutput.textContent =
+                    "Please enter your name.";
+
+                return;
+            }
+
 
             nameOutput.textContent =
-                "Please enter your name.";
+                "Welcome, " + tenantName + "!";
 
-            return;
         }
-
-
-        // Display name
-
-        nameOutput.textContent =
-            "Welcome, " + tenantName + "!";
-
-    });
+    );
 
 }
-// =========================
+
+
+// ==========================================
 // DAY 9 - LOAD SAVED SEARCH
-// =========================
+// ==========================================
 
 if (
     searchLocation &&
@@ -740,80 +849,135 @@ if (
     const savedSearch =
         localStorage.getItem("renteaseSearch");
 
+
     if (savedSearch) {
 
         const searchData =
             JSON.parse(savedSearch);
 
+
         searchLocation.value =
             searchData.location || "";
+
 
         filterType.value =
             searchData.propertyType || "";
 
+
         filterBudget.value =
             searchData.budget || "";
+
 
         filterProperties();
 
     }
 
 }
-// =========================
+
+
+// ==========================================
 // DAY 10 - RESET FILTERS
-// =========================
+// ==========================================
 
 const resetFilters =
     document.querySelector("#resetFilters");
 
+
 if (resetFilters) {
 
-    resetFilters.addEventListener("click", function () {
+    resetFilters.addEventListener(
+        "click",
+        function () {
 
-        searchLocation.value = "";
-        filterType.value = "";
-        filterBudget.value = "";
+            if (searchLocation) {
+                searchLocation.value = "";
+            }
 
-        filterProperties();
 
-    });
+            if (filterType) {
+                filterType.value = "";
+            }
+
+
+            if (filterBudget) {
+                filterBudget.value = "";
+            }
+
+
+            // Remove saved search
+
+            localStorage.removeItem(
+                "renteaseSearch"
+            );
+
+
+            filterProperties();
+
+        }
+    );
 
 }
-// =========================
+
+
+// ==========================================
 // DAY 11 - PROPERTY SORTING
-// =========================
+// ==========================================
 
 const sortProperties =
     document.querySelector("#sortProperties");
 
+
 if (sortProperties) {
 
-    sortProperties.addEventListener("change", function () {
+    sortProperties.addEventListener(
+        "change",
+        function () {
 
-        const sortValue =
-            sortProperties.value;
+            const sortValue =
+                sortProperties.value;
 
-        const sortedProperties =
-            [...properties];
 
-        if (sortValue === "lowToHigh") {
+            const sortedProperties =
+                [...properties];
 
-            sortedProperties.sort(function (a, b) {
-                return a.rent - b.rent;
-            });
+
+            // Low to High
+
+            if (sortValue === "lowToHigh") {
+
+                sortedProperties.sort(
+                    function (a, b) {
+
+                        return a.rent - b.rent;
+
+                    }
+                );
+
+            }
+
+
+            // High to Low
+
+            if (sortValue === "highToLow") {
+
+                sortedProperties.sort(
+                    function (a, b) {
+
+                        return b.rent - a.rent;
+
+                    }
+                );
+
+            }
+
+
+            // Default order
+
+            displayProperties(
+                sortedProperties
+            );
 
         }
-
-        if (sortValue === "highToLow") {
-
-            sortedProperties.sort(function (a, b) {
-                return b.rent - a.rent;
-            });
-
-        }
-
-        displayProperties(sortedProperties);
-
-    });
+    );
 
 }
