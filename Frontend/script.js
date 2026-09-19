@@ -1,48 +1,43 @@
-// ==========================================
-// RENT EASE - JAVASCRIPT
-// DAY 1 TO DAY 12
-// ==========================================
-
-
-// ==========================================
-// DAY 2 - PROPERTY SEARCH
-// ==========================================
-
 const propertySearch =
     document.querySelector("#propertySearch");
 
 if (propertySearch) {
 
-    propertySearch.addEventListener("submit", function (event) {
+    propertySearch.addEventListener(
+        "submit",
+        function (event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const location =
-            document.querySelector("#location").value.trim();
+            const location =
+                document.querySelector("#location").value.trim();
 
-        const propertyType =
-            document.querySelector("#propertyType").value;
+            const propertyType =
+                document.querySelector("#propertyType").value;
 
-        const budget =
-            document.querySelector("#budget").value;
-
-
-        const searchData = {
-            location: location,
-            propertyType: propertyType,
-            budget: budget
-        };
+            const budget =
+                document.querySelector("#budget").value;
 
 
-        localStorage.setItem(
-            "renteaseSearch",
-            JSON.stringify(searchData)
-        );
+            // Save search data
+            const searchData = {
+                location: location,
+                propertyType: propertyType,
+                budget: budget
+            };
 
 
-        window.location.href = "properties.html";
+            localStorage.setItem(
+                "renteaseSearch",
+                JSON.stringify(searchData)
+            );
 
-    });
+
+            window.location.href =
+                "properties.html";
+
+        }
+    );
 
 }
 
@@ -354,7 +349,10 @@ if (propertyDetails) {
         Number(urlParams.get("id"));
 
 
-    console.log("Property ID:", propertyId);
+    console.log(
+        "Property ID:",
+        propertyId
+    );
 
 
     const selectedProperty =
@@ -470,8 +468,10 @@ if (propertyDetails) {
 
 
                     <p>
-                        ${selectedProperty.description ||
-                        "This is a comfortable and well-maintained property suitable for rental."}
+                        ${
+                            selectedProperty.description ||
+                            "This is a comfortable and well-maintained property suitable for rental."
+                        }
                     </p>
 
 
@@ -482,12 +482,16 @@ if (propertyDetails) {
 
                     <div class="amenities">
 
-                        ${(selectedProperty.amenities || [
-                            "Parking",
-                            "WiFi",
-                            "Security",
-                            "Lift"
-                        ])
+                        ${
+                            (
+                                selectedProperty.amenities ||
+                                [
+                                    "Parking",
+                                    "WiFi",
+                                    "Security",
+                                    "Lift"
+                                ]
+                            )
                             .map(function (amenity) {
 
                                 return `
@@ -497,7 +501,8 @@ if (propertyDetails) {
                                 `;
 
                             })
-                            .join("")}
+                            .join("")
+                        }
 
                     </div>
 
@@ -518,7 +523,7 @@ if (propertyDetails) {
 
 
 // ==========================================
-// DAY 5 + DAY 12 - LOGIN
+// DAY 5 + DAY 12 + DAY 13 - LOGIN
 // ==========================================
 
 const loginForm =
@@ -550,7 +555,9 @@ if (loginForm) {
                 document.querySelector("#loginMessage");
 
 
-            // Check email
+            // ==========================================
+            // CHECK EMAIL
+            // ==========================================
 
             if (email === "") {
 
@@ -561,7 +568,9 @@ if (loginForm) {
             }
 
 
-            // Check email format
+            // ==========================================
+            // CHECK EMAIL FORMAT
+            // ==========================================
 
             if (!email.includes("@")) {
 
@@ -572,7 +581,9 @@ if (loginForm) {
             }
 
 
-            // Check password
+            // ==========================================
+            // CHECK PASSWORD
+            // ==========================================
 
             if (password === "") {
 
@@ -583,7 +594,9 @@ if (loginForm) {
             }
 
 
-            // Check password length
+            // ==========================================
+            // CHECK PASSWORD LENGTH
+            // ==========================================
 
             if (password.length < 6) {
 
@@ -594,7 +607,61 @@ if (loginForm) {
             }
 
 
-            // Login successful
+            // ==========================================
+            // DAY 13 - GET SAVED USER
+            // ==========================================
+
+            const savedUser =
+                localStorage.getItem("renteaseUser");
+
+
+            if (!savedUser) {
+
+                loginMessage.textContent =
+                    "No account found. Please sign up first.";
+
+                return;
+            }
+
+
+            // Convert String → Object
+
+            const userData =
+                JSON.parse(savedUser);
+
+
+            // ==========================================
+            // CHECK EMAIL WITH SAVED USER
+            // ==========================================
+
+            if (
+                email.toLowerCase() !==
+                userData.email.toLowerCase()
+            ) {
+
+                loginMessage.textContent =
+                    "Email does not match the registered account.";
+
+                return;
+            }
+
+
+            // ==========================================
+            // CHECK PASSWORD
+            // ==========================================
+
+            if (password !== userData.password) {
+
+                loginMessage.textContent =
+                    "Incorrect password.";
+
+                return;
+            }
+
+
+            // ==========================================
+            // LOGIN SUCCESS
+            // ==========================================
 
             loginMessage.textContent =
                 "Login successful! Redirecting...";
@@ -602,8 +669,19 @@ if (loginForm) {
 
             setTimeout(function () {
 
-                window.location.href =
-                    "tenant-dashboard.html";
+                // Check user role
+
+                if (userData.role === "Owner") {
+
+                    window.location.href =
+                        "owner-dashboard.html";
+
+                } else {
+
+                    window.location.href =
+                        "tenant-dashboard.html";
+
+                }
 
             }, 1000);
 
@@ -614,7 +692,7 @@ if (loginForm) {
 
 
 // ==========================================
-// DAY 5 + DAY 12 - SIGNUP
+// DAY 5 + DAY 12 + DAY 13 - SIGNUP
 // ==========================================
 
 const signupForm =
@@ -663,7 +741,9 @@ if (signupForm) {
                 document.querySelector("#signupMessage");
 
 
-            // Check name
+            // ==========================================
+            // CHECK NAME
+            // ==========================================
 
             if (name === "") {
 
@@ -674,7 +754,9 @@ if (signupForm) {
             }
 
 
-            // Check name length
+            // ==========================================
+            // CHECK NAME LENGTH
+            // ==========================================
 
             if (name.length < 3) {
 
@@ -685,7 +767,9 @@ if (signupForm) {
             }
 
 
-            // Check email
+            // ==========================================
+            // CHECK EMAIL
+            // ==========================================
 
             if (email === "") {
 
@@ -696,7 +780,9 @@ if (signupForm) {
             }
 
 
-            // Check email format
+            // ==========================================
+            // CHECK EMAIL FORMAT
+            // ==========================================
 
             if (!email.includes("@")) {
 
@@ -707,7 +793,9 @@ if (signupForm) {
             }
 
 
-            // Check password
+            // ==========================================
+            // CHECK PASSWORD
+            // ==========================================
 
             if (password === "") {
 
@@ -718,7 +806,9 @@ if (signupForm) {
             }
 
 
-            // Check password length
+            // ==========================================
+            // CHECK PASSWORD LENGTH
+            // ==========================================
 
             if (password.length < 6) {
 
@@ -729,7 +819,9 @@ if (signupForm) {
             }
 
 
-            // Check confirm password
+            // ==========================================
+            // CHECK CONFIRM PASSWORD
+            // ==========================================
 
             if (password !== confirmPassword) {
 
@@ -740,7 +832,9 @@ if (signupForm) {
             }
 
 
-            // Check role
+            // ==========================================
+            // CHECK ROLE
+            // ==========================================
 
             if (role === "") {
 
@@ -751,10 +845,36 @@ if (signupForm) {
             }
 
 
-            // Signup successful
+            // ==========================================
+            // DAY 13 - SAVE USER DATA
+            // ==========================================
+
+            const userData = {
+
+                name: name,
+                email: email,
+                password: password,
+                role: role
+
+            };
+
+
+            // Convert Object → String
+            // and save it in browser
+
+            localStorage.setItem(
+                "renteaseUser",
+                JSON.stringify(userData)
+            );
+
 
             signupMessage.textContent =
                 "Account created successfully!";
+
+
+            // ==========================================
+            // END SIGNUP
+            // ==========================================
 
         }
     );
@@ -890,17 +1010,23 @@ if (resetFilters) {
         function () {
 
             if (searchLocation) {
+
                 searchLocation.value = "";
+
             }
 
 
             if (filterType) {
+
                 filterType.value = "";
+
             }
 
 
             if (filterBudget) {
+
                 filterBudget.value = "";
+
             }
 
 
@@ -937,11 +1063,15 @@ if (sortProperties) {
                 sortProperties.value;
 
 
+            // Make a copy of original array
+
             const sortedProperties =
                 [...properties];
 
 
-            // Low to High
+            // ==========================================
+            // LOW TO HIGH
+            // ==========================================
 
             if (sortValue === "lowToHigh") {
 
@@ -956,7 +1086,9 @@ if (sortProperties) {
             }
 
 
-            // High to Low
+            // ==========================================
+            // HIGH TO LOW
+            // ==========================================
 
             if (sortValue === "highToLow") {
 
@@ -971,7 +1103,9 @@ if (sortProperties) {
             }
 
 
-            // Default order
+            // ==========================================
+            // DISPLAY SORTED PROPERTIES
+            // ==========================================
 
             displayProperties(
                 sortedProperties
