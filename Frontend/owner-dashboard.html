@@ -448,6 +448,67 @@
 
 
         </section>
+        <section class="add-property-section">
+
+            <h2>Add New Property</h2>
+
+            <form id="propertyForm">
+
+                <input
+                    type="text"
+                    id="propertyTitle"
+                    placeholder="Property Title"
+                >
+
+                <input
+                    type="text"
+                    id="propertyLocation"
+                    placeholder="Location"
+                >
+
+                <select id="propertyType">
+
+                    <option value="">Select Property Type</option>
+
+                    <option value="Apartment">
+                        Apartment
+                    </option>
+
+                    <option value="House">
+                        House
+                    </option>
+
+                    <option value="PG">
+                        PG
+                    </option>
+
+                    <option value="Room">
+                        Room
+                    </option>
+
+                </select>
+
+                <input
+                    type="number"
+                    id="propertyRent"
+                    placeholder="Monthly Rent"
+                >
+
+                <input
+                    type="text"
+                    id="propertyImage"
+                    placeholder="Image URL"
+                >
+
+                <button type="submit">
+                    Add Property
+                </button>
+
+            </form>
+
+            <p id="propertyMessage"></p>
+
+        </section>
 
     </main>
 

@@ -1,3 +1,7 @@
+// ==========================================
+// DAY 2 - HOME PROPERTY SEARCH
+// ==========================================
+
 const propertySearch =
     document.querySelector("#propertySearch");
 
@@ -112,6 +116,66 @@ const properties = [
 
 
 // ==========================================
+// DAY 14 - LOAD OWNER PROPERTIES
+// ==========================================
+// IMPORTANT:
+// New properties added from Owner Dashboard
+// are stored in localStorage.
+// We load them into the main properties array
+// BEFORE displaying properties.
+//
+// This was the main issue.
+// ==========================================
+
+const savedOwnerProperties =
+    localStorage.getItem("renteaseProperties");
+
+if (savedOwnerProperties) {
+
+    try {
+
+        const ownerProperties =
+            JSON.parse(savedOwnerProperties);
+
+        if (Array.isArray(ownerProperties)) {
+
+            ownerProperties.forEach(
+                function (property) {
+
+                    // Avoid duplicate ID
+                    const alreadyExists =
+                        properties.some(
+                            function (existingProperty) {
+
+                                return existingProperty.id === property.id;
+
+                            }
+                        );
+
+                    if (!alreadyExists) {
+
+                        properties.push(property);
+
+                    }
+
+                }
+            );
+
+        }
+
+    } catch (error) {
+
+        console.log(
+            "Error loading saved properties:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================
 // DAY 3 - SELECT PROPERTY CONTAINER
 // ==========================================
 
@@ -200,13 +264,6 @@ function displayProperties(propertyArray) {
 
 
 // ==========================================
-// SHOW ALL PROPERTIES INITIALLY
-// ==========================================
-
-displayProperties(properties);
-
-
-// ==========================================
 // DAY 3 - FILTER ELEMENTS
 // ==========================================
 
@@ -218,6 +275,14 @@ const filterType =
 
 const filterBudget =
     document.querySelector("#filterBudget");
+
+
+// ==========================================
+// DAY 11 - SORT ELEMENT
+// ==========================================
+
+const sortProperties =
+    document.querySelector("#sortProperties");
 
 
 // ==========================================
@@ -249,48 +314,97 @@ function filterProperties() {
         filterBudget.value;
 
 
-    const filteredProperties =
-        properties.filter(function (property) {
+    let filteredProperties =
+        properties.filter(
+            function (property) {
 
 
-            // Location matching
+                // Location matching
 
-            const locationMatch =
-                property.location
-                    .toLowerCase()
-                    .includes(locationValue);
-
-
-            // Type matching
-
-            const typeMatch =
-                typeValue === "" ||
-                property.type === typeValue;
+                const locationMatch =
+                    property.location
+                        .toLowerCase()
+                        .includes(locationValue);
 
 
-            // Budget matching
+                // Type matching
 
-            const budgetMatch =
-                budgetValue === "" ||
-                property.rent <= Number(budgetValue);
+                const typeMatch =
+                    typeValue === "" ||
+                    property.type === typeValue;
 
 
-            return (
-                locationMatch &&
-                typeMatch &&
-                budgetMatch
+                // Budget matching
+
+                const budgetMatch =
+                    budgetValue === "" ||
+                    property.rent <= Number(budgetValue);
+
+
+                return (
+                    locationMatch &&
+                    typeMatch &&
+                    budgetMatch
+                );
+
+            }
+        );
+
+
+    // ==========================================
+    // APPLY SORTING AFTER FILTERING
+    // ==========================================
+
+    if (sortProperties) {
+
+        const sortValue =
+            sortProperties.value;
+
+
+        if (sortValue === "lowToHigh") {
+
+            filteredProperties.sort(
+                function (a, b) {
+
+                    return a.rent - b.rent;
+
+                }
             );
 
-        });
+        }
 
 
-    displayProperties(filteredProperties);
+        if (sortValue === "highToLow") {
+
+            filteredProperties.sort(
+                function (a, b) {
+
+                    return b.rent - a.rent;
+
+                }
+            );
+
+        }
+
+    }
+
+
+    displayProperties(
+        filteredProperties
+    );
 
 }
 
 
 // ==========================================
-// SEARCH EVENT
+// SHOW ALL PROPERTIES INITIALLY
+// ==========================================
+
+displayProperties(properties);
+
+
+// ==========================================
+// DAY 3 - SEARCH EVENT
 // ==========================================
 
 if (searchLocation) {
@@ -304,7 +418,7 @@ if (searchLocation) {
 
 
 // ==========================================
-// TYPE FILTER EVENT
+// DAY 3 - TYPE FILTER EVENT
 // ==========================================
 
 if (filterType) {
@@ -318,7 +432,7 @@ if (filterType) {
 
 
 // ==========================================
-// BUDGET FILTER EVENT
+// DAY 3 - BUDGET FILTER EVENT
 // ==========================================
 
 if (filterBudget) {
@@ -342,11 +456,15 @@ const propertyDetails =
 if (propertyDetails) {
 
     const urlParams =
-        new URLSearchParams(window.location.search);
+        new URLSearchParams(
+            window.location.search
+        );
 
 
     const propertyId =
-        Number(urlParams.get("id"));
+        Number(
+            urlParams.get("id")
+        );
 
 
     console.log(
@@ -356,11 +474,13 @@ if (propertyDetails) {
 
 
     const selectedProperty =
-        properties.find(function (property) {
+        properties.find(
+            function (property) {
 
-            return property.id === propertyId;
+                return property.id === propertyId;
 
-        });
+            }
+        );
 
 
     console.log(
@@ -492,22 +612,27 @@ if (propertyDetails) {
                                     "Lift"
                                 ]
                             )
-                            .map(function (amenity) {
+                            .map(
+                                function (amenity) {
 
-                                return `
-                                    <span>
-                                        ${amenity}
-                                    </span>
-                                `;
+                                    return `
+                                        <span>
+                                            ${amenity}
+                                        </span>
+                                    `;
 
-                            })
+                                }
+                            )
                             .join("")
                         }
 
                     </div>
 
 
-                    <button class="contact-owner-btn">
+                    <button
+                        class="contact-owner-btn"
+                        type="button"
+                    >
                         Contact Owner
                     </button>
 
@@ -667,23 +792,29 @@ if (loginForm) {
                 "Login successful! Redirecting...";
 
 
-            setTimeout(function () {
+            setTimeout(
+                function () {
 
-                // Check user role
+                    // Check user role
 
-                if (userData.role === "Owner") {
+                    if (
+                        userData.role === "Owner" ||
+                        userData.role === "Property Owner"
+                    ) {
 
-                    window.location.href =
-                        "owner-dashboard.html";
+                        window.location.href =
+                            "owner-dashboard.html";
 
-                } else {
+                    } else {
 
-                    window.location.href =
-                        "tenant-dashboard.html";
+                        window.location.href =
+                            "tenant-dashboard.html";
 
-                }
+                    }
 
-            }, 1000);
+                },
+                1000
+            );
 
         }
     );
@@ -871,11 +1002,6 @@ if (signupForm) {
             signupMessage.textContent =
                 "Account created successfully!";
 
-
-            // ==========================================
-            // END SIGNUP
-            // ==========================================
-
         }
     );
 
@@ -905,8 +1031,12 @@ if (domButton) {
                 document.querySelector("#domMessage");
 
 
-            domMessage.textContent =
-                "DOM successfully changed the webpage!";
+            if (domMessage) {
+
+                domMessage.textContent =
+                    "DOM successfully changed the webpage!";
+
+            }
 
         }
     );
@@ -972,23 +1102,34 @@ if (
 
     if (savedSearch) {
 
-        const searchData =
-            JSON.parse(savedSearch);
+        try {
+
+            const searchData =
+                JSON.parse(savedSearch);
 
 
-        searchLocation.value =
-            searchData.location || "";
+            searchLocation.value =
+                searchData.location || "";
 
 
-        filterType.value =
-            searchData.propertyType || "";
+            filterType.value =
+                searchData.propertyType || "";
 
 
-        filterBudget.value =
-            searchData.budget || "";
+            filterBudget.value =
+                searchData.budget || "";
 
 
-        filterProperties();
+            filterProperties();
+
+        } catch (error) {
+
+            console.log(
+                "Error loading saved search:",
+                error
+            );
+
+        }
 
     }
 
@@ -1030,6 +1171,13 @@ if (resetFilters) {
             }
 
 
+            if (sortProperties) {
+
+                sortProperties.value = "";
+
+            }
+
+
             // Remove saved search
 
             localStorage.removeItem(
@@ -1049,69 +1197,432 @@ if (resetFilters) {
 // DAY 11 - PROPERTY SORTING
 // ==========================================
 
-const sortProperties =
-    document.querySelector("#sortProperties");
-
-
 if (sortProperties) {
 
     sortProperties.addEventListener(
         "change",
         function () {
 
-            const sortValue =
-                sortProperties.value;
+            // Instead of sorting all properties,
+            // call filterProperties().
+            //
+            // filterProperties() will:
+            // 1. Filter
+            // 2. Sort
+            // 3. Display
+
+            filterProperties();
+
+        }
+    );
+
+}
 
 
-            // Make a copy of original array
+// ==========================================
+// DAY 14 - FRONTEND CRUD
+// ==========================================
 
-            const sortedProperties =
-                [...properties];
+
+// ==========================================
+// SELECT CRUD ELEMENTS
+// ==========================================
+
+const propertyForm =
+    document.querySelector("#propertyForm");
+
+
+const ownerPropertyList =
+    document.querySelector("#ownerPropertyList");
+
+
+const propertyMessage =
+    document.querySelector("#propertyMessage");
+
+
+// ==========================================
+// CREATE - ADD PROPERTY
+// ==========================================
+
+if (propertyForm) {
+
+    propertyForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            const title =
+                document.querySelector("#propertyTitle")
+                    .value
+                    .trim();
+
+
+            const location =
+                document.querySelector("#propertyLocation")
+                    .value
+                    .trim();
+
+
+            const type =
+                document.querySelector("#propertyType")
+                    .value;
+
+
+            const rent =
+                document.querySelector("#propertyRent")
+                    .value;
+
+
+            const image =
+                document.querySelector("#propertyImage")
+                    .value
+                    .trim();
 
 
             // ==========================================
-            // LOW TO HIGH
+            // VALIDATION
             // ==========================================
 
-            if (sortValue === "lowToHigh") {
+            if (title === "") {
 
-                sortedProperties.sort(
-                    function (a, b) {
+                propertyMessage.textContent =
+                    "Please enter property title.";
 
-                        return a.rent - b.rent;
+                return;
+            }
+
+
+            if (location === "") {
+
+                propertyMessage.textContent =
+                    "Please enter location.";
+
+                return;
+            }
+
+
+            if (type === "") {
+
+                propertyMessage.textContent =
+                    "Please select property type.";
+
+                return;
+            }
+
+
+            if (rent === "") {
+
+                propertyMessage.textContent =
+                    "Please enter rent.";
+
+                return;
+            }
+
+
+            if (Number(rent) <= 0) {
+
+                propertyMessage.textContent =
+                    "Rent must be greater than 0.";
+
+                return;
+            }
+
+
+            // ==========================================
+            // CREATE PROPERTY OBJECT
+            // ==========================================
+
+            const newProperty = {
+
+                id: Date.now(),
+
+                title: title,
+
+                location: location,
+
+                type: type,
+
+                rent: Number(rent),
+
+                image:
+                    image ||
+                    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
+
+            };
+
+
+            // ==========================================
+            // GET EXISTING USER PROPERTIES
+            // ==========================================
+
+            const savedProperties =
+                localStorage.getItem(
+                    "renteaseProperties"
+                );
+
+
+            let ownerProperties = [];
+
+
+            if (savedProperties) {
+
+                try {
+
+                    ownerProperties =
+                        JSON.parse(savedProperties);
+
+                    if (!Array.isArray(ownerProperties)) {
+
+                        ownerProperties = [];
 
                     }
-                );
+
+                } catch (error) {
+
+                    console.log(
+                        "Error reading properties:",
+                        error
+                    );
+
+                    ownerProperties = [];
+
+                }
 
             }
 
 
             // ==========================================
-            // HIGH TO LOW
+            // ADD NEW PROPERTY
             // ==========================================
 
-            if (sortValue === "highToLow") {
-
-                sortedProperties.sort(
-                    function (a, b) {
-
-                        return b.rent - a.rent;
-
-                    }
-                );
-
-            }
+            ownerProperties.push(
+                newProperty
+            );
 
 
             // ==========================================
-            // DISPLAY SORTED PROPERTIES
+            // SAVE TO LOCAL STORAGE
             // ==========================================
 
-            displayProperties(
-                sortedProperties
+            localStorage.setItem(
+                "renteaseProperties",
+                JSON.stringify(ownerProperties)
+            );
+
+
+            // ==========================================
+            // SUCCESS MESSAGE
+            // ==========================================
+
+            propertyMessage.textContent =
+                "Property added successfully!";
+
+
+            // ==========================================
+            // CLEAR FORM
+            // ==========================================
+
+            propertyForm.reset();
+
+
+            // ==========================================
+            // DISPLAY OWNER PROPERTIES
+            // ==========================================
+
+            displayOwnerProperties();
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// READ - DISPLAY OWNER PROPERTIES
+// ==========================================
+
+function displayOwnerProperties() {
+
+    if (!ownerPropertyList) {
+
+        return;
+    }
+
+
+    ownerPropertyList.innerHTML = "";
+
+
+    const savedProperties =
+        localStorage.getItem(
+            "renteaseProperties"
+        );
+
+
+    if (!savedProperties) {
+
+        ownerPropertyList.innerHTML =
+            "<p>No properties added yet.</p>";
+
+        return;
+    }
+
+
+    let ownerProperties = [];
+
+
+    try {
+
+        ownerProperties =
+            JSON.parse(savedProperties);
+
+    } catch (error) {
+
+        console.log(
+            "Error loading owner properties:",
+            error
+        );
+
+        ownerPropertyList.innerHTML =
+            "<p>Unable to load properties.</p>";
+
+        return;
+    }
+
+
+    if (
+        !Array.isArray(ownerProperties) ||
+        ownerProperties.length === 0
+    ) {
+
+        ownerPropertyList.innerHTML =
+            "<p>No properties added yet.</p>";
+
+        return;
+    }
+
+
+    ownerProperties.forEach(
+        function (property) {
+
+            const card =
+                document.createElement("div");
+
+
+            card.classList.add(
+                "owner-property-card"
+            );
+
+
+            card.innerHTML = `
+
+                <img
+                    src="${property.image}"
+                    alt="${property.title}"
+                >
+
+                <h3>
+                    ${property.title}
+                </h3>
+
+                <p>
+                    📍 ${property.location}
+                </p>
+
+                <p>
+                    🏠 ${property.type}
+                </p>
+
+                <p>
+                    ₹${property.rent.toLocaleString("en-IN")}
+                    / month
+                </p>
+
+                <button
+                    type="button"
+                    onclick="deleteProperty(${property.id})"
+                >
+                    Delete
+                </button>
+
+            `;
+
+
+            ownerPropertyList.appendChild(
+                card
             );
 
         }
     );
+
+}
+
+
+// ==========================================
+// DELETE PROPERTY
+// ==========================================
+
+function deleteProperty(propertyId) {
+
+    const savedProperties =
+        localStorage.getItem(
+            "renteaseProperties"
+        );
+
+
+    if (!savedProperties) {
+
+        return;
+    }
+
+
+    let ownerProperties;
+
+
+    try {
+
+        ownerProperties =
+            JSON.parse(savedProperties);
+
+    } catch (error) {
+
+        console.log(
+            "Error deleting property:",
+            error
+        );
+
+        return;
+    }
+
+
+    ownerProperties =
+        ownerProperties.filter(
+            function (property) {
+
+                return property.id !== propertyId;
+
+            }
+        );
+
+
+    localStorage.setItem(
+        "renteaseProperties",
+        JSON.stringify(ownerProperties)
+    );
+
+
+    displayOwnerProperties();
+
+}
+
+
+// ==========================================
+// LOAD OWNER PROPERTIES WHEN PAGE OPENS
+// ==========================================
+
+if (ownerPropertyList) {
+
+    displayOwnerProperties();
 
 }
