@@ -1,54 +1,51 @@
-// ==========================================
-// DAY 2 - HOME PROPERTY SEARCH
-// ==========================================
+// ======================================================
+// RENT EASE - COMPLETE SCRIPT.JS
+// DAY 2 TO DAY 14
+// ======================================================
 
-const propertySearch =
-    document.querySelector("#propertySearch");
+
+// ======================================================
+// DAY 2 - HOME PROPERTY SEARCH
+// ======================================================
+
+const propertySearch = document.querySelector("#propertySearch");
 
 if (propertySearch) {
 
-    propertySearch.addEventListener(
-        "submit",
-        function (event) {
+    propertySearch.addEventListener("submit", function (event) {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            const location =
-                document.querySelector("#location").value.trim();
+        const location =
+            document.querySelector("#location").value.trim();
 
-            const propertyType =
-                document.querySelector("#propertyType").value;
+        const propertyType =
+            document.querySelector("#propertyType").value;
 
-            const budget =
-                document.querySelector("#budget").value;
+        const budget =
+            document.querySelector("#budget").value;
 
+        const searchData = {
+            location: location,
+            propertyType: propertyType,
+            budget: budget
+        };
 
-            // Save search data
-            const searchData = {
-                location: location,
-                propertyType: propertyType,
-                budget: budget
-            };
+        localStorage.setItem(
+            "renteaseSearch",
+            JSON.stringify(searchData)
+        );
 
+        window.location.href = "properties.html";
 
-            localStorage.setItem(
-                "renteaseSearch",
-                JSON.stringify(searchData)
-            );
-
-
-            window.location.href =
-                "properties.html";
-
-        }
-    );
+    });
 
 }
 
 
-// ==========================================
-// DAY 3 - PROPERTY DATA
-// ==========================================
+// ======================================================
+// DAY 3 - STATIC PROPERTY DATA
+// ======================================================
 
 const properties = [
 
@@ -58,8 +55,7 @@ const properties = [
         location: "Kolkata",
         type: "Apartment",
         rent: 15000,
-        image:
-            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
+        image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
     },
 
     {
@@ -68,8 +64,7 @@ const properties = [
         location: "Haldia",
         type: "House",
         rent: 12000,
-        image:
-            "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
+        image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
     },
 
     {
@@ -78,8 +73,7 @@ const properties = [
         location: "Durgapur",
         type: "PG",
         rent: 7000,
-        image:
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"
+        image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5"
     },
 
     {
@@ -88,8 +82,7 @@ const properties = [
         location: "Kolkata",
         type: "Room",
         rent: 8000,
-        image:
-            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
+        image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
     },
 
     {
@@ -98,8 +91,7 @@ const properties = [
         location: "New Town",
         type: "Apartment",
         rent: 20000,
-        image:
-            "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+        image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
     },
 
     {
@@ -108,24 +100,15 @@ const properties = [
         location: "Haldia",
         type: "House",
         rent: 9000,
-        image:
-            "https://images.unsplash.com/photo-1570129477492-45c003edd2be"
+        image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be"
     }
 
 ];
 
 
-// ==========================================
+// ======================================================
 // DAY 14 - LOAD OWNER PROPERTIES
-// ==========================================
-// IMPORTANT:
-// New properties added from Owner Dashboard
-// are stored in localStorage.
-// We load them into the main properties array
-// BEFORE displaying properties.
-//
-// This was the main issue.
-// ==========================================
+// ======================================================
 
 const savedOwnerProperties =
     localStorage.getItem("renteaseProperties");
@@ -139,27 +122,22 @@ if (savedOwnerProperties) {
 
         if (Array.isArray(ownerProperties)) {
 
-            ownerProperties.forEach(
-                function (property) {
+            ownerProperties.forEach(function (property) {
 
-                    // Avoid duplicate ID
-                    const alreadyExists =
-                        properties.some(
-                            function (existingProperty) {
+                const alreadyExists =
+                    properties.some(function (existingProperty) {
 
-                                return existingProperty.id === property.id;
+                        return existingProperty.id === property.id;
 
-                            }
-                        );
+                    });
 
-                    if (!alreadyExists) {
+                if (!alreadyExists) {
 
-                        properties.push(property);
-
-                    }
+                    properties.push(property);
 
                 }
-            );
+
+            });
 
         }
 
@@ -175,27 +153,27 @@ if (savedOwnerProperties) {
 }
 
 
-// ==========================================
-// DAY 3 - SELECT PROPERTY CONTAINER
-// ==========================================
+// ======================================================
+// DAY 3 - PROPERTY LIST
+// ======================================================
 
 const propertyList =
     document.querySelector("#propertyList");
 
 
-// ==========================================
-// DISPLAY PROPERTIES FUNCTION
-// ==========================================
+// ======================================================
+// DISPLAY PROPERTIES
+// ======================================================
 
 function displayProperties(propertyArray) {
 
     if (!propertyList) {
+
         return;
+
     }
 
-
     propertyList.innerHTML = "";
-
 
     if (propertyArray.length === 0) {
 
@@ -206,23 +184,22 @@ function displayProperties(propertyArray) {
         `;
 
         return;
-    }
 
+    }
 
     propertyArray.forEach(function (property) {
 
         const card =
             document.createElement("div");
 
-
         card.classList.add("property-card");
-
 
         card.innerHTML = `
 
             <img
                 src="${property.image}"
                 alt="${property.title}"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6';"
             >
 
             <div class="property-info">
@@ -255,7 +232,6 @@ function displayProperties(propertyArray) {
 
         `;
 
-
         propertyList.appendChild(card);
 
     });
@@ -263,9 +239,9 @@ function displayProperties(propertyArray) {
 }
 
 
-// ==========================================
+// ======================================================
 // DAY 3 - FILTER ELEMENTS
-// ==========================================
+// ======================================================
 
 const searchLocation =
     document.querySelector("#searchLocation");
@@ -277,17 +253,17 @@ const filterBudget =
     document.querySelector("#filterBudget");
 
 
-// ==========================================
-// DAY 11 - SORT ELEMENT
-// ==========================================
+// ======================================================
+// DAY 11 - SORT
+// ======================================================
 
 const sortProperties =
     document.querySelector("#sortProperties");
 
 
-// ==========================================
-// FILTER FUNCTION
-// ==========================================
+// ======================================================
+// FILTER + SORT FUNCTION
+// ======================================================
 
 function filterProperties() {
 
@@ -296,116 +272,95 @@ function filterProperties() {
         !filterType ||
         !filterBudget
     ) {
-        return;
-    }
 
+        return;
+
+    }
 
     const locationValue =
         searchLocation.value
             .toLowerCase()
             .trim();
 
-
     const typeValue =
         filterType.value;
-
 
     const budgetValue =
         filterBudget.value;
 
 
     let filteredProperties =
-        properties.filter(
-            function (property) {
+        properties.filter(function (property) {
 
+            const locationMatch =
+                property.location
+                    .toLowerCase()
+                    .includes(locationValue);
 
-                // Location matching
+            const typeMatch =
+                typeValue === "" ||
+                property.type === typeValue;
 
-                const locationMatch =
-                    property.location
-                        .toLowerCase()
-                        .includes(locationValue);
+            const budgetMatch =
+                budgetValue === "" ||
+                property.rent <= Number(budgetValue);
 
-
-                // Type matching
-
-                const typeMatch =
-                    typeValue === "" ||
-                    property.type === typeValue;
-
-
-                // Budget matching
-
-                const budgetMatch =
-                    budgetValue === "" ||
-                    property.rent <= Number(budgetValue);
-
-
-                return (
-                    locationMatch &&
-                    typeMatch &&
-                    budgetMatch
-                );
-
-            }
-        );
-
-
-    // ==========================================
-    // APPLY SORTING AFTER FILTERING
-    // ==========================================
-
-    if (sortProperties) {
-
-        const sortValue =
-            sortProperties.value;
-
-
-        if (sortValue === "lowToHigh") {
-
-            filteredProperties.sort(
-                function (a, b) {
-
-                    return a.rent - b.rent;
-
-                }
+            return (
+                locationMatch &&
+                typeMatch &&
+                budgetMatch
             );
 
-        }
+        });
 
 
-        if (sortValue === "highToLow") {
+    // SORT LOW TO HIGH
 
-            filteredProperties.sort(
-                function (a, b) {
+    if (
+        sortProperties &&
+        sortProperties.value === "lowToHigh"
+    ) {
 
-                    return b.rent - a.rent;
+        filteredProperties.sort(function (a, b) {
 
-                }
-            );
+            return a.rent - b.rent;
 
-        }
+        });
 
     }
 
 
-    displayProperties(
-        filteredProperties
-    );
+    // SORT HIGH TO LOW
+
+    if (
+        sortProperties &&
+        sortProperties.value === "highToLow"
+    ) {
+
+        filteredProperties.sort(function (a, b) {
+
+            return b.rent - a.rent;
+
+        });
+
+    }
+
+
+    displayProperties(filteredProperties);
 
 }
 
 
-// ==========================================
-// SHOW ALL PROPERTIES INITIALLY
-// ==========================================
+// ======================================================
+// SHOW PROPERTIES
+// ======================================================
 
 displayProperties(properties);
 
 
-// ==========================================
-// DAY 3 - SEARCH EVENT
-// ==========================================
+// ======================================================
+// FILTER EVENTS
+// ======================================================
 
 if (searchLocation) {
 
@@ -416,11 +371,6 @@ if (searchLocation) {
 
 }
 
-
-// ==========================================
-// DAY 3 - TYPE FILTER EVENT
-// ==========================================
-
 if (filterType) {
 
     filterType.addEventListener(
@@ -429,11 +379,6 @@ if (filterType) {
     );
 
 }
-
-
-// ==========================================
-// DAY 3 - BUDGET FILTER EVENT
-// ==========================================
 
 if (filterBudget) {
 
@@ -445,13 +390,12 @@ if (filterBudget) {
 }
 
 
-// ==========================================
+// ======================================================
 // DAY 4 - PROPERTY DETAILS
-// ==========================================
+// ======================================================
 
 const propertyDetails =
     document.querySelector("#propertyDetails");
-
 
 if (propertyDetails) {
 
@@ -460,12 +404,8 @@ if (propertyDetails) {
             window.location.search
         );
 
-
     const propertyId =
-        Number(
-            urlParams.get("id")
-        );
-
+        Number(urlParams.get("id"));
 
     console.log(
         "Property ID:",
@@ -474,13 +414,11 @@ if (propertyDetails) {
 
 
     const selectedProperty =
-        properties.find(
-            function (property) {
+        properties.find(function (property) {
 
-                return property.id === propertyId;
+            return property.id === propertyId;
 
-            }
-        );
+        });
 
 
     console.log(
@@ -518,8 +456,8 @@ if (propertyDetails) {
                     src="${selectedProperty.image}"
                     alt="${selectedProperty.title}"
                     class="details-image"
+                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6';"
                 >
-
 
                 <div class="details-content">
 
@@ -527,16 +465,13 @@ if (propertyDetails) {
                         ${selectedProperty.type}
                     </span>
 
-
                     <h1>
                         ${selectedProperty.title}
                     </h1>
 
-
                     <p class="property-location">
                         📍 ${selectedProperty.location}
                     </p>
-
 
                     <h2 class="details-rent">
                         ₹${selectedProperty.rent.toLocaleString("en-IN")}
@@ -554,7 +489,6 @@ if (propertyDetails) {
                             Bedrooms
                         </div>
 
-
                         <div>
                             🚿
                             <strong>
@@ -563,14 +497,12 @@ if (propertyDetails) {
                             Bathrooms
                         </div>
 
-
                         <div>
                             📐
                             <strong>
                                 ${selectedProperty.area || "1200 sq.ft"}
                             </strong>
                         </div>
-
 
                         <div>
                             🛋️
@@ -585,7 +517,6 @@ if (propertyDetails) {
                     <h2>
                         About Property
                     </h2>
-
 
                     <p>
                         ${
@@ -612,17 +543,15 @@ if (propertyDetails) {
                                     "Lift"
                                 ]
                             )
-                            .map(
-                                function (amenity) {
+                            .map(function (amenity) {
 
-                                    return `
-                                        <span>
-                                            ${amenity}
-                                        </span>
-                                    `;
+                                return `
+                                    <span>
+                                        ${amenity}
+                                    </span>
+                                `;
 
-                                }
-                            )
+                            })
                             .join("")
                         }
 
@@ -630,8 +559,8 @@ if (propertyDetails) {
 
 
                     <button
-                        class="contact-owner-btn"
                         type="button"
+                        class="contact-owner-btn"
                     >
                         Contact Owner
                     </button>
@@ -647,13 +576,12 @@ if (propertyDetails) {
 }
 
 
-// ==========================================
+// ======================================================
 // DAY 5 + DAY 12 + DAY 13 - LOGIN
-// ==========================================
+// ======================================================
 
 const loginForm =
     document.querySelector("#loginForm");
-
 
 if (loginForm) {
 
@@ -669,20 +597,14 @@ if (loginForm) {
                     .value
                     .trim();
 
-
             const password =
                 document.querySelector("#loginPassword")
                     .value
                     .trim();
 
-
             const loginMessage =
                 document.querySelector("#loginMessage");
 
-
-            // ==========================================
-            // CHECK EMAIL
-            // ==========================================
 
             if (email === "") {
 
@@ -690,12 +612,9 @@ if (loginForm) {
                     "Please enter your email.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK EMAIL FORMAT
-            // ==========================================
 
             if (!email.includes("@")) {
 
@@ -703,12 +622,9 @@ if (loginForm) {
                     "Please enter a valid email.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK PASSWORD
-            // ==========================================
 
             if (password === "") {
 
@@ -716,12 +632,9 @@ if (loginForm) {
                     "Please enter your password.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK PASSWORD LENGTH
-            // ==========================================
 
             if (password.length < 6) {
 
@@ -729,12 +642,9 @@ if (loginForm) {
                     "Password must be at least 6 characters.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // DAY 13 - GET SAVED USER
-            // ==========================================
 
             const savedUser =
                 localStorage.getItem("renteaseUser");
@@ -746,18 +656,26 @@ if (loginForm) {
                     "No account found. Please sign up first.";
 
                 return;
+
             }
 
 
-            // Convert String → Object
+            let userData;
 
-            const userData =
-                JSON.parse(savedUser);
+            try {
 
+                userData =
+                    JSON.parse(savedUser);
 
-            // ==========================================
-            // CHECK EMAIL WITH SAVED USER
-            // ==========================================
+            } catch (error) {
+
+                loginMessage.textContent =
+                    "Invalid saved account data.";
+
+                return;
+
+            }
+
 
             if (
                 email.toLowerCase() !==
@@ -768,12 +686,9 @@ if (loginForm) {
                     "Email does not match the registered account.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK PASSWORD
-            // ==========================================
 
             if (password !== userData.password) {
 
@@ -781,54 +696,49 @@ if (loginForm) {
                     "Incorrect password.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // LOGIN SUCCESS
-            // ==========================================
 
             loginMessage.textContent =
                 "Login successful! Redirecting...";
 
+            setTimeout(function () {
 
-            setTimeout(
-                function () {
+                const userRole = String(userData.role)
+                    .trim()
+                    .toLowerCase();
 
-                    // Check user role
+                if (
+                    userRole === "owner" ||
+                    userRole === "property owner" ||
+                    userRole === "property-owner"
+                ) {
 
-                    if (
-                        userData.role === "Owner" ||
-                        userData.role === "Property Owner"
-                    ) {
+                    window.location.href = "owner-dashboard.html";
 
-                        window.location.href =
-                            "owner-dashboard.html";
+                } else if (
+                    userRole === "tenant"
+                ) {
 
-                    } else {
+                    window.location.href = "tenant-dashboard.html";
 
-                        window.location.href =
-                            "tenant-dashboard.html";
+                } else {
 
-                    }
+                    loginMessage.textContent =
+                        "Invalid user role: " + userData.role;
 
-                },
-                1000
-            );
+                }
+
+            }, 1000);
 
         }
     );
 
 }
 
-
-// ==========================================
-// DAY 5 + DAY 12 + DAY 13 - SIGNUP
-// ==========================================
-
 const signupForm =
     document.querySelector("#signupForm");
-
 
 if (signupForm) {
 
@@ -844,37 +754,28 @@ if (signupForm) {
                     .value
                     .trim();
 
-
             const email =
                 document.querySelector("#signupEmail")
                     .value
                     .trim();
-
 
             const password =
                 document.querySelector("#signupPassword")
                     .value
                     .trim();
 
-
             const confirmPassword =
                 document.querySelector("#confirmPassword")
                     .value
                     .trim();
 
-
             const role =
                 document.querySelector("#userRole")
                     .value;
 
-
             const signupMessage =
                 document.querySelector("#signupMessage");
 
-
-            // ==========================================
-            // CHECK NAME
-            // ==========================================
 
             if (name === "") {
 
@@ -882,12 +783,9 @@ if (signupForm) {
                     "Please enter your name.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK NAME LENGTH
-            // ==========================================
 
             if (name.length < 3) {
 
@@ -895,12 +793,9 @@ if (signupForm) {
                     "Name must be at least 3 characters.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK EMAIL
-            // ==========================================
 
             if (email === "") {
 
@@ -908,12 +803,9 @@ if (signupForm) {
                     "Please enter your email.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK EMAIL FORMAT
-            // ==========================================
 
             if (!email.includes("@")) {
 
@@ -921,12 +813,9 @@ if (signupForm) {
                     "Please enter a valid email.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK PASSWORD
-            // ==========================================
 
             if (password === "") {
 
@@ -934,12 +823,9 @@ if (signupForm) {
                     "Please enter a password.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK PASSWORD LENGTH
-            // ==========================================
 
             if (password.length < 6) {
 
@@ -947,12 +833,9 @@ if (signupForm) {
                     "Password must be at least 6 characters.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK CONFIRM PASSWORD
-            // ==========================================
 
             if (password !== confirmPassword) {
 
@@ -960,12 +843,9 @@ if (signupForm) {
                     "Passwords do not match.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // CHECK ROLE
-            // ==========================================
 
             if (role === "") {
 
@@ -973,12 +853,9 @@ if (signupForm) {
                     "Please select your role.";
 
                 return;
+
             }
 
-
-            // ==========================================
-            // DAY 13 - SAVE USER DATA
-            // ==========================================
 
             const userData = {
 
@@ -989,9 +866,6 @@ if (signupForm) {
 
             };
 
-
-            // Convert Object → String
-            // and save it in browser
 
             localStorage.setItem(
                 "renteaseUser",
@@ -1008,18 +882,12 @@ if (signupForm) {
 }
 
 
-// ==========================================
+// ======================================================
 // DAY 8 - DOM PRACTICE
-// ==========================================
-
-
-// ==========================================
-// 1. CHANGE MESSAGE
-// ==========================================
+// ======================================================
 
 const domButton =
     document.querySelector("#domButton");
-
 
 if (domButton) {
 
@@ -1029,7 +897,6 @@ if (domButton) {
 
             const domMessage =
                 document.querySelector("#domMessage");
-
 
             if (domMessage) {
 
@@ -1044,13 +911,12 @@ if (domButton) {
 }
 
 
-// ==========================================
-// 2. SHOW TENANT NAME
-// ==========================================
+// ======================================================
+// DAY 8 - SHOW TENANT NAME
+// ======================================================
 
 const nameButton =
     document.querySelector("#nameButton");
-
 
 if (nameButton) {
 
@@ -1063,7 +929,6 @@ if (nameButton) {
                     .value
                     .trim();
 
-
             const nameOutput =
                 document.querySelector("#nameOutput");
 
@@ -1074,6 +939,7 @@ if (nameButton) {
                     "Please enter your name.";
 
                 return;
+
             }
 
 
@@ -1086,9 +952,9 @@ if (nameButton) {
 }
 
 
-// ==========================================
+// ======================================================
 // DAY 9 - LOAD SAVED SEARCH
-// ==========================================
+// ======================================================
 
 if (
     searchLocation &&
@@ -1097,7 +963,9 @@ if (
 ) {
 
     const savedSearch =
-        localStorage.getItem("renteaseSearch");
+        localStorage.getItem(
+            "renteaseSearch"
+        );
 
 
     if (savedSearch) {
@@ -1111,10 +979,8 @@ if (
             searchLocation.value =
                 searchData.location || "";
 
-
             filterType.value =
                 searchData.propertyType || "";
-
 
             filterBudget.value =
                 searchData.budget || "";
@@ -1136,13 +1002,12 @@ if (
 }
 
 
-// ==========================================
+// ======================================================
 // DAY 10 - RESET FILTERS
-// ==========================================
+// ======================================================
 
 const resetFilters =
     document.querySelector("#resetFilters");
-
 
 if (resetFilters) {
 
@@ -1156,13 +1021,11 @@ if (resetFilters) {
 
             }
 
-
             if (filterType) {
 
                 filterType.value = "";
 
             }
-
 
             if (filterBudget) {
 
@@ -1170,15 +1033,12 @@ if (resetFilters) {
 
             }
 
-
             if (sortProperties) {
 
                 sortProperties.value = "";
 
             }
 
-
-            // Remove saved search
 
             localStorage.removeItem(
                 "renteaseSearch"
@@ -1193,23 +1053,15 @@ if (resetFilters) {
 }
 
 
-// ==========================================
-// DAY 11 - PROPERTY SORTING
-// ==========================================
+// ======================================================
+// DAY 11 - SORT
+// ======================================================
 
 if (sortProperties) {
 
     sortProperties.addEventListener(
         "change",
         function () {
-
-            // Instead of sorting all properties,
-            // call filterProperties().
-            //
-            // filterProperties() will:
-            // 1. Filter
-            // 2. Sort
-            // 3. Display
 
             filterProperties();
 
@@ -1219,30 +1071,23 @@ if (sortProperties) {
 }
 
 
-// ==========================================
-// DAY 14 - FRONTEND CRUD
-// ==========================================
-
-
-// ==========================================
-// SELECT CRUD ELEMENTS
-// ==========================================
+// ======================================================
+// DAY 14 - CRUD
+// ======================================================
 
 const propertyForm =
     document.querySelector("#propertyForm");
 
-
 const ownerPropertyList =
     document.querySelector("#ownerPropertyList");
-
 
 const propertyMessage =
     document.querySelector("#propertyMessage");
 
 
-// ==========================================
-// CREATE - ADD PROPERTY
-// ==========================================
+// ======================================================
+// CREATE PROPERTY
+// ======================================================
 
 if (propertyForm) {
 
@@ -1258,22 +1103,18 @@ if (propertyForm) {
                     .value
                     .trim();
 
-
             const location =
                 document.querySelector("#propertyLocation")
                     .value
                     .trim();
 
-
             const type =
                 document.querySelector("#propertyType")
                     .value;
 
-
             const rent =
                 document.querySelector("#propertyRent")
                     .value;
-
 
             const image =
                 document.querySelector("#propertyImage")
@@ -1281,16 +1122,13 @@ if (propertyForm) {
                     .trim();
 
 
-            // ==========================================
-            // VALIDATION
-            // ==========================================
-
             if (title === "") {
 
                 propertyMessage.textContent =
                     "Please enter property title.";
 
                 return;
+
             }
 
 
@@ -1300,6 +1138,7 @@ if (propertyForm) {
                     "Please enter location.";
 
                 return;
+
             }
 
 
@@ -1309,6 +1148,7 @@ if (propertyForm) {
                     "Please select property type.";
 
                 return;
+
             }
 
 
@@ -1318,6 +1158,7 @@ if (propertyForm) {
                     "Please enter rent.";
 
                 return;
+
             }
 
 
@@ -1327,12 +1168,14 @@ if (propertyForm) {
                     "Rent must be greater than 0.";
 
                 return;
+
             }
 
 
-            // ==========================================
-            // CREATE PROPERTY OBJECT
-            // ==========================================
+            // DEFAULT IMAGE
+            const defaultImage =
+                "https://images.unsplash.com/photo-1564013799919-ab600027ffc6";
+
 
             const newProperty = {
 
@@ -1346,16 +1189,10 @@ if (propertyForm) {
 
                 rent: Number(rent),
 
-                image:
-                    image ||
-                    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6"
+                image: image || defaultImage
 
             };
 
-
-            // ==========================================
-            // GET EXISTING USER PROPERTIES
-            // ==========================================
 
             const savedProperties =
                 localStorage.getItem(
@@ -1393,18 +1230,10 @@ if (propertyForm) {
             }
 
 
-            // ==========================================
-            // ADD NEW PROPERTY
-            // ==========================================
-
             ownerProperties.push(
                 newProperty
             );
 
-
-            // ==========================================
-            // SAVE TO LOCAL STORAGE
-            // ==========================================
 
             localStorage.setItem(
                 "renteaseProperties",
@@ -1412,24 +1241,12 @@ if (propertyForm) {
             );
 
 
-            // ==========================================
-            // SUCCESS MESSAGE
-            // ==========================================
-
             propertyMessage.textContent =
                 "Property added successfully!";
 
 
-            // ==========================================
-            // CLEAR FORM
-            // ==========================================
-
             propertyForm.reset();
 
-
-            // ==========================================
-            // DISPLAY OWNER PROPERTIES
-            // ==========================================
 
             displayOwnerProperties();
 
@@ -1439,15 +1256,16 @@ if (propertyForm) {
 }
 
 
-// ==========================================
+// ======================================================
 // READ - DISPLAY OWNER PROPERTIES
-// ==========================================
+// ======================================================
 
 function displayOwnerProperties() {
 
     if (!ownerPropertyList) {
 
         return;
+
     }
 
 
@@ -1466,6 +1284,7 @@ function displayOwnerProperties() {
             "<p>No properties added yet.</p>";
 
         return;
+
     }
 
 
@@ -1488,6 +1307,7 @@ function displayOwnerProperties() {
             "<p>Unable to load properties.</p>";
 
         return;
+
     }
 
 
@@ -1500,6 +1320,7 @@ function displayOwnerProperties() {
             "<p>No properties added yet.</p>";
 
         return;
+
     }
 
 
@@ -1520,6 +1341,7 @@ function displayOwnerProperties() {
                 <img
                     src="${property.image}"
                     alt="${property.title}"
+                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6';"
                 >
 
                 <h3>
@@ -1539,6 +1361,15 @@ function displayOwnerProperties() {
                     / month
                 </p>
 
+
+                <button
+                    type="button"
+                    onclick="editProperty(${property.id})"
+                >
+                    Edit
+                </button>
+
+
                 <button
                     type="button"
                     onclick="deleteProperty(${property.id})"
@@ -1549,9 +1380,7 @@ function displayOwnerProperties() {
             `;
 
 
-            ownerPropertyList.appendChild(
-                card
-            );
+            ownerPropertyList.appendChild(card);
 
         }
     );
@@ -1559,9 +1388,163 @@ function displayOwnerProperties() {
 }
 
 
-// ==========================================
+// ======================================================
+// UPDATE PROPERTY
+// ======================================================
+
+function editProperty(propertyId) {
+
+    const savedProperties =
+        localStorage.getItem(
+            "renteaseProperties"
+        );
+
+
+    if (!savedProperties) {
+
+        return;
+
+    }
+
+
+    let ownerProperties;
+
+
+    try {
+
+        ownerProperties =
+            JSON.parse(savedProperties);
+
+    } catch (error) {
+
+        console.log(
+            "Error loading properties:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    const property =
+        ownerProperties.find(
+            function (property) {
+
+                return property.id === propertyId;
+
+            }
+        );
+
+
+    if (!property) {
+
+        alert(
+            "Property not found."
+        );
+
+        return;
+
+    }
+
+
+    const newTitle =
+        prompt(
+            "Enter property title:",
+            property.title
+        );
+
+
+    if (newTitle === null) {
+
+        return;
+
+    }
+
+
+    const newLocation =
+        prompt(
+            "Enter location:",
+            property.location
+        );
+
+
+    if (newLocation === null) {
+
+        return;
+
+    }
+
+
+    const newRent =
+        prompt(
+            "Enter monthly rent:",
+            property.rent
+        );
+
+
+    if (newRent === null) {
+
+        return;
+
+    }
+
+
+    if (
+        newTitle.trim() === "" ||
+        newLocation.trim() === "" ||
+        newRent.trim() === ""
+    ) {
+
+        alert(
+            "All fields are required."
+        );
+
+        return;
+
+    }
+
+
+    if (Number(newRent) <= 0) {
+
+        alert(
+            "Rent must be greater than 0."
+        );
+
+        return;
+
+    }
+
+
+    property.title =
+        newTitle.trim();
+
+    property.location =
+        newLocation.trim();
+
+    property.rent =
+        Number(newRent);
+
+
+    localStorage.setItem(
+        "renteaseProperties",
+        JSON.stringify(ownerProperties)
+    );
+
+
+    displayOwnerProperties();
+
+
+    alert(
+        "Property updated successfully!"
+    );
+
+}
+
+
+// ======================================================
 // DELETE PROPERTY
-// ==========================================
+// ======================================================
 
 function deleteProperty(propertyId) {
 
@@ -1574,6 +1557,7 @@ function deleteProperty(propertyId) {
     if (!savedProperties) {
 
         return;
+
     }
 
 
@@ -1593,6 +1577,7 @@ function deleteProperty(propertyId) {
         );
 
         return;
+
     }
 
 
@@ -1617,9 +1602,9 @@ function deleteProperty(propertyId) {
 }
 
 
-// ==========================================
-// LOAD OWNER PROPERTIES WHEN PAGE OPENS
-// ==========================================
+// ======================================================
+// LOAD OWNER PROPERTIES
+// ======================================================
 
 if (ownerPropertyList) {
 
