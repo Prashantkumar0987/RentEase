@@ -1,13 +1,15 @@
+require("dotenv").config();
+
+const mongoose = require("mongoose");
+
 const express = require("express");
 
 const app = express();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
 
-
-// ==========================
 // MIDDLEWARE
-// ==========================
 
 app.use(express.json());
 
@@ -111,6 +113,14 @@ app.get("/api/users", function (req, res) {
 // ==========================
 // START SERVER
 // ==========================
+
+mongoose.connect(MONGO_URI)
+    .then(function () {
+        console.log("MongoDB connected successfully");
+    })
+    .catch(function (error) {
+        console.log("MongoDB connection error:", error);
+    });
 
 app.listen(PORT, function () {
     console.log(`Server running on http://localhost:${PORT}`);
