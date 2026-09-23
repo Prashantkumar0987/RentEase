@@ -1,15 +1,18 @@
 require("dotenv").config();
 
 const mongoose = require("mongoose");
-
 const express = require("express");
+const Property = require("./models/Property");
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
+
+// ==========================
 // MIDDLEWARE
+// ==========================
 
 app.use(express.json());
 
@@ -36,32 +39,101 @@ app.get("/api/health", function (req, res) {
 
 
 // ==========================
-// GET PROPERTIES
+// GET PROPERTIES - FROM MONGODB
 // ==========================
 
-app.get("/api/properties", function (req, res) {
+app.get("/api/properties", async function (req, res) {
 
-    const properties = [
-        {
-            id: 1,
-            title: "Modern 2BHK Apartment",
-            location: "Kolkata",
-            type: "Apartment",
-            rent: 15000
-        },
-        {
-            id: 2,
-            title: "Premium Family House",
-            location: "Haldia",
-            type: "House",
-            rent: 12000
+    try {
+
+        const properties = await Property.find();
+
+        res.status(200).json({
+            success: true,
+            source: "MONGODB",
+            message: "This is the MongoDB GET route",
+            properties: properties
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch properties",
+            error: error.message
+        });
+
+    }
+
+});
+// ==========================
+// UPDATE PROPERTY - PUT
+// ==========================
+
+app.put("/api/properties/:id", async function (req, res) {
+    try {
+        const propertyId = req.params.id;
+
+        const updatedProperty = await Property.findByIdAndUpdate(
+            propertyId,
+            req.body,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updatedProperty) {
+            return res.status(404).json({
+                success: false,
+                message: "Property not found"
+            });
         }
-    ];
 
-    res.json({
-        success: true,
-        properties: properties
-    });
+        res.status(200).json({
+            success: true,
+            message: "Property updated successfully",
+            property: updatedProperty
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: "Failed to update property",
+            error: error.message
+        });
+    }
+});
+// ==========================
+// DELETE PROPERTY - DELETE
+// ==========================
+
+app.delete("/api/properties/:id", async function (req, res) {
+    try {
+        const propertyId = req.params.id;
+
+        const deletedProperty = await Property.findByIdAndDelete(propertyId);
+
+        if (!deletedProperty) {
+            return res.status(404).json({
+                success: false,
+                message: "Property not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Property deleted successfully",
+            property: deletedProperty
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: "Failed to delete property",
+            error: error.message
+        });
+    }
 });
 
 
@@ -69,30 +141,28 @@ app.get("/api/properties", function (req, res) {
 // ADD PROPERTY - POST
 // ==========================
 
-app.post("/api/properties", function (req, res) {
+app.post("/api/properties", async function (req, res) {
 
-    const property = req.body;
+    try {
 
-    // Basic validation
-    if (
-        !property.title ||
-        !property.location ||
-        !property.type ||
-        !property.rent
-    ) {
-        return res.status(400).json({
-            success: false,
-            message: "Please provide title, location, type and rent."
+        const property = await Property.create(req.body);
+
+        res.status(201).json({
+            success: true,
+            message: "Property added successfully",
+            property: property
         });
+
+    } catch (error) {
+
+        res.status(400).json({
+            success: false,
+            message: "Failed to add property",
+            error: error.message
+        });
+
     }
 
-    console.log("New Property:", property);
-
-    res.status(201).json({
-        success: true,
-        message: "Property added successfully",
-        property: property
-    });
 });
 
 
@@ -111,17 +181,30 @@ app.get("/api/users", function (req, res) {
 
 
 // ==========================
-// START SERVER
+// MONGODB CONNECTION
 // ==========================
 
 mongoose.connect(MONGO_URI)
+
     .then(function () {
+
         console.log("MongoDB connected successfully");
+
     })
+
     .catch(function (error) {
+
         console.log("MongoDB connection error:", error);
+
     });
 
+
+// ==========================
+// START SERVER
+// ==========================
+
 app.listen(PORT, function () {
+
     console.log(`Server running on http://localhost:${PORT}`);
+
 });
