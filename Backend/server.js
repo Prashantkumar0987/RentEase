@@ -2,7 +2,14 @@ require("dotenv").config();
 
 const mongoose = require("mongoose");
 const express = require("express");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const Property = require("./models/Property");
+const User = require("./models/User");
+
+const verifyToken = require("./middleware/authMiddleware");
+const authorizeRoles = require("./middleware/roleMiddleware");
 
 const app = express();
 
@@ -66,12 +73,186 @@ app.get("/api/properties", async function (req, res) {
     }
 
 });
+
+
+// ==========================
+// REGISTER USER - POST
+// ==========================
+
+app.post("/api/users/register", async function (req, res) {
+
+    try {
+
+        const { name, email, password, role } = req.body;
+
+        const existingUser = await User.findOne({
+            email: email
+        });
+
+        if (existingUser) {
+
+            return res.status(400).json({
+                success: false,
+                message: "User already exists"
+            });
+
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            name: name,
+            email: email,
+            password: hashedPassword,
+            role: role
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+
+        res.status(400).json({
+            success: false,
+            message: "Registration failed",
+            error: error.message
+        });
+
+    }
+
+});
+
+
+// ==========================
+// LOGIN USER - POST
+// ==========================
+
+app.post("/api/users/login", async function (req, res) {
+    try {
+        const { email, password } = req.body;
+
+        // Find user
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Check password
+        const isPasswordCorrect = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+        if (!isPasswordCorrect) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid password"
+            });
+        }
+
+        // Create JWT token
+        const token = jwt.sign(
+            {
+                id: user._id,
+                email: user.email,
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "1d"
+            }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Login successful",
+            token: token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Login failed",
+            error: error.message
+        });
+    }
+});
+// ==========================
+// PROTECTED PROFILE API
+// ==========================
+
+app.get("/api/profile", verifyToken, async function (req, res) {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Protected profile accessed",
+            user: user
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch profile",
+            error: error.message
+        });
+    }
+});
+// ==========================
+// OWNER ONLY API
+// ==========================
+
+app.get(
+    "/api/owner/dashboard",
+    verifyToken,
+    authorizeRoles("owner"),
+    function (req, res) {
+
+        res.status(200).json({
+            success: true,
+            message: "Welcome to Owner Dashboard",
+            user: req.user
+        });
+
+    }
+);
+
+
 // ==========================
 // UPDATE PROPERTY - PUT
 // ==========================
 
 app.put("/api/properties/:id", async function (req, res) {
+
     try {
+
         const propertyId = req.params.id;
 
         const updatedProperty = await Property.findByIdAndUpdate(
@@ -84,10 +265,12 @@ app.put("/api/properties/:id", async function (req, res) {
         );
 
         if (!updatedProperty) {
+
             return res.status(404).json({
                 success: false,
                 message: "Property not found"
             });
+
         }
 
         res.status(200).json({
@@ -97,28 +280,39 @@ app.put("/api/properties/:id", async function (req, res) {
         });
 
     } catch (error) {
+
         res.status(400).json({
             success: false,
             message: "Failed to update property",
             error: error.message
         });
+
     }
+
 });
+
+
 // ==========================
 // DELETE PROPERTY - DELETE
 // ==========================
 
 app.delete("/api/properties/:id", async function (req, res) {
+
     try {
+
         const propertyId = req.params.id;
 
-        const deletedProperty = await Property.findByIdAndDelete(propertyId);
+        const deletedProperty = await Property.findByIdAndDelete(
+            propertyId
+        );
 
         if (!deletedProperty) {
+
             return res.status(404).json({
                 success: false,
                 message: "Property not found"
             });
+
         }
 
         res.status(200).json({
@@ -128,12 +322,15 @@ app.delete("/api/properties/:id", async function (req, res) {
         });
 
     } catch (error) {
+
         res.status(400).json({
             success: false,
             message: "Failed to delete property",
             error: error.message
         });
+
     }
+
 });
 
 
