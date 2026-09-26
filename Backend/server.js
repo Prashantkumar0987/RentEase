@@ -249,118 +249,162 @@ app.get(
 // UPDATE PROPERTY - PUT
 // ==========================
 
-app.put("/api/properties/:id", async function (req, res) {
+app.put(
+    "/api/properties/:id",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
 
-    try {
+        try {
 
-        const propertyId = req.params.id;
+            const updatedProperty = await Property.findOneAndUpdate(
+                {
+                    _id: req.params.id,
+                    owner: req.user.id
+                },
+                req.body,
+                {
+                    new: true,
+                    runValidators: true
+                }
+            );
 
-        const updatedProperty = await Property.findByIdAndUpdate(
-            propertyId,
-            req.body,
-            {
-                new: true,
-                runValidators: true
+            if (!updatedProperty) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Property not found or not owned by you"
+                });
             }
-        );
 
-        if (!updatedProperty) {
+            res.status(200).json({
+                success: true,
+                message: "Property updated successfully",
+                property: updatedProperty
+            });
 
-            return res.status(404).json({
+        } catch (error) {
+
+            res.status(400).json({
                 success: false,
-                message: "Property not found"
+                message: "Failed to update property",
+                error: error.message
             });
 
         }
-
-        res.status(200).json({
-            success: true,
-            message: "Property updated successfully",
-            property: updatedProperty
-        });
-
-    } catch (error) {
-
-        res.status(400).json({
-            success: false,
-            message: "Failed to update property",
-            error: error.message
-        });
-
     }
-
-});
+);
 
 
 // ==========================
 // DELETE PROPERTY - DELETE
 // ==========================
 
-app.delete("/api/properties/:id", async function (req, res) {
+app.delete(
+    "/api/properties/:id",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
 
-    try {
+        try {
 
-        const propertyId = req.params.id;
+            const deletedProperty = await Property.findOneAndDelete({
+                _id: req.params.id,
+                owner: req.user.id
+            });
 
-        const deletedProperty = await Property.findByIdAndDelete(
-            propertyId
-        );
+            if (!deletedProperty) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Property not found or not owned by you"
+                });
+            }
 
-        if (!deletedProperty) {
+            res.status(200).json({
+                success: true,
+                message: "Property deleted successfully",
+                property: deletedProperty
+            });
 
-            return res.status(404).json({
+        } catch (error) {
+
+            res.status(400).json({
                 success: false,
-                message: "Property not found"
+                message: "Failed to delete property",
+                error: error.message
             });
 
         }
-
-        res.status(200).json({
-            success: true,
-            message: "Property deleted successfully",
-            property: deletedProperty
-        });
-
-    } catch (error) {
-
-        res.status(400).json({
-            success: false,
-            message: "Failed to delete property",
-            error: error.message
-        });
-
     }
-
-});
+);
 
 
 // ==========================
 // ADD PROPERTY - POST
 // ==========================
 
-app.post("/api/properties", async function (req, res) {
+app.post(
+    "/api/properties",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
 
-    try {
+        try {
 
-        const property = await Property.create(req.body);
+            const { title, location, type, rent } = req.body;
 
-        res.status(201).json({
-            success: true,
-            message: "Property added successfully",
-            property: property
-        });
+            const property = await Property.create({
+                title: title,
+                location: location,
+                type: type,
+                rent: rent,
+                owner: req.user.id
+            });
 
-    } catch (error) {
+            res.status(201).json({
+                success: true,
+                message: "Property added successfully",
+                property: property
+            });
 
-        res.status(400).json({
-            success: false,
-            message: "Failed to add property",
-            error: error.message
-        });
+        } catch (error) {
 
+            res.status(400).json({
+                success: false,
+                message: "Failed to add property",
+                error: error.message
+            });
+
+        }
     }
+);
+app.get(
+    "/api/owner/properties",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
 
-});
+        try {
+
+            const properties = await Property.find({
+                owner: req.user.id
+            });
+
+            res.status(200).json({
+                success: true,
+                properties: properties
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch properties",
+                error: error.message
+            });
+
+        }
+    }
+);
 
 
 // ==========================

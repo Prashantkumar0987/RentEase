@@ -20,6 +20,12 @@ const propertySchema = new mongoose.Schema({
     rent: {
         type: Number,
         required: true
+    },
+
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     }
 
 });
