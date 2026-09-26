@@ -405,6 +405,70 @@ app.get(
         }
     }
 );
+app.get(
+    "/api/tenants",
+    verifyToken,
+    authorizeRoles("owner", "admin"),
+    async function (req, res) {
+
+        try {
+
+            const tenants = await User.find({
+                role: "tenant"
+            }).select("-password");
+
+            res.status(200).json({
+                success: true,
+                tenants: tenants
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch tenants",
+                error: error.message
+            });
+
+        }
+    }
+);
+app.get(
+    "/api/tenants/:id",
+    verifyToken,
+    authorizeRoles("owner", "admin"),
+    async function (req, res) {
+
+        try {
+
+            const tenant = await User.findOne({
+                _id: req.params.id,
+                role: "tenant"
+            }).select("-password");
+
+            if (!tenant) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Tenant not found"
+                });
+            }
+
+            res.status(200).json({
+                success: true,
+                tenant: tenant
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch tenant",
+                error: error.message
+            });
+
+        }
+    }
+);
 
 
 // ==========================
