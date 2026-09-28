@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const Property = require("./models/Property");
 const User = require("./models/User");
 const RentalApplication = require("./models/RentalApplication");
+const Rent = require("./models/Rent");
 
 const verifyToken = require("./middleware/authMiddleware");
 const authorizeRoles = require("./middleware/roleMiddleware");
@@ -468,6 +469,145 @@ app.put(
             res.status(400).json({
                 success: false,
                 message: "Failed to update application status",
+                error: error.message
+            });
+
+        }
+    }
+);
+app.post(
+    "/api/rents",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function(req, res) {
+
+        try {
+
+            const { propertyId, tenantId, amount, dueDate } = req.body;
+
+            // Check property belongs to logged-in owner
+            const property = await Property.findOne({
+                _id: propertyId,
+                owner: req.user.id
+            });
+
+            if (!property) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Property not found or not owned by you"
+                });
+            }
+
+            // Check tenant
+            const tenant = await User.findOne({
+                _id: tenantId,
+                role: "tenant"
+            });
+
+            if (!tenant) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Tenant not found"
+                });
+            }
+
+            // Create rent record
+            const rent = await Rent.create({
+                property: propertyId,
+                tenant: tenantId,
+                amount: amount,
+                dueDate: dueDate
+            });
+
+            res.status(201).json({
+                success: true,
+                message: "Rent record created successfully",
+                rent: rent
+            });
+
+        } catch (error) {
+
+            res.status(400).json({
+                success: false,
+                message: "Failed to create rent record",
+                error: error.message
+            });
+
+        }
+    }
+);
+app.get(
+    "/api/tenant/rents",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function(req, res) {
+
+        try {
+
+            const rents = await Rent.find({
+                tenant: req.user.id
+            })
+            .populate("property");
+
+            res.status(200).json({
+                success: true,
+                rents: rents
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch rent records",
+                error: error.message
+            });
+
+        }
+    }
+);
+app.put(
+    "/api/rents/:id/pay",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function(req, res) {
+
+        try {
+
+            const rent = await Rent.findOne({
+                _id: req.params.id,
+                tenant: req.user.id
+            });
+
+            if (!rent) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Rent record not found"
+                });
+            }
+
+            if (rent.status === "paid") {
+                return res.status(400).json({
+                    success: false,
+                    message: "Rent is already paid"
+                });
+            }
+
+            rent.status = "paid";
+            rent.paidAt = new Date();
+
+            await rent.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Rent marked as paid successfully",
+                rent: rent
+            });
+
+        } catch (error) {
+
+            res.status(400).json({
+                success: false,
+                message: "Failed to update rent",
                 error: error.message
             });
 
