@@ -379,6 +379,102 @@ app.post(
     }
 );
 app.get(
+    "/api/owner/applications",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function(req, res) {
+
+        try {
+
+            const applications = await RentalApplication.find()
+                .populate("property")
+                .populate("tenant", "-password");
+
+            const ownerApplications = applications.filter(function(application) {
+                return application.property &&
+                       application.property.owner &&
+                       application.property.owner.toString() === req.user.id.toString();
+            });
+
+            res.status(200).json({
+                success: true,
+                applications: ownerApplications
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch applications",
+                error: error.message
+            });
+
+        }
+    }
+);
+app.put(
+    "/api/applications/:id/status",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function(req, res) {
+
+        try {
+
+            const { status } = req.body;
+
+            // Check valid status
+            if (!["approved", "rejected"].includes(status)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Status must be approved or rejected"
+                });
+            }
+
+            // Find application
+            const application = await RentalApplication.findById(req.params.id)
+                .populate("property");
+
+            if (!application) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Application not found"
+                });
+            }
+
+            // Check property ownership
+            if (
+                !application.property.owner ||
+                application.property.owner.toString() !== req.user.id.toString()
+            ) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You are not allowed to update this application"
+                });
+            }
+
+            // Update status
+            application.status = status;
+
+            await application.save();
+
+            res.status(200).json({
+                success: true,
+                message: `Application ${status} successfully`,
+                application: application
+            });
+
+        } catch (error) {
+
+            res.status(400).json({
+                success: false,
+                message: "Failed to update application status",
+                error: error.message
+            });
+
+        }
+    }
+);
+app.get(
     "/api/owner/properties",
     verifyToken,
     authorizeRoles("owner"),
