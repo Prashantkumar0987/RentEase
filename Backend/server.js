@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 
 const Property = require("./models/Property");
 const User = require("./models/User");
+const RentalApplication = require("./models/RentalApplication");
 
 const verifyToken = require("./middleware/authMiddleware");
 const authorizeRoles = require("./middleware/roleMiddleware");
@@ -469,6 +470,118 @@ app.get(
         }
     }
 );
+app.post(
+    "/api/applications",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function(req, res) {
+
+        try {
+
+            const { propertyId, message } = req.body;
+
+            // Check property
+            const property = await Property.findById(propertyId);
+
+            if (!property) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Property not found"
+                });
+            }
+
+            // Check if already applied
+            const existingApplication = await RentalApplication.findOne({
+                property: propertyId,
+                tenant: req.user.id
+            });
+
+            if (existingApplication) {
+                return res.status(400).json({
+                    success: false,
+                    message: "You have already applied for this property"
+                });
+            }
+
+            // Create application
+            const application = await RentalApplication.create({
+                property: propertyId,
+                tenant: req.user.id,
+                message: message || ""
+            });
+
+            res.status(201).json({
+                success: true,
+                message: "Rental application submitted successfully",
+                application: application
+            });
+
+        } catch (error) {
+
+            res.status(400).json({
+                success: false,
+                message: "Failed to submit rental application",
+                error: error.message
+            });
+
+        }
+    }
+);
+app.put(
+    "/api/properties/:propertyId/assign-tenant",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
+
+        try {
+
+            const property = await Property.findOne({
+                _id: req.params.propertyId,
+                owner: req.user.id
+            });
+
+            if (!property) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Property not found or not owned by you"
+                });
+            }
+
+            const { tenantId } = req.body;
+
+            const tenant = await User.findOne({
+                _id: tenantId,
+                role: "tenant"
+            });
+
+            if (!tenant) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Tenant not found"
+                });
+            }
+
+            property.tenant = tenant._id;
+
+            await property.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Tenant assigned successfully",
+                property: property
+            });
+
+        } catch (error) {
+
+            res.status(400).json({
+                success: false,
+                message: "Failed to assign tenant",
+                error: error.message
+            });
+
+        }
+    }
+);
 
 
 // ==========================
@@ -490,13 +603,21 @@ app.get("/api/users", function (req, res) {
 // ==========================
 
 mongoose.connect(MONGO_URI)
-
     .then(function () {
 
         console.log("MongoDB connected successfully");
 
-    })
+        console.log(
+            "MongoDB connection state:",
+            mongoose.connection.readyState
+        );
 
+        // Start server only after MongoDB connects
+        app.listen(PORT, function () {
+            console.log(`Server running on http://localhost:${PORT}`);
+        });
+
+    })
     .catch(function (error) {
 
         console.log("MongoDB connection error:", error);
@@ -504,12 +625,12 @@ mongoose.connect(MONGO_URI)
     });
 
 
-// ==========================
-// START SERVER
-// ==========================
+// MongoDB connection events
 
-app.listen(PORT, function () {
+mongoose.connection.on("error", function (error) {
+    console.log("MongoDB runtime error:", error);
+});
 
-    console.log(`Server running on http://localhost:${PORT}`);
-
+mongoose.connection.on("disconnected", function () {
+    console.log("MongoDB disconnected");
 });
