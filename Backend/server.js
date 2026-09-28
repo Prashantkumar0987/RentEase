@@ -7,8 +7,10 @@ const jwt = require("jsonwebtoken");
 
 const Property = require("./models/Property");
 const User = require("./models/User");
+const Maintenance = require("./models/Maintenance");
 const RentalApplication = require("./models/RentalApplication");
-const Rent = require("./models/Rent");
+const Rent = require("./models/rent");
+
 
 const verifyToken = require("./middleware/authMiddleware");
 const authorizeRoles = require("./middleware/roleMiddleware");
@@ -815,6 +817,48 @@ app.put(
                 error: error.message
             });
 
+        }
+    }
+);
+app.post(
+    "/api/maintenance",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function(req, res) {
+        try {
+            const { propertyId, title, description } = req.body;
+
+            const property = await Property.findOne({
+                _id: propertyId,
+                tenant: req.user.id
+            });
+
+            if (!property) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Property not found or not assigned to you"
+                });
+            }
+
+            const complaint = await Maintenance.create({
+                property: propertyId,
+                tenant: req.user.id,
+                title: title,
+                description: description
+            });
+
+            res.status(201).json({
+                success: true,
+                message: "Maintenance complaint submitted successfully",
+                complaint: complaint
+            });
+
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                message: "Failed to submit maintenance complaint",
+                error: error.message
+            });
         }
     }
 );
