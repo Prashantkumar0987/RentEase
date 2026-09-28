@@ -862,6 +862,39 @@ app.post(
         }
     }
 );
+// ==========================
+// TENANT - VIEW OWN MAINTENANCE COMPLAINTS
+// ==========================
+
+app.get(
+    "/api/tenant/maintenance",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function (req, res) {
+
+        try {
+
+            const complaints = await Maintenance.find({
+                tenant: req.user.id
+            })
+            .populate("property");
+
+            res.status(200).json({
+                success: true,
+                complaints: complaints
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch maintenance complaints",
+                error: error.message
+            });
+
+        }
+    }
+);
 
 
 // ==========================
