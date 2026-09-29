@@ -568,6 +568,84 @@ app.get(
     }
 );
 
+app.get(
+    "/api/tenant/rent-history",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function (req, res) {
+        try {
+            const rents = await Rent.find({
+                tenant: req.user.id
+            })
+                .populate("property", "title location")
+                .sort({ createdAt: -1 });
+
+            res.status(200).json({
+                success: true,
+                count: rents.length,
+                history: rents
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch rent history",
+                error: error.message
+            });
+        }
+    }
+);
+
+app.get(
+    "/api/tenant/rent-summary",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function (req, res) {
+        try {
+            const rents = await Rent.find({
+                tenant: req.user.id
+            });
+
+            let totalRent = 0;
+            let paidRent = 0;
+            let pendingRent = 0;
+            let paidCount = 0;
+            let pendingCount = 0;
+
+            rents.forEach(function (rent) {
+                totalRent += rent.amount;
+
+                if (rent.status === "paid") {
+                    paidRent += rent.amount;
+                    paidCount++;
+                } else if (rent.status === "pending") {
+                    pendingRent += rent.amount;
+                    pendingCount++;
+                }
+            });
+
+            res.status(200).json({
+                success: true,
+                summary: {
+                    totalRent: totalRent,
+                    paidRent: paidRent,
+                    pendingRent: pendingRent,
+                    paidCount: paidCount,
+                    pendingCount: pendingCount,
+                    totalRecords: rents.length
+                }
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Failed to calculate rent summary",
+                error: error.message
+            });
+        }
+    }
+);
+
 app.put(
     "/api/rents/:id/pay",
     verifyToken,
