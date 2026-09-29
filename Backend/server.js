@@ -567,6 +567,7 @@ app.get(
         }
     }
 );
+
 app.put(
     "/api/rents/:id/pay",
     verifyToken,
@@ -892,6 +893,111 @@ app.get(
                 error: error.message
             });
 
+        }
+    }
+);
+
+ // OWNER - VIEW MAINTENANCE COMPLAINTS
+
+app.get(
+    "/api/owner/maintenance",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
+        try {
+            // Find properties belonging to this owner
+            const properties = await Property.find({
+                owner: req.user.id
+            }).select("_id");
+
+            // Extract property IDs
+            const propertyIds = properties.map(function (property) {
+                return property._id;
+            });
+
+            // Find complaints for those properties
+            const complaints = await Maintenance.find({
+                property: { $in: propertyIds }
+            })
+                .populate("property")
+                .populate("tenant", "-password");
+
+            res.status(200).json({
+                success: true,
+                complaints: complaints
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch maintenance complaints",
+                error: error.message
+            });
+        }
+    }
+);
+
+app.put(
+    "/api/maintenance/:id/status",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
+        try {
+            const { status } = req.body;
+
+            // Validate status
+            const allowedStatuses = [
+                "pending",
+                "in-progress",
+                "resolved"
+            ];
+
+            if (!allowedStatuses.includes(status)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid status"
+                });
+            }
+
+            // Find complaint and its property
+            const complaint = await Maintenance.findById(
+                req.params.id
+            ).populate("property");
+
+            if (!complaint) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Maintenance complaint not found"
+                });
+            }
+
+            // Check whether the logged-in owner owns the property
+            if (
+                !complaint.property ||
+                complaint.property.owner.toString() !== req.user.id.toString()
+            ) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You are not allowed to update this complaint"
+                });
+            }
+
+            // Update status
+            complaint.status = status;
+            await complaint.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Maintenance status updated successfully",
+                complaint: complaint
+            });
+
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                message: "Failed to update maintenance status",
+                error: error.message
+            });
         }
     }
 );
