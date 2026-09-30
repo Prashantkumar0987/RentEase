@@ -222,7 +222,7 @@ function displayProperties(propertyArray) {
                 </span>
 
                 <a
-                    href="property-details.html?id=${property.id}"
+                    href="property-details.html?id=${property._id || property.id}"
                     class="details-btn"
                 >
                     View Details
@@ -260,12 +260,144 @@ const filterBudget =
 const sortProperties =
     document.querySelector("#sortProperties");
 
+    // ==========================================
+// DAY 35 - BACKEND PROPERTY SEARCH
+// ==========================================
+
+const API_BASE_URL = "http://localhost:5000";
+
+let currentPage = 1;
+const propertiesPerPage = 6;
+
+const prevPageBtn = document.querySelector("#prevPage");
+const nextPageBtn = document.querySelector("#nextPage");
+const pageInfo = document.querySelector("#pageInfo");
+
+// Fetch properties from backend
+async function fetchPropertiesFromAPI() {
+    if (!propertyList) return;
+
+    const message = document.querySelector("#propertyMessage");
+
+    try {
+        if (message) {
+            message.textContent = "Loading properties...";
+        }
+
+        const params = new URLSearchParams();
+
+        const location = searchLocation?.value.trim();
+        const type = filterType?.value;
+        const budget = filterBudget?.value;
+        const sort = sortProperties?.value;
+
+        if (location) {
+            params.set("location", location);
+        }
+
+        if (type) {
+            params.set("type", type);
+        }
+
+        if (budget) {
+            params.set("maxRent", budget);
+        }
+
+        // Map frontend values to backend values
+        if (sort === "lowToHigh") {
+            params.set("sort", "low");
+        } else if (sort === "highToLow") {
+            params.set("sort", "high");
+        }
+
+        params.set("page", currentPage);
+        params.set("limit", propertiesPerPage);
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/properties?${params.toString()}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message || "Failed to load properties"
+            );
+        }
+
+        // Render backend properties using existing card function
+        displayProperties(data.properties || []);
+
+        const pagination = data.pagination || {};
+
+        if (pageInfo) {
+            pageInfo.textContent =
+                `Page ${pagination.currentPage || currentPage} of ${pagination.totalPages || 0}`;
+        }
+
+        if (prevPageBtn) {
+            prevPageBtn.disabled = currentPage <= 1;
+        }
+
+        if (nextPageBtn) {
+            nextPageBtn.disabled =
+                currentPage >= (pagination.totalPages || 0);
+        }
+
+        if (message) {
+            message.textContent =
+                data.count === 0
+                    ? "No properties found. Try changing your filters."
+                    : `${pagination.totalProperties ?? data.count} properties found.`;
+        }
+
+    } catch (error) {
+        console.error("Property API error:", error);
+
+        propertyList.innerHTML = `
+            <p class="no-property">
+                Unable to load properties.
+                Please check whether the backend is running.
+            </p>
+        `;
+
+        if (message) {
+            message.textContent = error.message;
+        }
+    }
+}
+// ==========================================
+// DAY 35 - PAGINATION EVENTS
+// ==========================================
+
+if (prevPageBtn) {
+    prevPageBtn.addEventListener("click", function () {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchPropertiesFromAPI();
+        }
+    });
+}
+
+if (nextPageBtn) {
+    nextPageBtn.addEventListener("click", function () {
+        currentPage++;
+        fetchPropertiesFromAPI();
+    });
+}
+
 
 // ======================================================
 // FILTER + SORT FUNCTION
 // ======================================================
 
 function filterProperties() {
+        // Day 35: Use backend API on Properties page
+    if (propertyList) {
+        currentPage = 1;
+        fetchPropertiesFromAPI();
+        return;
+    }
 
     if (
         !searchLocation ||
@@ -355,7 +487,11 @@ function filterProperties() {
 // SHOW PROPERTIES
 // ======================================================
 
-displayProperties(properties);
+if (propertyList) {
+    fetchPropertiesFromAPI();
+} else {
+    displayProperties(properties);
+}
 
 
 // ======================================================

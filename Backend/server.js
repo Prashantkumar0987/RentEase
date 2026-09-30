@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
 const Property = require("./models/Property");
 const User = require("./models/User");
@@ -24,7 +25,7 @@ const MONGO_URI = process.env.MONGO_URI;
 // ==========================
 // MIDDLEWARE
 // ==========================
-
+app.use(cors());
 app.use(express.json());
 
 
@@ -53,29 +54,136 @@ app.get("/api/health", function (req, res) {
 // GET PROPERTIES - FROM MONGODB
 // ==========================
 
+
+ // GET PROPERTIES WITH LOCATION FILTER
+
 app.get("/api/properties", async function (req, res) {
-
     try {
+        const {
+            location,
+            type,
+            minRent,
+            maxRent,
+            sort,
+            page = "1",
+            limit = "10"
+        } = req.query;
+        
+        const currentPage = Number(page);
+        const pageLimit = Number(limit);
 
-        const properties = await Property.find();
+        if (
+            !Number.isInteger(currentPage) ||
+            currentPage < 1 ||
+            !Number.isInteger(pageLimit) ||
+            pageLimit < 1 ||
+            pageLimit > 100
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "page must be a positive integer and limit must be between 1 and 100"
+            });
+        }
 
-        res.status(200).json({
+        const skip = (currentPage - 1) * pageLimit;
+
+        const filter = {};
+
+        if (location && location.trim() !== "") {
+            filter.location = {
+                $regex: location.trim(),
+                $options: "i"
+            };
+        }
+        // Filter by property type
+        if (type && type.trim() !== "") {
+            filter.type = {
+                $regex: type.trim(),
+                $options: "i"
+            };
+        }
+        
+        // Minimum rent filter
+        if (minRent !== undefined && minRent !== "") {
+            const min = Number(minRent);
+
+            if (!Number.isFinite(min) || min < 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "minRent must be a valid non-negative number"
+                });
+            }
+
+            filter.rent = {
+                ...filter.rent,
+                $gte: min
+            };
+        }
+
+        // Maximum rent filter
+        if (maxRent !== undefined && maxRent !== "") {
+            const max = Number(maxRent);
+
+            if (!Number.isFinite(max) || max < 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "maxRent must be a valid non-negative number"
+                });
+            }
+
+            filter.rent = {
+                ...filter.rent,
+                $lte: max
+            };
+        }
+
+        // Check that minimum rent is not greater than maximum rent
+        if (
+            filter.rent?.$gte !== undefined &&
+            filter.rent?.$lte !== undefined &&
+            filter.rent.$gte > filter.rent.$lte
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "minRent cannot be greater than maxRent"
+            });
+        }
+
+        
+        const sortOptions = {};
+
+        if (sort === "low") {
+            sortOptions.rent = 1;   // Low to high
+        } else if (sort === "high") {
+            sortOptions.rent = -1;  // High to low
+        }
+
+        const properties = await Property.find(filter)
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(pageLimit);
+
+        const totalProperties = await Property.countDocuments(filter);
+
+       res.status(200).json({
             success: true,
-            source: "MONGODB",
-            message: "This is the MongoDB GET route",
+            count: properties.length,
+            pagination: {
+                currentPage: currentPage,
+                limit: pageLimit,
+                totalProperties: totalProperties,
+                totalPages: Math.ceil(totalProperties / pageLimit)
+            },
             properties: properties
         });
 
     } catch (error) {
-
         res.status(500).json({
             success: false,
             message: "Failed to fetch properties",
             error: error.message
         });
-
     }
-
 });
 
 
@@ -645,7 +753,6 @@ app.get(
         }
     }
 );
-
 app.put(
     "/api/rents/:id/pay",
     verifyToken,
