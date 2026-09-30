@@ -650,10 +650,112 @@ if (propertyDetails) {
                     >
                         Contact Owner
                     </button>
+                    
+                    <div class="application-form">
+                        <h2>Apply for Rent</h2>
+
+                        <label for="applicationMessage">
+                            Message to Owner (optional)
+                        </label>
+
+                        <textarea
+                            id="applicationMessage"
+                            rows="4"
+                            maxlength="1000"
+                            placeholder="Introduce yourself and tell the owner why you're interested..."
+                        ></textarea>
+
+                        <button
+                            type="button"
+                            id="applyForRentBtn"
+                            class="apply-rent-btn"
+                        >
+                            Apply for Rent
+                        </button>
+
+                        <p
+                            id="applicationMessageStatus"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
+                    </div>
 
                 </div>
             </div>
         `;
+        
+        const applyButton = document.querySelector("#applyForRentBtn");
+        const applicationInput = document.querySelector("#applicationMessage");
+        const applicationStatus = document.querySelector("#applicationMessageStatus");
+
+        if (applyButton && applicationInput && applicationStatus) {
+            applyButton.addEventListener("click", async function () {
+                const token = localStorage.getItem("renteaseToken");
+                const userData = JSON.parse(
+                    localStorage.getItem("renteaseUser") || "null"
+                );
+
+                if (!token) {
+                    applicationStatus.textContent =
+                        "Please log in first to apply for this property.";
+                    return;
+                }
+
+                if (!userData || String(userData.role).toLowerCase() !== "tenant") {
+                    applicationStatus.textContent =
+                        "Only tenant accounts can apply for rent.";
+                    return;
+                }
+
+                // Applications require a real MongoDB property ID.
+                if (!/^[a-f\d]{24}$/i.test(propertyId || "")) {
+                    applicationStatus.textContent =
+                        "Please select a property from the database-backed listing.";
+                    return;
+                }
+
+                const message = applicationInput.value.trim();
+
+                try {
+                    applyButton.disabled = true;
+                    applicationStatus.textContent = "Submitting application...";
+
+                    const response = await fetch(
+                        "http://localhost:5000/api/applications",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                propertyId: propertyId,
+                                message: message
+                            })
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(
+                            data.message || "Failed to submit application."
+                        );
+                    }
+
+                    applicationStatus.textContent =
+                        "Application submitted successfully!";
+
+                    applicationInput.value = "";
+
+                } catch (error) {
+                    console.error("Rental application error:", error);
+                    applicationStatus.textContent = error.message;
+                } finally {
+                    applyButton.disabled = false;
+                }
+            });
+        }
     }
 
     // Load property details
@@ -710,166 +812,64 @@ if (propertyDetails) {
     loadPropertyDetails();
 }
 
+//LOGIN AND SIGNUP
 
-// ======================================================
-// DAY 5 + DAY 12 + DAY 13 - LOGIN
-// ======================================================
-
-const loginForm =
-    document.querySelector("#loginForm");
+const loginForm = document.querySelector("#loginForm");
 
 if (loginForm) {
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    loginForm.addEventListener(
-        "submit",
-        function (event) {
+        const email = document.querySelector("#loginEmail").value.trim();
+        const password = document.querySelector("#loginPassword").value.trim();
+        const loginMessage = document.querySelector("#loginMessage");
 
-            event.preventDefault();
+        if (!email || !password) {
+            loginMessage.textContent = "Please enter email and password.";
+            return;
+        }
 
+        try {
+            loginMessage.textContent = "Logging in...";
 
-            const email =
-                document.querySelector("#loginEmail")
-                    .value
-                    .trim();
+            const response = await fetch("http://localhost:5000/api/users/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
 
-            const password =
-                document.querySelector("#loginPassword")
-                    .value
-                    .trim();
+            const data = await response.json();
 
-            const loginMessage =
-                document.querySelector("#loginMessage");
-
-
-            if (email === "") {
-
-                loginMessage.textContent =
-                    "Please enter your email.";
-
-                return;
-
+            if (!response.ok || !data.success || !data.token) {
+                throw new Error(data.message || "Login failed.");
             }
 
+            // Save the real backend JWT
+            localStorage.setItem("renteaseToken", data.token);
 
-            if (!email.includes("@")) {
+            // Preserve user details for existing frontend features
+            localStorage.setItem("renteaseUser", JSON.stringify(data.user));
 
-                loginMessage.textContent =
-                    "Please enter a valid email.";
+            loginMessage.textContent = "Login successful! Redirecting...";
 
-                return;
-
-            }
-
-
-            if (password === "") {
-
-                loginMessage.textContent =
-                    "Please enter your password.";
-
-                return;
-
-            }
-
-
-            if (password.length < 6) {
-
-                loginMessage.textContent =
-                    "Password must be at least 6 characters.";
-
-                return;
-
-            }
-
-
-            const savedUser =
-                localStorage.getItem("renteaseUser");
-
-
-            if (!savedUser) {
-
-                loginMessage.textContent =
-                    "No account found. Please sign up first.";
-
-                return;
-
-            }
-
-
-            let userData;
-
-            try {
-
-                userData =
-                    JSON.parse(savedUser);
-
-            } catch (error) {
-
-                loginMessage.textContent =
-                    "Invalid saved account data.";
-
-                return;
-
-            }
-
-
-            if (
-                email.toLowerCase() !==
-                userData.email.toLowerCase()
-            ) {
-
-                loginMessage.textContent =
-                    "Email does not match the registered account.";
-
-                return;
-
-            }
-
-
-            if (password !== userData.password) {
-
-                loginMessage.textContent =
-                    "Incorrect password.";
-
-                return;
-
-            }
-
-
-            loginMessage.textContent =
-                "Login successful! Redirecting...";
+            const role = String(data.user.role || "").toLowerCase();
 
             setTimeout(function () {
-
-                const userRole = String(userData.role)
-                    .trim()
-                    .toLowerCase();
-
-                if (
-                    userRole === "owner" ||
-                    userRole === "property owner" ||
-                    userRole === "property-owner"
-                ) {
-
+                if (role === "owner" || role === "property owner") {
                     window.location.href = "owner-dashboard.html";
-
-                } else if (
-                    userRole === "tenant"
-                ) {
-
-                    window.location.href = "tenant-dashboard.html";
-
                 } else {
-
-                    loginMessage.textContent =
-                        "Invalid user role: " + userData.role;
-
+                    window.location.href = "tenant-dashboard.html";
                 }
+            }, 700);
 
-            }, 1000);
-
+        } catch (error) {
+            console.error("Login error:", error);
+            loginMessage.textContent = error.message ||
+                "Unable to connect to the backend.";
         }
-    );
-
+    });
 }
 
 const signupForm =

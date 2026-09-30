@@ -2424,3 +2424,71 @@ body {
         padding: 10px 13px;
     }
 }
+
+/* DAY 37 - APPLY FOR RENT */
+
+.application-form {
+    margin-top: 28px;
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
+}
+
+.application-form h2 {
+    margin: 0 0 16px;
+    color: #172033;
+    font-size: 22px;
+}
+
+.application-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.application-form textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+    resize: vertical;
+}
+
+.application-form textarea:focus {
+    outline: 2px solid #16a34a;
+    outline-offset: 1px;
+}
+
+.apply-rent-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #16a34a;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.apply-rent-btn:hover {
+    background: #15803d;
+}
+
+.apply-rent-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#applicationMessageStatus {
+    margin: 12px 0 0;
+    color: #334155;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
