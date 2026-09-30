@@ -185,6 +185,45 @@ app.get("/api/properties", async function (req, res) {
         });
     }
 });
+// ========================================
+// DAY 36 - GET SINGLE PROPERTY BY MONGODB ID
+// ========================================
+
+app.get("/api/properties/:id", async function (req, res) {
+    try {
+        const propertyId = req.params.id;
+
+        // Validate MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid property ID"
+            });
+        }
+
+        // Find property in MongoDB
+        const property = await Property.findById(propertyId);
+
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                message: "Property not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            property: property
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch property details",
+            error: error.message
+        });
+    }
+});
 
 
 // ==========================

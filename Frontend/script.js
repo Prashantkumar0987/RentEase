@@ -526,173 +526,123 @@ if (filterBudget) {
 }
 
 
-// ======================================================
-// DAY 4 - PROPERTY DETAILS
-// ======================================================
+// ========================================
+// DAY 36 - PROPERTY DETAILS API
+// ========================================
 
-const propertyDetails =
-    document.querySelector("#propertyDetails");
+const propertyDetails = document.querySelector("#propertyDetails");
 
 if (propertyDetails) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get("id");
 
-    const urlParams =
-        new URLSearchParams(
-            window.location.search
-        );
+    const PROPERTY_DETAILS_API_URL = "http://localhost:5000";
+    const fallbackImage =
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6";
 
-    const propertyId =
-        Number(urlParams.get("id"));
-
-    console.log(
-        "Property ID:",
-        propertyId
-    );
-
-
-    const selectedProperty =
-        properties.find(function (property) {
-
-            return property.id === propertyId;
-
-        });
-
-
-    console.log(
-        "Selected Property:",
-        selectedProperty
-    );
-
-
-    if (!selectedProperty) {
-
+    // Show error message
+    function showPropertyError(message) {
         propertyDetails.innerHTML = `
-
             <div class="no-property">
-
-                <h2>
-                    Property not found
-                </h2>
-
-                <p>
-                    Please select a property
-                    from the Properties page.
-                </p>
-
+                <h2>Property not found</h2>
+                <p>${message}</p>
+                <a href="properties.html">Back to Properties</a>
             </div>
-
         `;
+    }
 
-    } else {
+    // Display selected property
+    function renderPropertyDetails(selectedProperty) {
+        if (!selectedProperty) {
+            showPropertyError(
+                "Please select a valid property from the Properties page."
+            );
+            return;
+        }
+
+        const rent = Number(selectedProperty.rent) || 0;
+
+        const image =
+            selectedProperty.image ||
+            selectedProperty.imageUrl ||
+            fallbackImage;
+
+        const amenities = Array.isArray(selectedProperty.amenities)
+            ? selectedProperty.amenities
+            : ["Parking", "WiFi", "Security", "Lift"];
 
         propertyDetails.innerHTML = `
-
             <div class="details-card">
 
                 <img
-                    src="${selectedProperty.image}"
-                    alt="${selectedProperty.title}"
+                    src="${image}"
+                    alt="${selectedProperty.title || "Rental property"}"
                     class="details-image"
-                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6';"
+                    onerror="this.onerror=null; this.src='${fallbackImage}';"
                 >
 
                 <div class="details-content">
 
                     <span class="property-type">
-                        ${selectedProperty.type}
+                        ${selectedProperty.type || "Property"}
                     </span>
 
                     <h1>
-                        ${selectedProperty.title}
+                        ${selectedProperty.title || "Rental Property"}
                     </h1>
 
                     <p class="property-location">
-                        📍 ${selectedProperty.location}
+                        📍 ${selectedProperty.location || "Location not specified"}
                     </p>
 
                     <h2 class="details-rent">
-                        ₹${selectedProperty.rent.toLocaleString("en-IN")}
-                        / month
+                        ₹${rent.toLocaleString("en-IN")} / month
                     </h2>
-
 
                     <div class="property-features">
 
                         <div>
                             🛏️
-                            <strong>
-                                ${selectedProperty.bedrooms || 2}
-                            </strong>
+                            <strong>${selectedProperty.bedrooms || 2}</strong>
                             Bedrooms
                         </div>
 
                         <div>
                             🚿
-                            <strong>
-                                ${selectedProperty.bathrooms || 2}
-                            </strong>
+                            <strong>${selectedProperty.bathrooms || 2}</strong>
                             Bathrooms
                         </div>
 
                         <div>
                             📐
-                            <strong>
-                                ${selectedProperty.area || "1200 sq.ft"}
-                            </strong>
+                            <strong>${selectedProperty.area || "1200 sq.ft"}</strong>
                         </div>
 
                         <div>
                             🛋️
-                            <strong>
-                                ${selectedProperty.furnished || "Semi-Furnished"}
-                            </strong>
+                            <strong>${selectedProperty.furnished || "Semi-Furnished"}</strong>
                         </div>
 
                     </div>
 
-
-                    <h2>
-                        About Property
-                    </h2>
+                    <h2>About Property</h2>
 
                     <p>
                         ${
                             selectedProperty.description ||
-                            "This is a comfortable and well-maintained property suitable for rental."
+                            "This is a comfortable property available for rent."
                         }
                     </p>
 
-
-                    <h2>
-                        Amenities
-                    </h2>
-
+                    <h2>Amenities</h2>
 
                     <div class="amenities">
-
                         ${
-                            (
-                                selectedProperty.amenities ||
-                                [
-                                    "Parking",
-                                    "WiFi",
-                                    "Security",
-                                    "Lift"
-                                ]
-                            )
-                            .map(function (amenity) {
-
-                                return `
-                                    <span>
-                                        ${amenity}
-                                    </span>
-                                `;
-
-                            })
-                            .join("")
+                            amenities.map(function (amenity) {
+                                return `<span>${amenity}</span>`;
+                            }).join("")
                         }
-
                     </div>
-
 
                     <button
                         type="button"
@@ -702,13 +652,62 @@ if (propertyDetails) {
                     </button>
 
                 </div>
-
             </div>
-
         `;
-
     }
 
+    // Load property details
+    async function loadPropertyDetails() {
+        if (!propertyId) {
+            showPropertyError("No property ID was provided in the URL.");
+            return;
+        }
+
+        propertyDetails.innerHTML = `
+            <p class="no-property">Loading property details...</p>
+        `;
+
+        // MongoDB ObjectId is normally a 24-character hexadecimal string
+        const isMongoId = /^[a-f\d]{24}$/i.test(propertyId);
+
+        if (isMongoId) {
+            try {
+                const response = await fetch(
+                    `${PROPERTY_DETAILS_API_URL}/api/properties/${encodeURIComponent(propertyId)}`
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.message || "Unable to load this property."
+                    );
+                }
+
+                renderPropertyDetails(data.property);
+
+            } catch (error) {
+                console.error("Property details API error:", error);
+
+                showPropertyError(
+                    error.message ||
+                    "Unable to connect to the backend. Please try again."
+                );
+            }
+
+        } else {
+            // Preserve old static/localStorage property support
+            const numericId = Number(propertyId);
+
+            const selectedProperty = properties.find(function (property) {
+                return Number(property.id) === numericId;
+            });
+
+            renderPropertyDetails(selectedProperty);
+        }
+    }
+
+    loadPropertyDetails();
 }
 
 
