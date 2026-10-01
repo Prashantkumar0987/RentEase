@@ -990,6 +990,38 @@ app.post(
         }
     }
 );
+
+/* =========================================
+   DAY 38 - GET LOGGED-IN TENANT APPLICATIONS
+========================================= */
+
+app.get(
+    "/api/tenant/applications",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function (req, res) {
+        try {
+            const applications = await RentalApplication.find({
+                tenant: req.user.id
+            })
+                .populate("property")
+                .sort({ createdAt: -1 });
+
+            res.status(200).json({
+                success: true,
+                count: applications.length,
+                applications: applications
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch tenant applications",
+                error: error.message
+            });
+        }
+    }
+);
 app.put(
     "/api/properties/:propertyId/assign-tenant",
     verifyToken,

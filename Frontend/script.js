@@ -1746,3 +1746,271 @@ if (ownerPropertyList) {
     displayOwnerProperties();
 
 }
+
+/* =========================================
+   DAY 38 - TENANT APPLICATIONS DASHBOARD
+========================================= */
+
+(function initTenantApplicationsDashboard() {
+    const applicationsList = document.querySelector(
+        "#tenantApplicationsList"
+    );
+
+    // Run only on tenant dashboard
+    if (!applicationsList) return;
+
+    const API_BASE_URL = "http://localhost:5000";
+
+    const messageElement = document.querySelector(
+        "#tenantApplicationsMessage"
+    );
+
+    const summaryElement = document.querySelector(
+        "#tenantApplicationsSummary"
+    );
+
+    const refreshButton = document.querySelector(
+        "#refreshTenantApplications"
+    );
+
+    // Safely display values received from the API
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            const entities = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            };
+
+            return entities[char];
+        });
+    }
+
+    function renderSummary(applications) {
+        const counts = {
+            pending: 0,
+            approved: 0,
+            rejected: 0
+        };
+
+        applications.forEach(function (application) {
+            const status = String(
+                application.status || "pending"
+            ).toLowerCase();
+
+            if (Object.prototype.hasOwnProperty.call(counts, status)) {
+                counts[status]++;
+            }
+        });
+
+        summaryElement.innerHTML = `
+            <div class="application-summary-card">
+                <span>Total Applications</span>
+                <strong>${applications.length}</strong>
+            </div>
+
+            <div class="application-summary-card">
+                <span>Pending</span>
+                <strong>${counts.pending}</strong>
+            </div>
+
+            <div class="application-summary-card">
+                <span>Approved</span>
+                <strong>${counts.approved}</strong>
+            </div>
+
+            <div class="application-summary-card">
+                <span>Rejected</span>
+                <strong>${counts.rejected}</strong>
+            </div>
+        `;
+    }
+
+    function renderApplications(applications) {
+        if (!applications.length) {
+            applicationsList.innerHTML = `
+                <div class="tenant-applications-empty">
+                    <h3>No applications yet</h3>
+                    <p>Explore properties and apply for a home to see your applications here.</p>
+                    <a href="properties.html">Explore Properties</a>
+                </div>
+            `;
+            return;
+        }
+
+        applicationsList.innerHTML = applications.map(
+            function (application) {
+                const property = application.property || {};
+
+                const status = String(
+                    application.status || "pending"
+                ).toLowerCase();
+
+                const allowedStatuses = [
+                    "pending",
+                    "approved",
+                    "rejected"
+                ];
+
+                const safeStatus = allowedStatuses.includes(status)
+                    ? status
+                    : "unknown";
+
+                const statusLabel = safeStatus.charAt(0).toUpperCase()
+                    + safeStatus.slice(1);
+
+                const rent = Number(property.rent);
+
+                const rentText = Number.isFinite(rent)
+                    ? `₹${rent.toLocaleString("en-IN")}/month`
+                    : "Rent not available";
+
+                const dateText = application.createdAt
+                    ? new Date(application.createdAt).toLocaleDateString("en-IN")
+                    : "Date not available";
+
+                return `
+                    <article class="tenant-application-card">
+                        <div class="tenant-application-card-top">
+                            <span class="application-status status-${safeStatus}">
+                                ${escapeHTML(statusLabel)}
+                            </span>
+
+                            <span class="application-date">
+                                Applied: ${escapeHTML(dateText)}
+                            </span>
+                        </div>
+
+                        <h3>${escapeHTML(property.title || "Property details unavailable")}</h3>
+
+                        <p class="application-location">
+                            📍 ${escapeHTML(property.location || "Location unavailable")}
+                        </p>
+
+                        <p class="application-rent">
+                            ${escapeHTML(rentText)}
+                        </p>
+
+                        <p class="application-type">
+                            Type: ${escapeHTML(property.type || "Not specified")}
+                        </p>
+
+                        <div class="application-user-message">
+                            <strong>Your message</strong>
+                            <p>${escapeHTML(application.message || "No message added.")}</p>
+                        </div>
+
+                        ${
+                            property._id
+                                ? `<a class="application-details-link"
+                                      href="property-details.html?id=${encodeURIComponent(property._id)}">
+                                      View Property
+                                   </a>`
+                                : ""
+                        }
+                    </article>
+                `;
+            }
+        ).join("");
+    }
+
+    async function loadTenantApplications() {
+        const token = localStorage.getItem("renteaseToken");
+
+        let user = null;
+
+        try {
+            user = JSON.parse(
+                localStorage.getItem("renteaseUser") || "null"
+            );
+        } catch (error) {
+            user = null;
+        }
+
+        if (!token) {
+            messageElement.textContent =
+                "Please log in using your backend account to view applications.";
+
+            applicationsList.innerHTML = "";
+            summaryElement.innerHTML = "";
+            return;
+        }
+
+        if (!user || String(user.role || "").toLowerCase() !== "tenant") {
+            messageElement.textContent =
+                "This section is available to tenant accounts only.";
+
+            applicationsList.innerHTML = "";
+            summaryElement.innerHTML = "";
+            return;
+        }
+
+        try {
+            if (refreshButton) refreshButton.disabled = true;
+
+            messageElement.textContent = "Loading your applications...";
+            applicationsList.innerHTML = "";
+
+            const response = await fetch(
+                `${API_BASE_URL}/api/tenant/applications`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                if (response.status === 401) {
+                    throw new Error(
+                        "Your session has expired. Please log in again."
+                    );
+                }
+
+                if (response.status === 403) {
+                    throw new Error(
+                        "Your account is not authorized to view tenant applications."
+                    );
+                }
+
+                throw new Error(
+                    data.message || "Could not load applications."
+                );
+            }
+
+            const applications = Array.isArray(data.applications)
+                ? data.applications
+                : [];
+
+            renderSummary(applications);
+            renderApplications(applications);
+
+            messageElement.textContent =
+                `${applications.length} application(s) found.`;
+
+        } catch (error) {
+            console.error("Tenant applications error:", error);
+
+            messageElement.textContent = error.message;
+            applicationsList.innerHTML = "";
+            summaryElement.innerHTML = "";
+
+        } finally {
+            if (refreshButton) refreshButton.disabled = false;
+        }
+    }
+
+    if (refreshButton) {
+        refreshButton.addEventListener(
+            "click",
+            loadTenantApplications
+        );
+    }
+
+    loadTenantApplications();
+})();

@@ -276,6 +276,41 @@
         </section>
 
     </main>
+    
+<!-- DAY 38 - TENANT APPLICATIONS -->
+
+    <section class="tenant-applications-section">
+        <div class="tenant-applications-header">
+            <div>
+                <p class="hero-tag">RENTAL ACTIVITY</p>
+                <h2>My Rental Applications</h2>
+                <p>Track the status of your property applications.</p>
+            </div>
+
+            <button
+                type="button"
+                id="refreshTenantApplications"
+            >
+                Refresh
+            </button>
+        </div>
+
+        <div
+            id="tenantApplicationsSummary"
+            class="tenant-applications-summary"
+        ></div>
+
+        <p
+            id="tenantApplicationsMessage"
+            role="status"
+            aria-live="polite"
+        >Your applications will appear here.</p>
+
+        <div
+            id="tenantApplicationsList"
+            class="tenant-applications-grid"
+        ></div>
+    </section>
 
 
     <script src="script.js"></script>

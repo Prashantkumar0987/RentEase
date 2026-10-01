@@ -2492,3 +2492,225 @@ body {
     line-height: 1.5;
     overflow-wrap: anywhere;
 }
+
+/* =====================================
+   DAY 38 - TENANT APPLICATIONS
+===================================== */
+
+.tenant-applications-section {
+    width: min(1150px, 92%);
+    margin: 40px auto;
+    padding-bottom: 40px;
+}
+
+.tenant-applications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.tenant-applications-header h2 {
+    margin: 8px 0;
+    color: #172033;
+    font-size: clamp(24px, 4vw, 32px);
+}
+
+.tenant-applications-header p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+#refreshTenantApplications {
+    padding: 11px 18px;
+    border: 1px solid #16a34a;
+    border-radius: 8px;
+    background: #fff;
+    color: #15803d;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#refreshTenantApplications:hover {
+    background: #16a34a;
+    color: #fff;
+}
+
+#refreshTenantApplications:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.tenant-applications-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.application-summary-card {
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.application-summary-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.application-summary-card strong {
+    color: #172033;
+    font-size: 28px;
+}
+
+#tenantApplicationsMessage {
+    margin: 16px 0;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.tenant-applications-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.tenant-application-card {
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+    overflow-wrap: anywhere;
+}
+
+.tenant-application-card h3 {
+    margin: 18px 0 8px;
+    color: #172033;
+    font-size: 20px;
+}
+
+.tenant-application-card p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.tenant-application-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.application-status {
+    display: inline-block;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-unknown {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.application-date {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.application-rent {
+    color: #15803d !important;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.application-user-message {
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 9px;
+    background: #f8fafc;
+}
+
+.application-user-message strong {
+    color: #334155;
+}
+
+.application-user-message p {
+    margin-bottom: 0;
+    white-space: pre-wrap;
+}
+
+.application-details-link,
+.tenant-applications-empty a {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: #16a34a;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.application-details-link:hover,
+.tenant-applications-empty a:hover {
+    background: #15803d;
+}
+
+.tenant-applications-empty {
+    grid-column: 1 / -1;
+    padding: 32px 20px;
+    text-align: center;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.tenant-applications-empty h3 {
+    color: #172033;
+}
+
+@media (max-width: 750px) {
+    .tenant-applications-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tenant-applications-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .tenant-applications-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .application-summary-card {
+        padding: 15px;
+    }
+}
