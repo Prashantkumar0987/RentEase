@@ -2714,3 +2714,315 @@ body {
         padding: 15px;
     }
 }
+/* DAY 39 - OWNER APPLICATION MANAGEMENT */
+
+.owner-applications-section {
+    margin-top: 28px;
+}
+
+.owner-application-item {
+    padding: 20px;
+    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.owner-application-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.owner-application-header h3 {
+    margin: 0;
+}
+
+.owner-application-item p {
+    margin: 8px 0;
+    overflow-wrap: anywhere;
+}
+
+.owner-application-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.owner-approve-btn,
+.owner-reject-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.owner-approve-btn {
+    background: #16803d;
+}
+
+.owner-reject-btn {
+    background: #c62828;
+}
+
+.owner-approve-btn:disabled,
+.owner-reject-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.owner-application-empty {
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+    .owner-application-item {
+        padding: 14px;
+    }
+
+    .owner-application-actions button {
+        flex: 1;
+    }
+}
+
+/* =========================================
+   RENT EASE - OWNER DASHBOARD CLEANUP
+   Existing styles and functionality preserved
+========================================= */
+
+.owner-dashboard-container {
+    width: min(92%, 1320px);
+    margin: 36px auto 60px;
+}
+
+.owner-welcome {
+    margin-bottom: 28px;
+}
+
+.owner-stats {
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.owner-stat-card,
+.owner-card {
+    min-width: 0;
+}
+
+.owner-card {
+    padding: 26px;
+    border: 1px solid #edf0f5;
+    border-radius: 18px;
+}
+
+.owner-dashboard-grid {
+    align-items: stretch;
+    gap: 22px;
+}
+
+.owner-card-header {
+    gap: 16px;
+    min-width: 0;
+}
+
+.owner-card-header h2 {
+    line-height: 1.35;
+}
+
+/* Rental applications header fix */
+.owner-applications-section {
+    margin-top: 24px;
+}
+
+.owner-applications-section .owner-card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.owner-applications-section .owner-card-header h2 {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.owner-applications-section .owner-card-header .owner-action-btn {
+    width: auto;
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding: 11px 18px;
+    white-space: nowrap;
+}
+
+#ownerApplicationsMessage {
+    color: #64748b;
+    margin: 10px 0 16px;
+}
+
+/* Separate Manage Properties and Add Property cards */
+.my-properties-crud,
+.add-property-section {
+    margin-top: 24px;
+    scroll-margin-top: 24px;
+}
+
+.owner-section-label {
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Add Property form */
+.owner-form-description {
+    color: #64748b;
+    margin: -8px 0 22px;
+}
+
+.owner-property-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.owner-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.owner-form-field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.owner-form-field input,
+.owner-form-field select {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 11px 13px;
+    border: 1px solid #dbe1ea;
+    border-radius: 9px;
+    background: #fff;
+    color: #1e293b;
+    font: inherit;
+    outline: none;
+}
+
+.owner-form-field input:focus,
+.owner-form-field select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.owner-form-full {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+.owner-submit-property {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.owner-submit-property:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+#propertyMessage {
+    margin-top: 14px;
+    overflow-wrap: anywhere;
+}
+
+/* Make quick-action buttons consistent */
+.owner-quick-action {
+    width: 100%;
+    min-height: 58px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (max-width: 700px) {
+    .owner-dashboard-container {
+        width: 94%;
+        margin-top: 22px;
+    }
+
+    .owner-card {
+        padding: 19px;
+    }
+
+    .owner-property-form {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .owner-form-full {
+        grid-column: auto;
+    }
+
+    .owner-applications-section .owner-card-header {
+        align-items: stretch;
+    }
+
+    .owner-applications-section .owner-card-header h2 {
+        flex-basis: 100%;
+    }
+
+    .owner-applications-section .owner-card-header .owner-action-btn {
+        width: 100%;
+        white-space: normal;
+    }
+}
+/* =========================================
+   DAY 40 - DASHBOARD PROPERTY SYNC
+========================================= */
+
+.owner-dashboard-property-preview {
+    min-height: 80px;
+}
+
+.dashboard-property-empty {
+    padding: 20px 0;
+    text-align: center;
+    color: #64748b;
+}
+
+.owner-dashboard-property-preview
+.owner-property-item {
+    margin-bottom: 0;
+}
+
+.owner-dashboard-property-preview
+.owner-property-item + .owner-property-item {
+    border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 600px) {
+
+    .owner-dashboard-property-preview
+    .owner-property-item {
+        gap: 12px;
+    }
+
+}

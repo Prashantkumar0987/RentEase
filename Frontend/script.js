@@ -1384,6 +1384,10 @@ if (propertyForm) {
 
 
             displayOwnerProperties();
+            if (window.refreshOwnerDashboard) {
+                window.refreshOwnerDashboard();
+            }
+            
 
         }
     );
@@ -1668,7 +1672,9 @@ function editProperty(propertyId) {
 
 
     displayOwnerProperties();
-
+    if (window.refreshOwnerDashboard) {
+        window.refreshOwnerDashboard();
+    }
 
     alert(
         "Property updated successfully!"
@@ -1733,6 +1739,9 @@ function deleteProperty(propertyId) {
 
 
     displayOwnerProperties();
+    if (window.refreshOwnerDashboard) {
+        window.refreshOwnerDashboard();
+    }
 
 }
 
@@ -1746,6 +1755,173 @@ if (ownerPropertyList) {
     displayOwnerProperties();
 
 }
+// ======================================================
+// DAY 40 - OWNER DASHBOARD DATA SYNC
+// ======================================================
+
+(function syncOwnerDashboardData() {
+
+    const totalPropertiesElement =
+        document.querySelector("#totalPropertiesCount");
+
+    const monthlyRentElement =
+        document.querySelector("#monthlyRentTotal");
+
+    const dashboardPropertyPreview =
+        document.querySelector("#dashboardPropertyPreview");
+
+    // Run only when owner dashboard elements exist
+    if (
+        !totalPropertiesElement &&
+        !monthlyRentElement &&
+        !dashboardPropertyPreview
+    ) {
+        return;
+    }
+
+    function getOwnerProperties() {
+
+        const savedProperties =
+            localStorage.getItem("renteaseProperties");
+
+        if (!savedProperties) {
+            return [];
+        }
+
+        try {
+
+            const properties =
+                JSON.parse(savedProperties);
+
+            return Array.isArray(properties)
+                ? properties
+                : [];
+
+        } catch (error) {
+
+            console.error(
+                "Error loading dashboard properties:",
+                error
+            );
+
+            return [];
+        }
+    }
+
+    function updateDashboard() {
+
+        const properties =
+            getOwnerProperties();
+
+        // ------------------------------
+        // TOTAL PROPERTIES
+        // ------------------------------
+
+        if (totalPropertiesElement) {
+
+            totalPropertiesElement.textContent =
+                properties.length;
+        }
+
+        // ------------------------------
+        // MONTHLY RENT
+        // ------------------------------
+
+        const totalRent =
+            properties.reduce(
+                function (total, property) {
+
+                    const rent =
+                        Number(property.rent);
+
+                    return total +
+                        (Number.isFinite(rent)
+                            ? rent
+                            : 0);
+
+                },
+                0
+            );
+
+        if (monthlyRentElement) {
+
+            monthlyRentElement.textContent =
+                `₹${totalRent.toLocaleString("en-IN")}`;
+        }
+
+        // ------------------------------
+        // PROPERTY PREVIEW
+        // ------------------------------
+
+        if (!dashboardPropertyPreview) {
+            return;
+        }
+
+        if (properties.length === 0) {
+
+            dashboardPropertyPreview.innerHTML = `
+                <div class="dashboard-property-empty">
+                    <p>No properties added yet.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        // Show latest 3 properties
+        const previewProperties =
+            properties.slice(-3).reverse();
+
+        dashboardPropertyPreview.innerHTML =
+            previewProperties.map(
+                function (property) {
+
+                    const rent =
+                        Number(property.rent);
+
+                    const rentText =
+                        Number.isFinite(rent)
+                            ? `₹${rent.toLocaleString("en-IN")}`
+                            : "Rent unavailable";
+
+                    return `
+                        <div class="owner-property-item">
+
+                            <div>
+
+                                <h3>
+                                    ${property.title || "Untitled Property"}
+                                </h3>
+
+                                <p>
+                                    📍 ${property.location || "Location unavailable"}
+                                </p>
+
+                                <span class="vacant">
+                                    Available
+                                </span>
+
+                            </div>
+
+                            <strong>
+                                ${rentText}
+                            </strong>
+
+                        </div>
+                    `;
+
+                }
+            ).join("");
+    }
+
+    // Initial dashboard load
+    updateDashboard();
+
+    // Allow other dashboard code to refresh it
+    window.refreshOwnerDashboard =
+        updateDashboard;
+
+})();
 
 /* =========================================
    DAY 38 - TENANT APPLICATIONS DASHBOARD
@@ -2013,4 +2189,323 @@ if (ownerPropertyList) {
     }
 
     loadTenantApplications();
+})();
+// =========================================
+// DAY 39 - OWNER APPLICATION MANAGEMENT
+// =========================================
+
+(function initOwnerApplicationsDashboard() {
+    const applicationsList = document.querySelector(
+        "#ownerApplicationsList"
+    );
+
+    // Run only on Owner Dashboard
+    if (!applicationsList) return;
+
+    const API_URL = "http://localhost:5000";
+    const messageElement = document.querySelector(
+        "#ownerApplicationsMessage"
+    );
+    const refreshButton = document.querySelector(
+        "#refreshOwnerApplications"
+    );
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            const entities = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            };
+
+            return entities[char];
+        });
+    }
+
+    // Fetch applications belonging to the logged-in owner
+    async function loadOwnerApplications() {
+        const token = localStorage.getItem("renteaseToken");
+
+        let user = null;
+
+        try {
+            user = JSON.parse(
+                localStorage.getItem("renteaseUser") || "null"
+            );
+        } catch (error) {
+            user = null;
+        }
+
+        if (!token) {
+            messageElement.textContent =
+                "Please log in as an owner to view applications.";
+            applicationsList.innerHTML = "";
+            return;
+        }
+
+        const role = String(user?.role || "").toLowerCase();
+
+        if (!user || !["owner", "property owner"].includes(role)) {
+            messageElement.textContent =
+                "This section is available to owner accounts only.";
+            applicationsList.innerHTML = "";
+            return;
+        }
+
+        try {
+            if (refreshButton) refreshButton.disabled = true;
+
+            messageElement.textContent =
+                "Loading rental applications...";
+
+            applicationsList.innerHTML = "";
+
+            const response = await fetch(
+                `${API_URL}/api/owner/applications`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message || "Failed to load applications."
+                );
+            }
+
+            const applications = Array.isArray(data.applications)
+                ? data.applications
+                : [];
+
+            renderOwnerApplications(applications);
+
+            messageElement.textContent =
+                `${applications.length} rental application(s) found.`;
+
+        } catch (error) {
+            console.error("Owner applications error:", error);
+
+            messageElement.textContent = error.message;
+            applicationsList.innerHTML = "";
+
+        } finally {
+            if (refreshButton) refreshButton.disabled = false;
+        }
+    }
+
+    // Render application cards
+    function renderOwnerApplications(applications) {
+        if (!applications.length) {
+            applicationsList.innerHTML = `
+                <div class="owner-application-empty">
+                    <h3>No rental applications yet</h3>
+                    <p>Applications from tenants will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        applicationsList.innerHTML = applications.map(
+            function (application) {
+                const property = application.property || {};
+                const tenant = application.tenant || {};
+
+                const status = String(
+                    application.status || "pending"
+                ).toLowerCase();
+
+                const allowedStatuses = [
+                    "pending",
+                    "approved",
+                    "rejected"
+                ];
+
+                const safeStatus = allowedStatuses.includes(status)
+                    ? status
+                    : "unknown";
+
+                const rent = Number(property.rent);
+
+                const rentText = Number.isFinite(rent)
+                    ? `₹${rent.toLocaleString("en-IN")}/month`
+                    : "Rent not available";
+
+                return `
+                    <article class="owner-application-item">
+                        <div class="owner-application-header">
+                            <h3>
+                                ${escapeHTML(
+                                    property.title ||
+                                    "Property details unavailable"
+                                )}
+                            </h3>
+
+                            <span class="application-status status-${safeStatus}">
+                                ${escapeHTML(
+                                    safeStatus.charAt(0).toUpperCase() +
+                                    safeStatus.slice(1)
+                                )}
+                            </span>
+                        </div>
+
+                        <p>
+                            <strong>Location:</strong>
+                            ${escapeHTML(property.location || "Not available")}
+                        </p>
+
+                        <p>
+                            <strong>Property type:</strong>
+                            ${escapeHTML(property.type || "Not specified")}
+                        </p>
+
+                        <p>
+                            <strong>Monthly rent:</strong>
+                            ${escapeHTML(rentText)}
+                        </p>
+
+                        <p>
+                            <strong>Tenant:</strong>
+                            ${escapeHTML(tenant.name || "Tenant")}
+                        </p>
+
+                        <p>
+                            <strong>Tenant email:</strong>
+                            ${escapeHTML(tenant.email || "Not available")}
+                        </p>
+
+                        <p>
+                            <strong>Application message:</strong>
+                            ${escapeHTML(application.message || "No message provided")}
+                        </p>
+
+                        <div class="owner-application-actions">
+                            <button
+                                type="button"
+                                class="owner-approve-btn"
+                                data-application-id="${escapeHTML(application._id)}"
+                                data-status="approved"
+                                ${!application._id ? "disabled" : ""}
+                            >
+                                Approve
+                            </button>
+
+                            <button
+                                type="button"
+                                class="owner-reject-btn"
+                                data-application-id="${escapeHTML(application._id)}"
+                                data-status="rejected"
+                                ${!application._id ? "disabled" : ""}
+                            >
+                                Reject
+                            </button>
+                        </div>
+                    </article>
+                `;
+            }
+        ).join("");
+    }
+
+    // Handle Approve / Reject clicks
+    applicationsList.addEventListener("click", async function (event) {
+        const button = event.target.closest(
+            "button[data-application-id][data-status]"
+        );
+
+        if (!button || button.disabled) return;
+
+        const applicationId = button.dataset.applicationId;
+        const status = button.dataset.status;
+
+        if (!["approved", "rejected"].includes(status)) return;
+
+        const confirmed = window.confirm(
+            `Are you sure you want to ${status} this application?`
+        );
+
+        if (!confirmed) return;
+
+        const token = localStorage.getItem("renteaseToken");
+
+        if (!token) {
+            messageElement.textContent =
+                "Please log in again to update the application.";
+            return;
+        }
+
+        try {
+            button.disabled = true;
+
+            messageElement.textContent =
+                `Updating application to ${status}...`;
+
+            const response = await fetch(
+                `${API_URL}/api/applications/${encodeURIComponent(applicationId)}/status`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: status })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message || "Failed to update application."
+                );
+            }
+
+            messageElement.textContent =
+                data.message || `Application ${status} successfully.`;
+
+            // Reload the list to display the latest status
+            await loadOwnerApplications();
+
+        } catch (error) {
+            console.error("Application status update error:", error);
+            messageElement.textContent = error.message;
+            button.disabled = false;
+        }
+    });
+
+    if (refreshButton) {
+        refreshButton.addEventListener(
+            "click",
+            loadOwnerApplications
+        );
+    }
+
+    // Initial load
+    loadOwnerApplications();
+})();
+// Owner Dashboard: Quick Add Property action
+(function connectQuickAddPropertyButton() {
+    const button = document.querySelector("#quickAddPropertyBtn");
+    const formSection = document.querySelector("#add-property-section");
+    const titleInput = document.querySelector("#propertyTitle");
+
+    if (!button || !formSection) return;
+
+    button.addEventListener("click", function () {
+        formSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        if (titleInput) {
+            window.setTimeout(function () {
+                titleInput.focus({ preventScroll: true });
+            }, 400);
+        }
+    });
 })();

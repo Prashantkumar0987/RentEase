@@ -93,7 +93,7 @@
 
                     <p>Total Properties</p>
 
-                    <h2>6</h2>
+                    <h2 id="totalPropertiesCount">0</h2>
 
                 </div>
 
@@ -129,7 +129,7 @@
 
                     <p>Monthly Rent</p>
 
-                    <h2>₹54,000</h2>
+                    <h2 id="monthlyRentTotal">₹0</h2>
 
                 </div>
 
@@ -164,8 +164,12 @@
 
             <!-- Properties -->
 
-            <div class="owner-card owner-properties-card">
-
+            <div
+                id="dashboardPropertyPreview"
+                class="owner-dashboard-property-preview"
+            >
+                <p>Loading properties...</p>
+            </div>
                 <div class="owner-card-header">
 
                     <h2>
@@ -426,7 +430,11 @@
 
                 <div class="owner-quick-actions">
 
-                    <button class="owner-quick-action">
+                    <button
+                        type="button"
+                        class="owner-quick-action"
+                        id="quickAddPropertyBtn"
+                    >
                         ➕ Add Property
                     </button>
 
@@ -448,71 +456,115 @@
 
 
         </section>
-        <section class="add-property-section">
+        <!-- DAY 39: OWNER RENTAL APPLICATIONS -->
+        <section class="owner-card owner-applications-section">
 
-            <h2>Add New Property</h2>
-            <section class="my-properties-crud">
-                <h2>Manage My Properties</h2>
+            <div class="owner-card-header">
+                <h2>📋 Manage Rental Applications</h2>
 
-                <div id="ownerPropertyList"></div>
-            </section>
-
-            <form id="propertyForm">
-
-                <input
-                    type="text"
-                    id="propertyTitle"
-                    placeholder="Property Title"
+                <button
+                    type="button"
+                    id="refreshOwnerApplications"
+                    class="owner-action-btn"
                 >
-
-                <input
-                    type="text"
-                    id="propertyLocation"
-                    placeholder="Location"
-                >
-
-                <select id="propertyType">
-
-                    <option value="">Select Property Type</option>
-
-                    <option value="Apartment">
-                        Apartment
-                    </option>
-
-                    <option value="House">
-                        House
-                    </option>
-
-                    <option value="PG">
-                        PG
-                    </option>
-
-                    <option value="Room">
-                        Room
-                    </option>
-
-                </select>
-
-                <input
-                    type="number"
-                    id="propertyRent"
-                    placeholder="Monthly Rent"
-                >
-
-                <input
-                    type="text"
-                    id="propertyImage"
-                    placeholder="Image URL"
-                >
-
-                <button type="submit">
-                    Add Property
+                    Refresh Applications
                 </button>
+            </div>
 
+            <p id="ownerApplicationsMessage" role="status">
+                Rental applications will appear here.
+            </p>
+
+            <div id="ownerApplicationsList">
+                <!-- Applications will be loaded from the backend -->
+            </div>
+
+        </section>
+       
+<!-- MANAGE MY PROPERTIES -->
+        <section
+            class="my-properties-crud owner-card"
+            id="my-properties-section"
+        >
+            <div class="owner-card-header">
+                <h2>🏠 Manage My Properties</h2>
+                <span class="owner-section-label">Your listings</span>
+            </div>
+
+            <div id="ownerPropertyList">
+                <!-- Existing JavaScript renders properties here -->
+            </div>
+        </section>
+
+        <!-- ADD PROPERTY -->
+        <section
+            class="add-property-section owner-card"
+            id="add-property-section"
+        >
+            <div class="owner-card-header">
+                <h2>➕ Add New Property</h2>
+            </div>
+
+            <p class="owner-form-description">
+                Enter your property details to add a new listing.
+            </p>
+
+            <form id="propertyForm" class="owner-property-form">
+                <div class="owner-form-field">
+                    <label for="propertyTitle">Property Title</label>
+                    <input
+                        type="text"
+                        id="propertyTitle"
+                        placeholder="e.g. Modern 2BHK Apartment"
+                    >
+                </div>
+
+                <div class="owner-form-field">
+                    <label for="propertyLocation">Location</label>
+                    <input
+                        type="text"
+                        id="propertyLocation"
+                        placeholder="e.g. Kolkata"
+                    >
+                </div>
+
+                <div class="owner-form-field">
+                    <label for="propertyType">Property Type</label>
+                    <select id="propertyType">
+                        <option value="">Select Property Type</option>
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                        <option value="PG">PG</option>
+                        <option value="Room">Room</option>
+                    </select>
+                </div>
+
+                <div class="owner-form-field">
+                    <label for="propertyRent">Monthly Rent (₹)</label>
+                    <input
+                        type="number"
+                        id="propertyRent"
+                        placeholder="e.g. 12000"
+                    >
+                </div>
+
+                <div class="owner-form-field owner-form-full">
+                    <label for="propertyImage">Property Image URL</label>
+                    <input
+                        type="text"
+                        id="propertyImage"
+                        placeholder="Paste an image URL (optional)"
+                    >
+                </div>
+
+                <div class="owner-form-full">
+                    <button type="submit" class="owner-submit-property">
+                        Add Property
+                    </button>
+                </div>
             </form>
 
-            <p id="propertyMessage"></p>
-
+            <p id="propertyMessage" role="status" aria-live="polite"></p>
         </section>
 
     </main>
