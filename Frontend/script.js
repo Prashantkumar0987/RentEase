@@ -1255,6 +1255,8 @@ if (propertyForm) {
                 document.querySelector("#propertyImage")
                     .value
                     .trim();
+            const status =
+                 document.querySelector("#propertyStatus").value;       
 
 
             if (title === "") {
@@ -1324,7 +1326,9 @@ if (propertyForm) {
 
                 rent: Number(rent),
 
-                image: image || defaultImage
+                image: image || defaultImage,
+
+                status: status
 
             };
 
@@ -1499,6 +1503,10 @@ function displayOwnerProperties() {
                     ₹${property.rent.toLocaleString("en-IN")}
                     / month
                 </p>
+                <p>
+                    🔑 Status:
+                    ${property.status || "Available"}
+                </p>
 
 
                 <button
@@ -1627,6 +1635,33 @@ function editProperty(propertyId) {
         return;
 
     }
+    const newStatus =
+        prompt(
+            "Enter property status (Available/Occupied):",
+            property.status || "Available"
+        );
+
+    if (newStatus === null) {
+
+        return;
+
+    }
+
+    const normalizedStatus =
+        newStatus.trim().toLowerCase();
+
+    if (
+        normalizedStatus !== "available" &&
+        normalizedStatus !== "occupied"
+    ) {
+
+        alert(
+            "Status must be Available or Occupied."
+        );
+
+        return;
+
+    }
 
 
     if (
@@ -1663,6 +1698,11 @@ function editProperty(propertyId) {
 
     property.rent =
         Number(newRent);
+
+    property.status =
+        normalizedStatus === "occupied"
+            ? "Occupied"
+            : "Available";
 
 
     localStorage.setItem(
@@ -1767,6 +1807,9 @@ if (ownerPropertyList) {
     const monthlyRentElement =
         document.querySelector("#monthlyRentTotal");
 
+    const vacantPropertiesElement =
+        document.querySelector("#vacantPropertiesCount");
+
     const dashboardPropertyPreview =
         document.querySelector("#dashboardPropertyPreview");
 
@@ -1774,6 +1817,7 @@ if (ownerPropertyList) {
     if (
         !totalPropertiesElement &&
         !monthlyRentElement &&
+        !vacantPropertiesElement &&
         !dashboardPropertyPreview
     ) {
         return;
@@ -1850,6 +1894,28 @@ if (ownerPropertyList) {
         }
 
         // ------------------------------
+// VACANT PROPERTIES
+// ------------------------------
+
+        const vacantProperties =
+            properties.filter(function (property) {
+
+                return (
+                    String(
+                        property.status || "Available"
+                    ).toLowerCase() === "available"
+                );
+
+            }).length;
+
+        if (vacantPropertiesElement) {
+
+            vacantPropertiesElement.textContent =
+                vacantProperties;
+
+        }
+
+        // ------------------------------
         // PROPERTY PREVIEW
         // ------------------------------
 
@@ -1898,7 +1964,7 @@ if (ownerPropertyList) {
                                 </p>
 
                                 <span class="vacant">
-                                    Available
+                                   ${property.status || "Available"}
                                 </span>
 
                             </div>
@@ -2508,4 +2574,175 @@ if (ownerPropertyList) {
             }, 400);
         }
     });
+})();
+// ==========================================
+// DAY 40: OWNER DASHBOARD DATA SYNC
+// ==========================================
+
+(function syncOwnerDashboardData() {
+
+    const totalPropertiesElement =
+        document.querySelector("#totalPropertiesCount");
+
+    const monthlyRentElement =
+        document.querySelector("#monthlyRentTotal");
+
+    const dashboardPropertyPreview =
+        document.querySelector("#dashboardPropertyPreview");
+
+    // Dashboard elements nahi hain to kuch mat karo
+    if (
+        !totalPropertiesElement &&
+        !monthlyRentElement &&
+        !dashboardPropertyPreview
+    ) {
+        return;
+    }
+
+    // Get properties from localStorage
+    function getOwnerProperties() {
+
+        const savedProperties =
+            localStorage.getItem("renteaseProperties");
+
+        if (!savedProperties) {
+            return [];
+        }
+
+        try {
+
+            const properties = JSON.parse(savedProperties);
+
+            return Array.isArray(properties)
+                ? properties
+                : [];
+
+        } catch (error) {
+
+            console.error(
+                "Error loading dashboard properties:",
+                error
+            );
+
+            return [];
+        }
+    }
+
+    // Update dashboard
+    function updateDashboard() {
+
+        const properties = getOwnerProperties();
+
+        // -------------------------------
+        // TOTAL PROPERTIES
+        // -------------------------------
+
+        if (totalPropertiesElement) {
+
+            totalPropertiesElement.textContent =
+                properties.length;
+        }
+
+
+        // -------------------------------
+        // TOTAL MONTHLY RENT
+        // -------------------------------
+
+        const totalRent = properties.reduce(
+            function(total, property) {
+
+                const rent = Number(property.rent);
+
+                return total +
+                    (Number.isFinite(rent) ? rent : 0);
+
+            },
+            0
+        );
+
+        if (monthlyRentElement) {
+
+            monthlyRentElement.textContent =
+                `₹${totalRent.toLocaleString("en-IN")}`;
+        }
+
+
+        // -------------------------------
+        // PROPERTY PREVIEW
+        // -------------------------------
+
+        if (!dashboardPropertyPreview) {
+            return;
+        }
+
+
+        // No properties
+        if (!properties.length) {
+
+            dashboardPropertyPreview.innerHTML = `
+                <div class="dashboard-property-empty">
+                    <p>No properties added yet.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        // Show latest 3 properties
+        const previewProperties =
+            properties.slice(-3).reverse();
+
+
+        dashboardPropertyPreview.innerHTML =
+            previewProperties.map(
+                function(property) {
+
+                    const rent =
+                        Number(property.rent);
+
+                    const rentText =
+                        Number.isFinite(rent)
+                            ? `₹${rent.toLocaleString("en-IN")}`
+                            : "Rent unavailable";
+
+
+                    return `
+                        <div class="owner-property-item">
+
+                            <div>
+
+                                <h3>
+                                    ${property.title || "Untitled Property"}
+                                </h3>
+
+                                <p>
+                                    📍 ${property.location || "Location unavailable"}
+                                </p>
+
+                                <span class="vacant">
+                                    Available
+                                </span>
+
+                            </div>
+
+                            <strong>
+                                ${rentText}
+                            </strong>
+
+                        </div>
+                    `;
+                }
+            ).join("");
+    }
+
+
+    // Initial dashboard update
+    updateDashboard();
+
+
+    // Make function available to other CRUD functions
+    window.refreshOwnerDashboard =
+        updateDashboard;
+
 })();

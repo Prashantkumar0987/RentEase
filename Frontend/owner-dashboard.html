@@ -20,7 +20,9 @@
 <body>
 
 
-    <!-- Navbar -->
+    <!-- ==========================================
+         NAVBAR
+    =========================================== -->
 
     <nav class="navbar">
 
@@ -30,9 +32,13 @@
 
         <div class="nav-links">
 
-            <a href="index.html">Home</a>
+            <a href="index.html">
+                Home
+            </a>
 
-            <a href="properties.html">Properties</a>
+            <a href="properties.html">
+                Properties
+            </a>
 
             <a
                 href="owner-dashboard.html"
@@ -50,13 +56,16 @@
     </nav>
 
 
-
-    <!-- Main Dashboard -->
+    <!-- ==========================================
+         MAIN DASHBOARD
+    =========================================== -->
 
     <main class="owner-dashboard-container">
 
 
-        <!-- Welcome Section -->
+        <!-- ==========================================
+             WELCOME SECTION
+        =========================================== -->
 
         <section class="owner-welcome">
 
@@ -77,11 +86,14 @@
         </section>
 
 
-
-        <!-- Statistics -->
+        <!-- ==========================================
+             STATISTICS
+        =========================================== -->
 
         <section class="owner-stats">
 
+
+            <!-- Total Properties -->
 
             <div class="owner-stat-card">
 
@@ -91,15 +103,20 @@
 
                 <div>
 
-                    <p>Total Properties</p>
+                    <p>
+                        Total Properties
+                    </p>
 
-                    <h2 id="totalPropertiesCount">0</h2>
+                    <h2 id="totalPropertiesCount">
+                        0
+                    </h2>
 
                 </div>
 
             </div>
 
 
+            <!-- Total Tenants -->
 
             <div class="owner-stat-card">
 
@@ -109,15 +126,20 @@
 
                 <div>
 
-                    <p>Total Tenants</p>
+                    <p>
+                        Total Tenants
+                    </p>
 
-                    <h2>4</h2>
+                    <h2>
+                        4
+                    </h2>
 
                 </div>
 
             </div>
 
 
+            <!-- Monthly Rent -->
 
             <div class="owner-stat-card">
 
@@ -127,15 +149,20 @@
 
                 <div>
 
-                    <p>Monthly Rent</p>
+                    <p>
+                        Monthly Rent
+                    </p>
 
-                    <h2 id="monthlyRentTotal">₹0</h2>
+                    <h2 id="monthlyRentTotal">
+                        ₹0
+                    </h2>
 
                 </div>
 
             </div>
 
 
+            <!-- Vacant Properties -->
 
             <div class="owner-stat-card">
 
@@ -145,9 +172,13 @@
 
                 <div>
 
-                    <p>Vacant Properties</p>
+                    <p>
+                        Vacant Properties
+                    </p>
 
-                    <h2>2</h2>
+                    <h2 id="vacantPropertiesCount">
+                        0
+                    </h2>
 
                 </div>
 
@@ -156,20 +187,19 @@
         </section>
 
 
-
-        <!-- Dashboard Grid -->
+        <!-- ==========================================
+             DASHBOARD GRID
+        =========================================== -->
 
         <section class="owner-dashboard-grid">
 
 
-            <!-- Properties -->
+            <!-- ======================================
+                 MY PROPERTIES PREVIEW
+            ======================================= -->
 
-            <div
-                id="dashboardPropertyPreview"
-                class="owner-dashboard-property-preview"
-            >
-                <p>Loading properties...</p>
-            </div>
+            <div class="owner-card">
+
                 <div class="owner-card-header">
 
                     <h2>
@@ -183,87 +213,23 @@
                 </div>
 
 
-                <div class="owner-property-item">
+                <div
+                    id="dashboardPropertyPreview"
+                    class="owner-dashboard-property-preview"
+                >
 
-                    <div>
-
-                        <h3>
-                            Modern 2BHK Apartment
-                        </h3>
-
-                        <p>
-                            📍 Kolkata
-                        </p>
-
-                        <span class="occupied">
-                            Occupied
-                        </span>
-
-                    </div>
-
-                    <strong>
-                        ₹15,000
-                    </strong>
-
-                </div>
-
-
-
-                <div class="owner-property-item">
-
-                    <div>
-
-                        <h3>
-                            Premium Family House
-                        </h3>
-
-                        <p>
-                            📍 Haldia
-                        </p>
-
-                        <span class="occupied">
-                            Occupied
-                        </span>
-
-                    </div>
-
-                    <strong>
-                        ₹12,000
-                    </strong>
-
-                </div>
-
-
-
-                <div class="owner-property-item">
-
-                    <div>
-
-                        <h3>
-                            Luxury 3BHK Apartment
-                        </h3>
-
-                        <p>
-                            📍 New Town
-                        </p>
-
-                        <span class="vacant">
-                            Vacant
-                        </span>
-
-                    </div>
-
-                    <strong>
-                        ₹20,000
-                    </strong>
+                    <p>
+                        Loading properties...
+                    </p>
 
                 </div>
 
             </div>
 
 
-
-            <!-- Rent Collection -->
+            <!-- ======================================
+                 RENT COLLECTION
+            ======================================= -->
 
             <div class="owner-card">
 
@@ -329,8 +295,9 @@
             </div>
 
 
-
-            <!-- Maintenance -->
+            <!-- ======================================
+                 MAINTENANCE
+            ======================================= -->
 
             <div class="owner-card">
 
@@ -368,7 +335,6 @@
                 </div>
 
 
-
                 <div class="owner-maintenance-item">
 
                     <div>
@@ -388,7 +354,6 @@
                     </span>
 
                 </div>
-
 
 
                 <div class="owner-maintenance-item">
@@ -414,8 +379,9 @@
             </div>
 
 
-
-            <!-- Quick Actions -->
+            <!-- ======================================
+                 QUICK ACTIONS
+            ======================================= -->
 
             <div class="owner-card">
 
@@ -438,15 +404,27 @@
                         ➕ Add Property
                     </button>
 
-                    <button class="owner-quick-action">
+
+                    <button
+                        type="button"
+                        class="owner-quick-action"
+                    >
                         👥 Manage Tenants
                     </button>
 
-                    <button class="owner-quick-action">
+
+                    <button
+                        type="button"
+                        class="owner-quick-action"
+                    >
                         💰 Rent Records
                     </button>
 
-                    <button class="owner-quick-action">
+
+                    <button
+                        type="button"
+                        class="owner-quick-action"
+                    >
                         🔧 Maintenance
                     </button>
 
@@ -454,13 +432,23 @@
 
             </div>
 
-
         </section>
-        <!-- DAY 39: OWNER RENTAL APPLICATIONS -->
-        <section class="owner-card owner-applications-section">
+
+
+        <!-- ==========================================
+             DAY 39 - OWNER RENTAL APPLICATIONS
+        =========================================== -->
+
+        <section
+            class="owner-card owner-applications-section"
+        >
 
             <div class="owner-card-header">
-                <h2>📋 Manage Rental Applications</h2>
+
+                <h2>
+                    📋 Manage Rental Applications
+                </h2>
+
 
                 <button
                     type="button"
@@ -469,107 +457,249 @@
                 >
                     Refresh Applications
                 </button>
+
             </div>
 
-            <p id="ownerApplicationsMessage" role="status">
+
+            <p
+                id="ownerApplicationsMessage"
+                role="status"
+            >
                 Rental applications will appear here.
             </p>
 
+
             <div id="ownerApplicationsList">
-                <!-- Applications will be loaded from the backend -->
+
+                <!-- Applications loaded from backend -->
+
             </div>
 
         </section>
-       
-<!-- MANAGE MY PROPERTIES -->
+
+
+        <!-- ==========================================
+             MANAGE MY PROPERTIES
+        =========================================== -->
+
         <section
             class="my-properties-crud owner-card"
             id="my-properties-section"
         >
+
             <div class="owner-card-header">
-                <h2>🏠 Manage My Properties</h2>
-                <span class="owner-section-label">Your listings</span>
+
+                <h2>
+                    🏠 Manage My Properties
+                </h2>
+
+                <span class="owner-section-label">
+                    Your listings
+                </span>
+
             </div>
+
 
             <div id="ownerPropertyList">
-                <!-- Existing JavaScript renders properties here -->
+
+                <!-- JavaScript renders properties here -->
+
             </div>
+
         </section>
 
-        <!-- ADD PROPERTY -->
+
+        <!-- ==========================================
+             ADD PROPERTY
+        =========================================== -->
+
         <section
             class="add-property-section owner-card"
             id="add-property-section"
         >
+
             <div class="owner-card-header">
-                <h2>➕ Add New Property</h2>
+
+                <h2>
+                    ➕ Add New Property
+                </h2>
+
             </div>
 
+
             <p class="owner-form-description">
-                Enter your property details to add a new listing.
+
+                Enter your property details to add
+                a new listing.
+
             </p>
 
-            <form id="propertyForm" class="owner-property-form">
+
+            <form
+                id="propertyForm"
+                class="owner-property-form"
+            >
+
+
+                <!-- Property Title -->
+
                 <div class="owner-form-field">
-                    <label for="propertyTitle">Property Title</label>
+
+                    <label for="propertyTitle">
+                        Property Title
+                    </label>
+
                     <input
                         type="text"
                         id="propertyTitle"
                         placeholder="e.g. Modern 2BHK Apartment"
                     >
+
                 </div>
 
+
+                <!-- Location -->
+
                 <div class="owner-form-field">
-                    <label for="propertyLocation">Location</label>
+
+                    <label for="propertyLocation">
+                        Location
+                    </label>
+
                     <input
                         type="text"
                         id="propertyLocation"
                         placeholder="e.g. Kolkata"
                     >
+
                 </div>
 
+
+                <!-- Property Type -->
+
                 <div class="owner-form-field">
-                    <label for="propertyType">Property Type</label>
+
+                    <label for="propertyType">
+                        Property Type
+                    </label>
+
                     <select id="propertyType">
-                        <option value="">Select Property Type</option>
-                        <option value="Apartment">Apartment</option>
-                        <option value="House">House</option>
-                        <option value="PG">PG</option>
-                        <option value="Room">Room</option>
+
+                        <option value="">
+                            Select Property Type
+                        </option>
+
+                        <option value="Apartment">
+                            Apartment
+                        </option>
+
+                        <option value="House">
+                            House
+                        </option>
+
+                        <option value="PG">
+                            PG
+                        </option>
+
+                        <option value="Room">
+                            Room
+                        </option>
+
                     </select>
+
                 </div>
 
+
+                <!-- Monthly Rent -->
+
                 <div class="owner-form-field">
-                    <label for="propertyRent">Monthly Rent (₹)</label>
+
+                    <label for="propertyRent">
+                        Monthly Rent (₹)
+                    </label>
+
                     <input
                         type="number"
                         id="propertyRent"
                         placeholder="e.g. 12000"
                     >
+
                 </div>
 
+
+                <!-- ==================================
+                     PROPERTY STATUS
+                =================================== -->
+
+                <div class="owner-form-field">
+
+                    <label for="propertyStatus">
+                        Property Status
+                    </label>
+
+                    <select id="propertyStatus">
+
+                        <option value="Available">
+                            Available
+                        </option>
+
+                        <option value="Occupied">
+                            Occupied
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Property Image -->
+
                 <div class="owner-form-field owner-form-full">
-                    <label for="propertyImage">Property Image URL</label>
+
+                    <label for="propertyImage">
+                        Property Image URL
+                    </label>
+
                     <input
                         type="text"
                         id="propertyImage"
                         placeholder="Paste an image URL (optional)"
                     >
+
                 </div>
+
+
+                <!-- Submit -->
 
                 <div class="owner-form-full">
-                    <button type="submit" class="owner-submit-property">
+
+                    <button
+                        type="submit"
+                        class="owner-submit-property"
+                    >
                         Add Property
                     </button>
+
                 </div>
+
             </form>
 
-            <p id="propertyMessage" role="status" aria-live="polite"></p>
+
+            <p
+                id="propertyMessage"
+                role="status"
+                aria-live="polite"
+            ></p>
+
         </section>
+
 
     </main>
 
 
+    <!-- ==========================================
+         JAVASCRIPT
+    =========================================== -->
 
     <script src="script.js"></script>
 
