@@ -501,13 +501,15 @@ app.post(
 
         try {
 
-            const { title, location, type, rent } = req.body;
+            const { title, location, type, rent , image , status } = req.body;
 
             const property = await Property.create({
                 title: title,
                 location: location,
                 type: type,
                 rent: rent,
+                image: image || "",
+                status: status || "Available",
                 owner: req.user.id
             });
 

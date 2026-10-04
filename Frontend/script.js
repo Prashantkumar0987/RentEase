@@ -1221,17 +1221,16 @@ const propertyMessage =
 
 
 // ======================================================
-// CREATE PROPERTY
+// CREATE PROPERTY - BACKEND
 // ======================================================
 
 if (propertyForm) {
 
     propertyForm.addEventListener(
         "submit",
-        function (event) {
+        async function (event) {
 
             event.preventDefault();
-
 
             const title =
                 document.querySelector("#propertyTitle")
@@ -1255,9 +1254,19 @@ if (propertyForm) {
                 document.querySelector("#propertyImage")
                     .value
                     .trim();
-            const status =
-                 document.querySelector("#propertyStatus").value;       
 
+            const statusElement =
+                document.querySelector("#propertyStatus");
+
+            const status =
+                statusElement
+                    ? statusElement.value
+                    : "Available";
+
+
+            // ==========================================
+            // VALIDATION
+            // ==========================================
 
             if (title === "") {
 
@@ -1265,7 +1274,6 @@ if (propertyForm) {
                     "Please enter property title.";
 
                 return;
-
             }
 
 
@@ -1275,7 +1283,6 @@ if (propertyForm) {
                     "Please enter location.";
 
                 return;
-
             }
 
 
@@ -1285,7 +1292,6 @@ if (propertyForm) {
                     "Please select property type.";
 
                 return;
-
             }
 
 
@@ -1295,7 +1301,6 @@ if (propertyForm) {
                     "Please enter rent.";
 
                 return;
-
             }
 
 
@@ -1305,18 +1310,41 @@ if (propertyForm) {
                     "Rent must be greater than 0.";
 
                 return;
-
             }
 
 
+            // ==========================================
+            // GET JWT TOKEN
+            // ==========================================
+
+            const token =
+                localStorage.getItem(
+                    "renteaseToken"
+                );
+
+
+            if (!token) {
+
+                propertyMessage.textContent =
+                    "Please login as an owner first.";
+
+                return;
+            }
+
+
+            // ==========================================
             // DEFAULT IMAGE
+            // ==========================================
+
             const defaultImage =
                 "https://images.unsplash.com/photo-1564013799919-ab600027ffc6";
 
 
-            const newProperty = {
+            // ==========================================
+            // PROPERTY DATA
+            // ==========================================
 
-                id: Date.now(),
+            const propertyData = {
 
                 title: title,
 
@@ -1328,70 +1356,123 @@ if (propertyForm) {
 
                 image: image || defaultImage,
 
-                status: status
+                status: status || "Available"
 
             };
 
 
-            const savedProperties =
-                localStorage.getItem(
-                    "renteaseProperties"
-                );
+            // ==========================================
+            // SEND TO BACKEND
+            // ==========================================
+
+            try {
+
+                propertyMessage.textContent =
+                    "Adding property...";
 
 
-            let ownerProperties = [];
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/api/properties`,
+                        {
+                            method: "POST",
 
+                            headers: {
 
-            if (savedProperties) {
+                                "Content-Type":
+                                    "application/json",
 
-                try {
+                                "Authorization":
+                                    `Bearer ${token}`
 
-                    ownerProperties =
-                        JSON.parse(savedProperties);
+                            },
 
-                    if (!Array.isArray(ownerProperties)) {
-
-                        ownerProperties = [];
-
-                    }
-
-                } catch (error) {
-
-                    console.log(
-                        "Error reading properties:",
-                        error
+                            body:
+                                JSON.stringify(
+                                    propertyData
+                                )
+                        }
                     );
 
-                    ownerProperties = [];
+
+                const data =
+                    await response.json();
+
+
+                // ======================================
+                // HANDLE ERROR
+                // ======================================
+
+                if (!response.ok || !data.success) {
+
+                    propertyMessage.textContent =
+                        data.message ||
+                        "Failed to add property.";
+
+                    console.error(
+                        "Add property error:",
+                        data
+                    );
+
+                    return;
+                }
+
+
+                // ======================================
+                // SUCCESS
+                // ======================================
+
+                propertyMessage.textContent =
+                    "Property added successfully!";
+
+
+                propertyForm.reset();
+
+
+                // ======================================
+                // RELOAD OWNER PROPERTIES
+                // ======================================
+
+                if (
+                    typeof loadOwnerPropertiesFromAPI ===
+                    "function"
+                ) {
+
+                    await loadOwnerPropertiesFromAPI();
+
+                } else {
+
+                    displayOwnerProperties();
 
                 }
 
+
+                // ======================================
+                // REFRESH OWNER DASHBOARD
+                // ======================================
+
+                if (
+                    typeof refreshOwnerDashboard ===
+                    "function"
+                ) {
+
+                    refreshOwnerDashboard();
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Add property failed:",
+                    error
+                );
+
+
+                propertyMessage.textContent =
+                    "Unable to connect to backend.";
+
             }
-
-
-            ownerProperties.push(
-                newProperty
-            );
-
-
-            localStorage.setItem(
-                "renteaseProperties",
-                JSON.stringify(ownerProperties)
-            );
-
-
-            propertyMessage.textContent =
-                "Property added successfully!";
-
-
-            propertyForm.reset();
-
-
-            displayOwnerProperties();
-            if (window.refreshOwnerDashboard) {
-                window.refreshOwnerDashboard();
-            }
-            
 
         }
     );
@@ -1400,325 +1481,543 @@ if (propertyForm) {
 
 
 // ======================================================
-// READ - DISPLAY OWNER PROPERTIES
+// READ - DISPLAY OWNER PROPERTIES FROM BACKEND
+// ======================================================
+
+async function loadOwnerPropertiesFromAPI() {
+
+    if (!ownerPropertyList) {
+        return;
+    }
+
+    const token =
+        localStorage.getItem("renteaseToken");
+
+    // ==========================================
+    // CHECK LOGIN
+    // ==========================================
+
+    if (!token) {
+
+        ownerPropertyList.innerHTML =
+            "<p>Please login as an owner.</p>";
+
+        return;
+    }
+
+
+    // ==========================================
+    // LOADING
+    // ==========================================
+
+    ownerPropertyList.innerHTML =
+        "<p>Loading your properties...</p>";
+
+
+    try {
+
+        // ======================================
+        // GET OWNER PROPERTIES
+        // ======================================
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/api/owner/properties`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        // ======================================
+        // ERROR HANDLING
+        // ======================================
+
+        if (!response.ok || !data.success) {
+
+            if (response.status === 401) {
+
+                ownerPropertyList.innerHTML =
+                    "<p>Your session has expired. Please login again.</p>";
+
+                return;
+            }
+
+
+            if (response.status === 403) {
+
+                ownerPropertyList.innerHTML =
+                    "<p>Only owner accounts can view these properties.</p>";
+
+                return;
+            }
+
+
+            throw new Error(
+                data.message ||
+                "Failed to load properties."
+            );
+        }
+
+
+        // ======================================
+        // GET PROPERTY ARRAY
+        // ======================================
+
+        const ownerProperties =
+            Array.isArray(data.properties)
+                ? data.properties
+                : [];
+
+
+        // ======================================
+        // NO PROPERTIES
+        // ======================================
+
+        if (ownerProperties.length === 0) {
+
+            ownerPropertyList.innerHTML =
+                "<p>No properties added yet.</p>";
+
+            return;
+        }
+
+
+        // ======================================
+        // CLEAR OLD CONTENT
+        // ======================================
+
+        ownerPropertyList.innerHTML = "";
+
+
+        // ======================================
+        // DISPLAY PROPERTIES
+        // ======================================
+
+        ownerProperties.forEach(
+            function (property) {
+
+                const card =
+                    document.createElement("div");
+
+
+                card.classList.add(
+                    "owner-property-card"
+                );
+
+
+                // MongoDB ID
+                const propertyId =
+                    property._id;
+
+
+                // Default image
+                const propertyImage =
+                    property.image ||
+                    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6";
+
+
+                // Property status
+                const propertyStatus =
+                    property.status ||
+                    "Available";
+
+
+                card.innerHTML = `
+
+                    <img
+                        src="${propertyImage}"
+                        alt="${property.title}"
+                        onerror="
+                            this.onerror=null;
+                            this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6';
+                        "
+                    >
+
+                    <h3>
+                        ${property.title}
+                    </h3>
+
+                    <p>
+                        📍 ${property.location}
+                    </p>
+
+                    <p>
+                        🏠 ${property.type}
+                    </p>
+
+                    <p>
+                        ₹${Number(property.rent).toLocaleString("en-IN")}
+                        / month
+                    </p>
+
+                    <p>
+                        🔑 Status:
+                        ${propertyStatus}
+                    </p>
+
+
+                    <button
+                        type="button"
+                        onclick="editProperty('${propertyId}')"
+                    >
+                        Edit
+                    </button>
+
+
+                    <button
+                        type="button"
+                        onclick="deleteProperty('${propertyId}')"
+                    >
+                        Delete
+                    </button>
+
+                `;
+
+
+                ownerPropertyList.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Load owner properties error:",
+            error
+        );
+
+
+        ownerPropertyList.innerHTML = `
+
+            <p>
+                Unable to load properties from backend.
+            </p>
+
+            <small>
+                ${error.message}
+            </small>
+
+        `;
+
+    }
+
+}
+
+
+// ======================================================
+// BACKWARD COMPATIBILITY
 // ======================================================
 
 function displayOwnerProperties() {
 
-    if (!ownerPropertyList) {
-
-        return;
-
-    }
-
-
-    ownerPropertyList.innerHTML = "";
-
-
-    const savedProperties =
-        localStorage.getItem(
-            "renteaseProperties"
-        );
-
-
-    if (!savedProperties) {
-
-        ownerPropertyList.innerHTML =
-            "<p>No properties added yet.</p>";
-
-        return;
-
-    }
-
-
-    let ownerProperties = [];
-
-
-    try {
-
-        ownerProperties =
-            JSON.parse(savedProperties);
-
-    } catch (error) {
-
-        console.log(
-            "Error loading owner properties:",
-            error
-        );
-
-        ownerPropertyList.innerHTML =
-            "<p>Unable to load properties.</p>";
-
-        return;
-
-    }
-
-
-    if (
-        !Array.isArray(ownerProperties) ||
-        ownerProperties.length === 0
-    ) {
-
-        ownerPropertyList.innerHTML =
-            "<p>No properties added yet.</p>";
-
-        return;
-
-    }
-
-
-    ownerProperties.forEach(
-        function (property) {
-
-            const card =
-                document.createElement("div");
-
-
-            card.classList.add(
-                "owner-property-card"
-            );
-
-
-            card.innerHTML = `
-
-                <img
-                    src="${property.image}"
-                    alt="${property.title}"
-                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6';"
-                >
-
-                <h3>
-                    ${property.title}
-                </h3>
-
-                <p>
-                    📍 ${property.location}
-                </p>
-
-                <p>
-                    🏠 ${property.type}
-                </p>
-
-                <p>
-                    ₹${property.rent.toLocaleString("en-IN")}
-                    / month
-                </p>
-                <p>
-                    🔑 Status:
-                    ${property.status || "Available"}
-                </p>
-
-
-                <button
-                    type="button"
-                    onclick="editProperty(${property.id})"
-                >
-                    Edit
-                </button>
-
-
-                <button
-                    type="button"
-                    onclick="deleteProperty(${property.id})"
-                >
-                    Delete
-                </button>
-
-            `;
-
-
-            ownerPropertyList.appendChild(card);
-
-        }
-    );
+    loadOwnerPropertiesFromAPI();
 
 }
 
 
 // ======================================================
-// UPDATE PROPERTY
+// UPDATE PROPERTY - BACKEND
 // ======================================================
 
-function editProperty(propertyId) {
+async function editProperty(propertyId) {
 
-    const savedProperties =
-        localStorage.getItem(
-            "renteaseProperties"
-        );
+    const token =
+        localStorage.getItem("renteaseToken");
 
 
-    if (!savedProperties) {
+    // ==========================================
+    // CHECK LOGIN
+    // ==========================================
+
+    if (!token) {
+
+        alert("Please login as an owner.");
 
         return;
-
     }
 
 
-    let ownerProperties;
-
+    // ==========================================
+    // GET CURRENT PROPERTY FROM BACKEND
+    // ==========================================
 
     try {
 
-        ownerProperties =
-            JSON.parse(savedProperties);
+        const response =
+            await fetch(
+                `${API_BASE_URL}/api/properties/${propertyId}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            alert(
+                data.message ||
+                "Unable to load property."
+            );
+
+            return;
+        }
+
+
+        const property =
+            data.property;
+
+
+        // ======================================
+        // EDIT TITLE
+        // ======================================
+
+        const newTitle =
+            prompt(
+                "Enter property title:",
+                property.title || ""
+            );
+
+
+        if (newTitle === null) {
+
+            return;
+
+        }
+
+
+        // ======================================
+        // EDIT LOCATION
+        // ======================================
+
+        const newLocation =
+            prompt(
+                "Enter location:",
+                property.location || ""
+            );
+
+
+        if (newLocation === null) {
+
+            return;
+
+        }
+
+
+        // ======================================
+        // EDIT RENT
+        // ======================================
+
+        const newRent =
+            prompt(
+                "Enter monthly rent:",
+                property.rent || ""
+            );
+
+
+        if (newRent === null) {
+
+            return;
+
+        }
+
+
+        // ======================================
+        // EDIT STATUS
+        // ======================================
+
+        const currentStatus =
+            property.status ||
+            "Available";
+
+
+        const newStatus =
+            prompt(
+                "Enter status (Available / Occupied):",
+                currentStatus
+            );
+
+
+        if (newStatus === null) {
+
+            return;
+
+        }
+
+
+        // ======================================
+        // VALIDATION
+        // ======================================
+
+        if (
+            newTitle.trim() === "" ||
+            newLocation.trim() === "" ||
+            newRent.trim() === ""
+        ) {
+
+            alert(
+                "All fields are required."
+            );
+
+            return;
+        }
+
+
+        if (Number(newRent) <= 0) {
+
+            alert(
+                "Rent must be greater than 0."
+            );
+
+            return;
+        }
+
+
+        // ======================================
+        // NORMALIZE STATUS
+        // ======================================
+
+        const normalizedStatus =
+            newStatus.trim().toLowerCase() ===
+            "occupied"
+                ? "Occupied"
+                : "Available";
+
+
+        // ======================================
+        // UPDATE DATA
+        // ======================================
+
+        const updatedProperty = {
+
+            title:
+                newTitle.trim(),
+
+            location:
+                newLocation.trim(),
+
+            rent:
+                Number(newRent),
+
+            status:
+                normalizedStatus
+
+        };
+
+
+        // ======================================
+        // SEND PUT REQUEST
+        // ======================================
+
+        const updateResponse =
+            await fetch(
+                `${API_BASE_URL}/api/properties/${propertyId}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            updatedProperty
+                        )
+
+                }
+            );
+
+
+        const updateData =
+            await updateResponse.json();
+
+
+        // ======================================
+        // HANDLE ERROR
+        // ======================================
+
+        if (
+            !updateResponse.ok ||
+            !updateData.success
+        ) {
+
+            alert(
+                updateData.message ||
+                "Failed to update property."
+            );
+
+            console.error(
+                "Update property error:",
+                updateData
+            );
+
+            return;
+        }
+
+
+        // ======================================
+        // SUCCESS
+        // ======================================
+
+        alert(
+            "Property updated successfully!"
+        );
+
+
+        // ======================================
+        // RELOAD FROM MONGODB
+        // ======================================
+
+        await loadOwnerPropertiesFromAPI();
+
+
+        // ======================================
+        // REFRESH OWNER DASHBOARD
+        // ======================================
+
+        if (
+            typeof refreshOwnerDashboard ===
+            "function"
+        ) {
+
+            refreshOwnerDashboard();
+
+        }
+
 
     } catch (error) {
 
-        console.log(
-            "Error loading properties:",
+        console.error(
+            "Edit property error:",
             error
         );
 
-        return;
-
-    }
-
-
-    const property =
-        ownerProperties.find(
-            function (property) {
-
-                return property.id === propertyId;
-
-            }
-        );
-
-
-    if (!property) {
 
         alert(
-            "Property not found."
+            "Unable to connect to backend."
         );
 
-        return;
-
     }
-
-
-    const newTitle =
-        prompt(
-            "Enter property title:",
-            property.title
-        );
-
-
-    if (newTitle === null) {
-
-        return;
-
-    }
-
-
-    const newLocation =
-        prompt(
-            "Enter location:",
-            property.location
-        );
-
-
-    if (newLocation === null) {
-
-        return;
-
-    }
-
-
-    const newRent =
-        prompt(
-            "Enter monthly rent:",
-            property.rent
-        );
-
-
-    if (newRent === null) {
-
-        return;
-
-    }
-    const newStatus =
-        prompt(
-            "Enter property status (Available/Occupied):",
-            property.status || "Available"
-        );
-
-    if (newStatus === null) {
-
-        return;
-
-    }
-
-    const normalizedStatus =
-        newStatus.trim().toLowerCase();
-
-    if (
-        normalizedStatus !== "available" &&
-        normalizedStatus !== "occupied"
-    ) {
-
-        alert(
-            "Status must be Available or Occupied."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        newTitle.trim() === "" ||
-        newLocation.trim() === "" ||
-        newRent.trim() === ""
-    ) {
-
-        alert(
-            "All fields are required."
-        );
-
-        return;
-
-    }
-
-
-    if (Number(newRent) <= 0) {
-
-        alert(
-            "Rent must be greater than 0."
-        );
-
-        return;
-
-    }
-
-
-    property.title =
-        newTitle.trim();
-
-    property.location =
-        newLocation.trim();
-
-    property.rent =
-        Number(newRent);
-
-    property.status =
-        normalizedStatus === "occupied"
-            ? "Occupied"
-            : "Available";
-
-
-    localStorage.setItem(
-        "renteaseProperties",
-        JSON.stringify(ownerProperties)
-    );
-
-
-    displayOwnerProperties();
-    if (window.refreshOwnerDashboard) {
-        window.refreshOwnerDashboard();
-    }
-
-    alert(
-        "Property updated successfully!"
-    );
 
 }
 
@@ -1727,62 +2026,53 @@ function editProperty(propertyId) {
 // DELETE PROPERTY
 // ======================================================
 
-function deleteProperty(propertyId) {
+async function deleteProperty(propertyId) {
+    const token = localStorage.getItem("renteaseToken");
 
-    const savedProperties =
-        localStorage.getItem(
-            "renteaseProperties"
-        );
-
-
-    if (!savedProperties) {
-
+    if (!token) {
+        alert("Please login as an owner.");
         return;
-
     }
 
+    const confirmDelete = confirm(
+        "Are you sure you want to delete this property?"
+    );
 
-    let ownerProperties;
-
+    if (!confirmDelete) return;
 
     try {
-
-        ownerProperties =
-            JSON.parse(savedProperties);
-
-    } catch (error) {
-
-        console.log(
-            "Error deleting property:",
-            error
-        );
-
-        return;
-
-    }
-
-
-    ownerProperties =
-        ownerProperties.filter(
-            function (property) {
-
-                return property.id !== propertyId;
-
+        const response = await fetch(
+            `${API_BASE_URL}/api/properties/${propertyId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             }
         );
 
+        const data = await response.json();
 
-    localStorage.setItem(
-        "renteaseProperties",
-        JSON.stringify(ownerProperties)
-    );
+        if (!response.ok || !data.success) {
+            alert(data.message || "Failed to delete property.");
+            console.error("Delete property error:", data);
+            return;
+        }
 
+        alert("Property deleted successfully!");
 
-    displayOwnerProperties();
-    if (window.refreshOwnerDashboard) {
-        window.refreshOwnerDashboard();
+        // Reload properties from MongoDB
+        await loadOwnerPropertiesFromAPI();
+
+        // Refresh dashboard statistics
+        if (typeof refreshOwnerDashboard === "function") {
+            refreshOwnerDashboard();
+        }
+
+    } catch (error) {
+        console.error("Delete property error:", error);
+        alert("Unable to connect to backend.");
     }
-
 }
 
 
@@ -2744,5 +3034,266 @@ if (ownerPropertyList) {
     // Make function available to other CRUD functions
     window.refreshOwnerDashboard =
         updateDashboard;
+
+})();
+/* =========================================
+   DAY 41 - TENANT CURRENT PROPERTY
+========================================= */
+
+(function initTenantCurrentProperty() {
+
+    const propertyContent = document.querySelector(
+        "#currentPropertyContent"
+    );
+
+    const viewDetailsLink = document.querySelector(
+        "#currentPropertyViewDetails"
+    );
+
+    // Run only on tenant dashboard
+    if (!propertyContent) return;
+
+    const API_URL = "http://localhost:5000";
+
+    async function loadCurrentProperty() {
+
+        const token = localStorage.getItem(
+            "renteaseToken"
+        );
+
+        if (!token) {
+
+            propertyContent.innerHTML = `
+                <div class="dashboard-property-empty">
+                    <p>Please log in to view your current property.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        try {
+
+            propertyContent.innerHTML = `
+                <div class="dashboard-property-empty">
+                    <p>Loading current property...</p>
+                </div>
+            `;
+
+            // --------------------------------
+            // STEP 1: GET TENANT APPLICATIONS
+            // --------------------------------
+
+            const applicationsResponse = await fetch(
+                `${API_URL}/api/tenant/applications`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const applicationsData =
+                await applicationsResponse.json();
+
+            if (
+                !applicationsResponse.ok ||
+                !applicationsData.success
+            ) {
+
+                throw new Error(
+                    applicationsData.message ||
+                    "Failed to load tenant applications."
+                );
+            }
+
+            const applications =
+                Array.isArray(
+                    applicationsData.applications
+                )
+                    ? applicationsData.applications
+                    : [];
+
+            // --------------------------------
+            // STEP 2: FIND APPROVED APPLICATION
+            // --------------------------------
+
+            const approvedApplication =
+                applications.find(function (application) {
+
+                    return String(
+                        application.status || ""
+                    ).toLowerCase() === "approved";
+
+                });
+
+            if (!approvedApplication) {
+
+                propertyContent.innerHTML = `
+                    <div class="dashboard-property-empty">
+
+                        <p>
+                            You don't have an approved rental
+                            property yet.
+                        </p>
+
+                        <a href="properties.html">
+                            Browse Properties
+                        </a>
+
+                    </div>
+                `;
+
+                if (viewDetailsLink) {
+                    viewDetailsLink.style.display = "none";
+                }
+
+                return;
+            }
+
+            // --------------------------------
+            // STEP 3: GET PROPERTY ID
+            // --------------------------------
+
+            const propertyId =
+                approvedApplication.property?._id ||
+                approvedApplication.property?.id ||
+                approvedApplication.propertyId;
+
+            if (!propertyId) {
+
+                throw new Error(
+                    "Property ID not found in approved application."
+                );
+            }
+
+            // --------------------------------
+            // STEP 4: GET PROPERTY DETAILS
+            // --------------------------------
+
+            const propertyResponse = await fetch(
+                `${API_URL}/api/properties/${encodeURIComponent(propertyId)}`
+            );
+
+            const propertyData =
+                await propertyResponse.json();
+
+            if (
+                !propertyResponse.ok ||
+                !propertyData.success
+            ) {
+
+                throw new Error(
+                    propertyData.message ||
+                    "Failed to load property details."
+                );
+            }
+
+            const property =
+                propertyData.property;
+
+            // --------------------------------
+            // STEP 5: PROPERTY VALUES
+            // --------------------------------
+
+            const title =
+                property.title ||
+                "Property";
+
+            const location =
+                property.location ||
+                "Location unavailable";
+
+            const type =
+                property.type ||
+                "Property";
+
+            const rent =
+                Number(property.rent);
+
+            const rentText =
+                Number.isFinite(rent)
+                    ? `₹${rent.toLocaleString("en-IN")}`
+                    : "Rent unavailable";
+
+            const image =
+                property.image ||
+                "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267";
+
+            // --------------------------------
+            // STEP 6: DISPLAY PROPERTY
+            // --------------------------------
+
+            propertyContent.innerHTML = `
+
+                <img
+                    src="${image}"
+                    alt="${title}"
+                    class="dashboard-property-image"
+                >
+
+                <div class="dashboard-property-info">
+
+                    <h3>
+                        ${title}
+                    </h3>
+
+                    <p>
+                        📍 ${location}
+                    </p>
+
+                    <p>
+                        🏠 ${type}
+                    </p>
+
+                    <strong>
+                        ${rentText} / month
+                    </strong>
+
+                </div>
+
+            `;
+
+            // --------------------------------
+            // STEP 7: VIEW DETAILS LINK
+            // --------------------------------
+
+            if (viewDetailsLink) {
+
+                viewDetailsLink.href =
+                    `property-details.html?id=${encodeURIComponent(propertyId)}`;
+
+                viewDetailsLink.style.display = "inline-block";
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Tenant current property error:",
+                error
+            );
+
+            propertyContent.innerHTML = `
+
+                <div class="dashboard-property-empty">
+
+                    <p>
+                        Unable to load current property.
+                    </p>
+
+                    <small>
+                        ${error.message}
+                    </small>
+
+                </div>
+
+            `;
+        }
+    }
+
+    // Load current property
+    loadCurrentProperty();
 
 })();

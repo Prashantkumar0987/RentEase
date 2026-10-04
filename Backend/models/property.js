@@ -22,11 +22,23 @@ const propertySchema = new mongoose.Schema({
         required: true
     },
 
+    image: {
+        type: String,
+        default: ""
+    },
+
+    status: {
+        type: String,
+        enum: ["Available", "Occupied"],
+        default: "Available"
+    },
+
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
+
     tenant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
