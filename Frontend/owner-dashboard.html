@@ -116,7 +116,7 @@
             </div>
 
 
-            <!-- Total Tenants -->
+           <!-- Total Tenants -->
 
             <div class="owner-stat-card">
 
@@ -130,14 +130,13 @@
                         Total Tenants
                     </p>
 
-                    <h2>
-                        4
+                    <h2 id="totalTenantsCount">
+                        0
                     </h2>
 
                 </div>
 
             </div>
-
 
             <!-- Monthly Rent -->
 
@@ -250,8 +249,8 @@
                             Expected Rent
                         </span>
 
-                        <strong>
-                            ₹54,000
+                        <strong id="expectedRentTotal">
+                            ₹0
                         </strong>
 
                     </div>
@@ -263,8 +262,11 @@
                             Collected
                         </span>
 
-                        <strong class="collected">
-                            ₹39,000
+                        <strong
+                            id="collectedRentTotal"
+                            class="collected"
+                        >
+                            ₹0
                         </strong>
 
                     </div>
@@ -276,8 +278,11 @@
                             Pending
                         </span>
 
-                        <strong class="pending">
-                            ₹15,000
+                        <strong
+                            id="pendingRentTotal"
+                            class="pending"
+                        >
+                            ₹0
                         </strong>
 
                     </div>
@@ -285,98 +290,38 @@
                 </div>
 
 
-                <button
-                    class="owner-action-btn"
-                    id="rentHistoryBtn"
-                >
-                    View Rent History
-                </button>
 
-            </div>
+    <!-- ======================================
+        MAINTENANCE
+    ======================================= -->
 
+                <div class="owner-card">
 
-            <!-- ======================================
-                 MAINTENANCE
-            ======================================= -->
+                    <div class="owner-card-header">
 
-            <div class="owner-card">
+                        <h2>
+                            🔧 Maintenance Requests
+                        </h2>
 
-                <div class="owner-card-header">
+                        <span
+                            class="owner-request-count"
+                            id="ownerMaintenanceCount"
+                        >
+                            0 Open
+                        </span>
 
-                    <h2>
-                        🔧 Maintenance Requests
-                    </h2>
-
-                    <span class="owner-request-count">
-                        3 Open
-                    </span>
-
-                </div>
+                    </div>
 
 
-                <div class="owner-maintenance-item">
-
-                    <div>
-
-                        <h3>
-                            Water Leakage
-                        </h3>
+                    <div id="ownerMaintenanceList">
 
                         <p>
-                            Tenant: Rahul
+                            Loading maintenance requests...
                         </p>
 
                     </div>
 
-                    <span class="owner-pending">
-                        Pending
-                    </span>
-
                 </div>
-
-
-                <div class="owner-maintenance-item">
-
-                    <div>
-
-                        <h3>
-                            Fan Repair
-                        </h3>
-
-                        <p>
-                            Tenant: Amit
-                        </p>
-
-                    </div>
-
-                    <span class="owner-progress">
-                        In Progress
-                    </span>
-
-                </div>
-
-
-                <div class="owner-maintenance-item">
-
-                    <div>
-
-                        <h3>
-                            Kitchen Tap
-                        </h3>
-
-                        <p>
-                            Tenant: Priya
-                        </p>
-
-                    </div>
-
-                    <span class="owner-completed">
-                        Completed
-                    </span>
-
-                </div>
-
-            </div>
 
 
             <!-- ======================================

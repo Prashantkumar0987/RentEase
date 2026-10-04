@@ -2085,199 +2085,7 @@ if (ownerPropertyList) {
     displayOwnerProperties();
 
 }
-// ======================================================
-// DAY 40 - OWNER DASHBOARD DATA SYNC
-// ======================================================
 
-(function syncOwnerDashboardData() {
-
-    const totalPropertiesElement =
-        document.querySelector("#totalPropertiesCount");
-
-    const monthlyRentElement =
-        document.querySelector("#monthlyRentTotal");
-
-    const vacantPropertiesElement =
-        document.querySelector("#vacantPropertiesCount");
-
-    const dashboardPropertyPreview =
-        document.querySelector("#dashboardPropertyPreview");
-
-    // Run only when owner dashboard elements exist
-    if (
-        !totalPropertiesElement &&
-        !monthlyRentElement &&
-        !vacantPropertiesElement &&
-        !dashboardPropertyPreview
-    ) {
-        return;
-    }
-
-    function getOwnerProperties() {
-
-        const savedProperties =
-            localStorage.getItem("renteaseProperties");
-
-        if (!savedProperties) {
-            return [];
-        }
-
-        try {
-
-            const properties =
-                JSON.parse(savedProperties);
-
-            return Array.isArray(properties)
-                ? properties
-                : [];
-
-        } catch (error) {
-
-            console.error(
-                "Error loading dashboard properties:",
-                error
-            );
-
-            return [];
-        }
-    }
-
-    function updateDashboard() {
-
-        const properties =
-            getOwnerProperties();
-
-        // ------------------------------
-        // TOTAL PROPERTIES
-        // ------------------------------
-
-        if (totalPropertiesElement) {
-
-            totalPropertiesElement.textContent =
-                properties.length;
-        }
-
-        // ------------------------------
-        // MONTHLY RENT
-        // ------------------------------
-
-        const totalRent =
-            properties.reduce(
-                function (total, property) {
-
-                    const rent =
-                        Number(property.rent);
-
-                    return total +
-                        (Number.isFinite(rent)
-                            ? rent
-                            : 0);
-
-                },
-                0
-            );
-
-        if (monthlyRentElement) {
-
-            monthlyRentElement.textContent =
-                `₹${totalRent.toLocaleString("en-IN")}`;
-        }
-
-        // ------------------------------
-// VACANT PROPERTIES
-// ------------------------------
-
-        const vacantProperties =
-            properties.filter(function (property) {
-
-                return (
-                    String(
-                        property.status || "Available"
-                    ).toLowerCase() === "available"
-                );
-
-            }).length;
-
-        if (vacantPropertiesElement) {
-
-            vacantPropertiesElement.textContent =
-                vacantProperties;
-
-        }
-
-        // ------------------------------
-        // PROPERTY PREVIEW
-        // ------------------------------
-
-        if (!dashboardPropertyPreview) {
-            return;
-        }
-
-        if (properties.length === 0) {
-
-            dashboardPropertyPreview.innerHTML = `
-                <div class="dashboard-property-empty">
-                    <p>No properties added yet.</p>
-                </div>
-            `;
-
-            return;
-        }
-
-        // Show latest 3 properties
-        const previewProperties =
-            properties.slice(-3).reverse();
-
-        dashboardPropertyPreview.innerHTML =
-            previewProperties.map(
-                function (property) {
-
-                    const rent =
-                        Number(property.rent);
-
-                    const rentText =
-                        Number.isFinite(rent)
-                            ? `₹${rent.toLocaleString("en-IN")}`
-                            : "Rent unavailable";
-
-                    return `
-                        <div class="owner-property-item">
-
-                            <div>
-
-                                <h3>
-                                    ${property.title || "Untitled Property"}
-                                </h3>
-
-                                <p>
-                                    📍 ${property.location || "Location unavailable"}
-                                </p>
-
-                                <span class="vacant">
-                                   ${property.status || "Available"}
-                                </span>
-
-                            </div>
-
-                            <strong>
-                                ${rentText}
-                            </strong>
-
-                        </div>
-                    `;
-
-                }
-            ).join("");
-    }
-
-    // Initial dashboard load
-    updateDashboard();
-
-    // Allow other dashboard code to refresh it
-    window.refreshOwnerDashboard =
-        updateDashboard;
-
-})();
 
 /* =========================================
    DAY 38 - TENANT APPLICATIONS DASHBOARD
@@ -2866,10 +2674,10 @@ if (ownerPropertyList) {
     });
 })();
 // ==========================================
-// DAY 40: OWNER DASHBOARD DATA SYNC
+// DAY 43 - OWNER DASHBOARD DATA FROM MONGODB
 // ==========================================
 
-(function syncOwnerDashboardData() {
+(function syncOwnerDashboardDataFromAPI() {
 
     const totalPropertiesElement =
         document.querySelector("#totalPropertiesCount");
@@ -2877,163 +2685,296 @@ if (ownerPropertyList) {
     const monthlyRentElement =
         document.querySelector("#monthlyRentTotal");
 
+    const vacantPropertiesElement =
+        document.querySelector("#vacantPropertiesCount");
+
     const dashboardPropertyPreview =
         document.querySelector("#dashboardPropertyPreview");
 
-    // Dashboard elements nahi hain to kuch mat karo
+    // Run only on Owner Dashboard
     if (
         !totalPropertiesElement &&
         !monthlyRentElement &&
+        !vacantPropertiesElement &&
         !dashboardPropertyPreview
     ) {
         return;
     }
 
-    // Get properties from localStorage
-    function getOwnerProperties() {
+    async function updateDashboard() {
 
-        const savedProperties =
-            localStorage.getItem("renteaseProperties");
+        const token =
+            localStorage.getItem("renteaseToken");
 
-        if (!savedProperties) {
-            return [];
+        if (!token) {
+            return;
         }
 
         try {
 
-            const properties = JSON.parse(savedProperties);
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/api/owner/properties`,
+                    {
+                        method: "GET",
 
-            return Array.isArray(properties)
-                ? properties
-                : [];
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "Failed to load owner properties."
+                );
+            }
+
+            const properties =
+                Array.isArray(data.properties)
+                    ? data.properties
+                    : [];
+
+
+            // ==========================================
+            // TOTAL PROPERTIES
+            // ==========================================
+
+            if (totalPropertiesElement) {
+
+                totalPropertiesElement.textContent =
+                    properties.length;
+            }
+
+
+            // ==========================================
+            // TOTAL MONTHLY RENT
+            // ==========================================
+
+            const totalRent =
+                properties.reduce(
+                    function (total, property) {
+
+                        const rent =
+                            Number(property.rent);
+
+                        return total +
+                            (
+                                Number.isFinite(rent)
+                                    ? rent
+                                    : 0
+                            );
+
+                    },
+                    0
+                );
+
+            if (monthlyRentElement) {
+
+                monthlyRentElement.textContent =
+                    `₹${totalRent.toLocaleString("en-IN")}`;
+            }
+
+
+            // ==========================================
+            // VACANT PROPERTIES
+            // ==========================================
+
+            const vacantProperties =
+                properties.filter(
+                    function (property) {
+
+                        return (
+                            String(
+                                property.status ||
+                                "Available"
+                            ).toLowerCase() ===
+                            "available"
+                        );
+
+                    }
+                ).length;
+
+
+            if (vacantPropertiesElement) {
+
+                vacantPropertiesElement.textContent =
+                    vacantProperties;
+            }
+
+
+            // ==========================================
+            // PROPERTY PREVIEW
+            // ==========================================
+
+            if (!dashboardPropertyPreview) {
+                return;
+            }
+
+
+            if (properties.length === 0) {
+
+                dashboardPropertyPreview.innerHTML = `
+                    <div class="dashboard-property-empty">
+                        <p>No properties added yet.</p>
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            // Latest 3 MongoDB properties
+            const previewProperties =
+                properties
+                    .slice(-3)
+                    .reverse();
+
+
+            dashboardPropertyPreview.innerHTML =
+                previewProperties.map(
+                    function (property) {
+
+                        const rent =
+                            Number(property.rent);
+
+                        const rentText =
+                            Number.isFinite(rent)
+                                ? `₹${rent.toLocaleString("en-IN")}`
+                                : "Rent unavailable";
+
+                        const status =
+                            property.status ||
+                            "Available";
+
+
+                        return `
+                            <div class="owner-property-item">
+
+                                <div>
+
+                                    <h3>
+                                        ${
+                                            property.title ||
+                                            "Untitled Property"
+                                        }
+                                    </h3>
+
+                                    <p>
+                                        📍
+                                        ${
+                                            property.location ||
+                                            "Location unavailable"
+                                        }
+                                    </p>
+
+                                    <span class="vacant">
+                                        ${status}
+                                    </span>
+
+                                </div>
+
+                                <strong>
+                                    ${rentText}
+                                </strong>
+
+                            </div>
+                        `;
+
+                    }
+                ).join("");
+
 
         } catch (error) {
 
             console.error(
-                "Error loading dashboard properties:",
+                "Owner dashboard API error:",
                 error
             );
 
-            return [];
-        }
-    }
-
-    // Update dashboard
-    function updateDashboard() {
-
-        const properties = getOwnerProperties();
-
-        // -------------------------------
-        // TOTAL PROPERTIES
-        // -------------------------------
-
-        if (totalPropertiesElement) {
-
-            totalPropertiesElement.textContent =
-                properties.length;
         }
 
-
-        // -------------------------------
-        // TOTAL MONTHLY RENT
-        // -------------------------------
-
-        const totalRent = properties.reduce(
-            function(total, property) {
-
-                const rent = Number(property.rent);
-
-                return total +
-                    (Number.isFinite(rent) ? rent : 0);
-
-            },
-            0
-        );
-
-        if (monthlyRentElement) {
-
-            monthlyRentElement.textContent =
-                `₹${totalRent.toLocaleString("en-IN")}`;
-        }
-
-
-        // -------------------------------
-        // PROPERTY PREVIEW
-        // -------------------------------
-
-        if (!dashboardPropertyPreview) {
-            return;
-        }
-
-
-        // No properties
-        if (!properties.length) {
-
-            dashboardPropertyPreview.innerHTML = `
-                <div class="dashboard-property-empty">
-                    <p>No properties added yet.</p>
-                </div>
-            `;
-
-            return;
-        }
-
-
-        // Show latest 3 properties
-        const previewProperties =
-            properties.slice(-3).reverse();
-
-
-        dashboardPropertyPreview.innerHTML =
-            previewProperties.map(
-                function(property) {
-
-                    const rent =
-                        Number(property.rent);
-
-                    const rentText =
-                        Number.isFinite(rent)
-                            ? `₹${rent.toLocaleString("en-IN")}`
-                            : "Rent unavailable";
-
-
-                    return `
-                        <div class="owner-property-item">
-
-                            <div>
-
-                                <h3>
-                                    ${property.title || "Untitled Property"}
-                                </h3>
-
-                                <p>
-                                    📍 ${property.location || "Location unavailable"}
-                                </p>
-
-                                <span class="vacant">
-                                    Available
-                                </span>
-
-                            </div>
-
-                            <strong>
-                                ${rentText}
-                            </strong>
-
-                        </div>
-                    `;
-                }
-            ).join("");
     }
 
 
-    // Initial dashboard update
+    // Initial dashboard load
     updateDashboard();
 
 
-    // Make function available to other CRUD functions
+    // Make available to Add / Edit / Delete
     window.refreshOwnerDashboard =
         updateDashboard;
+    
+    // ==========================================
+// DAY 44 - OWNER TENANTS COUNT
+// ==========================================
+
+    async function loadOwnerTenantCount() {
+
+        const totalTenantsCount =
+            document.getElementById("totalTenantsCount");
+
+        if (!totalTenantsCount) {
+            return;
+        }
+
+        try {
+
+            const token =
+                localStorage.getItem("renteaseToken");
+
+            if (!token) {
+                totalTenantsCount.textContent = "0";
+                return;
+            }
+
+            const response = await fetch(
+                `${API_BASE_URL}/api/owner/tenants`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+
+                console.error(
+                    "Failed to fetch tenant count:",
+                    data
+                );
+
+                totalTenantsCount.textContent = "0";
+
+                return;
+            }
+
+            totalTenantsCount.textContent = data.count;
+
+        } catch (error) {
+
+            console.error(
+                "Owner tenant count error:",
+                error
+            );
+
+            totalTenantsCount.textContent = "0";
+        }
+    }
+    
 
 })();
 /* =========================================
@@ -3297,3 +3238,319 @@ if (ownerPropertyList) {
     loadCurrentProperty();
 
 })();
+// ==========================================
+// DAY 44 - OWNER TENANTS COUNT
+// ==========================================
+
+async function loadOwnerTenantCount() {
+
+    const totalTenantsCount =
+        document.getElementById("totalTenantsCount");
+
+    if (!totalTenantsCount) {
+        return;
+    }
+
+    try {
+
+        const token =
+            localStorage.getItem("renteaseToken");
+
+        if (!token) {
+            totalTenantsCount.textContent = "0";
+            return;
+        }
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/owner/tenants`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            console.error(
+                "Failed to fetch tenant count:",
+                data
+            );
+
+            totalTenantsCount.textContent = "0";
+
+            return;
+        }
+
+        totalTenantsCount.textContent = data.count;
+
+    } catch (error) {
+
+        console.error(
+            "Owner tenant count error:",
+            error
+        );
+
+        totalTenantsCount.textContent = "0";
+    }
+}
+
+
+// Load owner tenant count
+loadOwnerTenantCount();
+// ==========================================
+// DAY 45 - OWNER RENT SUMMARY
+// ==========================================
+
+async function loadOwnerRentSummary() {
+
+    const expectedRentTotal =
+        document.getElementById("expectedRentTotal");
+
+    const collectedRentTotal =
+        document.getElementById("collectedRentTotal");
+
+    const pendingRentTotal =
+        document.getElementById("pendingRentTotal");
+
+    if (
+        !expectedRentTotal ||
+        !collectedRentTotal ||
+        !pendingRentTotal
+    ) {
+        return;
+    }
+
+    try {
+
+        const token =
+            localStorage.getItem("renteaseToken");
+
+        if (!token) {
+            return;
+        }
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/owner/rent-summary`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            console.error(
+                "Failed to fetch owner rent summary:",
+                data
+            );
+
+            return;
+        }
+
+        const summary = data.summary;
+
+        expectedRentTotal.textContent =
+            `₹${Number(summary.expectedRent).toLocaleString("en-IN")}`;
+
+        collectedRentTotal.textContent =
+            `₹${Number(summary.collectedRent).toLocaleString("en-IN")}`;
+
+        pendingRentTotal.textContent =
+            `₹${Number(summary.pendingRent).toLocaleString("en-IN")}`;
+
+    } catch (error) {
+
+        console.error(
+            "Owner rent summary error:",
+            error
+        );
+
+    }
+}
+
+loadOwnerRentSummary();
+// ==========================================
+// DAY 46 - OWNER MAINTENANCE REQUESTS
+// ==========================================
+
+async function loadOwnerMaintenance() {
+
+    const maintenanceList =
+        document.getElementById("ownerMaintenanceList");
+
+    const maintenanceCount =
+        document.getElementById("ownerMaintenanceCount");
+
+    if (!maintenanceList || !maintenanceCount) {
+        return;
+    }
+
+    const token = localStorage.getItem("renteaseToken");
+
+    if (!token) {
+
+        maintenanceList.innerHTML =
+            "<p>Please login as owner.</p>";
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/owner/maintenance`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            maintenanceList.innerHTML =
+                `<p>${data.message || "Failed to load maintenance requests."}</p>`;
+
+            return;
+        }
+
+
+        const complaints = data.complaints || [];
+
+
+        // ======================================
+        // COUNT OPEN REQUESTS
+        // ======================================
+
+        const openRequests = complaints.filter(function (complaint) {
+
+            return complaint.status !== "resolved";
+
+        }).length;
+
+
+        maintenanceCount.textContent =
+            `${openRequests} Open`;
+
+
+        // ======================================
+        // NO REQUESTS
+        // ======================================
+
+        if (complaints.length === 0) {
+
+            maintenanceList.innerHTML =
+                "<p>No maintenance requests found.</p>";
+
+            return;
+        }
+
+
+        // ======================================
+        // DISPLAY REQUESTS
+        // ======================================
+
+        maintenanceList.innerHTML = "";
+
+
+        complaints.forEach(function (complaint) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "owner-maintenance-item";
+
+
+            const tenantName =
+                complaint.tenant?.name ||
+                complaint.tenant?.username ||
+                "Unknown Tenant";
+
+
+            const title =
+                complaint.title ||
+                "Maintenance Request";
+
+
+            const status =
+                complaint.status ||
+                "pending";
+
+
+            let statusClass =
+                "owner-pending";
+
+            let statusText =
+                "Pending";
+
+
+            if (status === "in-progress") {
+
+                statusClass =
+                    "owner-progress";
+
+                statusText =
+                    "In Progress";
+
+            } else if (status === "resolved") {
+
+                statusClass =
+                    "owner-completed";
+
+                statusText =
+                    "Completed";
+            }
+
+
+            item.innerHTML = `
+
+                <div>
+
+                    <h3>
+                        ${title}
+                    </h3>
+
+                    <p>
+                        Tenant: ${tenantName}
+                    </p>
+
+                </div>
+
+                <span class="${statusClass}">
+                    ${statusText}
+                </span>
+
+            `;
+
+
+            maintenanceList.appendChild(item);
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Maintenance loading error:",
+            error
+        );
+
+        maintenanceList.innerHTML =
+            "<p>Unable to load maintenance requests.</p>";
+    }
+}
+loadOwnerMaintenance();

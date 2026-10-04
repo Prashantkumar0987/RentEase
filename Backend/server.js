@@ -843,6 +843,80 @@ app.put(
         }
     }
 );
+// ==========================================
+// DAY 45 - OWNER RENT SUMMARY
+// ==========================================
+
+app.get(
+    "/api/owner/rent-summary",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
+
+        try {
+
+            // Find properties belonging to logged-in owner
+            const properties = await Property.find({
+                owner: req.user.id
+            }).select("_id");
+
+            const propertyIds = properties.map(function (property) {
+                return property._id;
+            });
+
+            // Find rent records for owner's properties
+            const rents = await Rent.find({
+                property: { $in: propertyIds }
+            });
+
+            let expectedRent = 0;
+            let collectedRent = 0;
+            let pendingRent = 0;
+
+            rents.forEach(function (rent) {
+
+                const amount = Number(rent.amount) || 0;
+
+                expectedRent += amount;
+
+                if (rent.status === "paid") {
+
+                    collectedRent += amount;
+
+                } else if (rent.status === "pending") {
+
+                    pendingRent += amount;
+
+                }
+
+            });
+
+            res.status(200).json({
+
+                success: true,
+
+                summary: {
+                    expectedRent: expectedRent,
+                    collectedRent: collectedRent,
+                    pendingRent: pendingRent,
+                    totalRecords: rents.length
+                }
+
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+
+                success: false,
+                message: "Failed to calculate owner rent summary",
+                error: error.message
+
+            });
+
+        }
+    }
+);
 app.get(
     "/api/owner/properties",
     verifyToken,
@@ -893,6 +967,53 @@ app.get(
             res.status(500).json({
                 success: false,
                 message: "Failed to fetch tenants",
+                error: error.message
+            });
+
+        }
+    }
+);
+// ==========================================
+// DAY 44 - OWNER TENANTS COUNT
+// ==========================================
+
+app.get(
+    "/api/owner/tenants",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
+
+        try {
+
+            // Find properties belonging to logged-in owner
+            const properties = await Property.find({
+                owner: req.user.id,
+                tenant: { $exists: true, $ne: null }
+            }).select("tenant");
+
+            // Get unique tenant IDs
+            const tenantIds = [
+                ...new Set(
+                    properties
+                        .map(function (property) {
+                            return property.tenant
+                                ? property.tenant.toString()
+                                : null;
+                        })
+                        .filter(Boolean)
+                )
+            ];
+
+            res.status(200).json({
+                success: true,
+                count: tenantIds.length
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to fetch owner tenants",
                 error: error.message
             });
 
