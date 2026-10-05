@@ -3531,9 +3531,43 @@ async function loadOwnerMaintenance() {
 
                 </div>
 
-                <span class="${statusClass}">
-                    ${statusText}
-                </span>
+                <div>
+
+                    <span class="${statusClass}">
+                        ${statusText}
+                    </span>
+
+                    <select
+                        onchange="updateMaintenanceStatus(
+                            '${complaint._id}',
+                            this.value
+                        )"
+                    >
+
+                        <option
+                            value="pending"
+                            ${status === "pending" ? "selected" : ""}
+                        >
+                            Pending
+                        </option>
+
+                        <option
+                            value="in-progress"
+                            ${status === "in-progress" ? "selected" : ""}
+                        >
+                            In Progress
+                        </option>
+
+                        <option
+                            value="resolved"
+                            ${status === "resolved" ? "selected" : ""}
+                        >
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
 
             `;
 
@@ -3554,3 +3588,70 @@ async function loadOwnerMaintenance() {
     }
 }
 loadOwnerMaintenance();
+// ==========================================
+// DAY 46 - UPDATE MAINTENANCE STATUS
+// ==========================================
+
+async function updateMaintenanceStatus(maintenanceId, newStatus) {
+
+    const token = localStorage.getItem("renteaseToken");
+
+    if (!token) {
+
+        alert("Please login as owner.");
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/maintenance/${maintenanceId}/status`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            alert(
+                data.message ||
+                "Failed to update maintenance status."
+            );
+
+            return;
+        }
+
+
+        alert("Maintenance status updated successfully.");
+
+
+        // Reload maintenance requests
+        loadOwnerMaintenance();
+
+
+    } catch (error) {
+
+        console.error(
+            "Maintenance status update error:",
+            error
+        );
+
+        alert(
+            "Unable to update maintenance status."
+        );
+    }
+}
