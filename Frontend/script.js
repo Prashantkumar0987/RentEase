@@ -4662,3 +4662,292 @@ async function loadTenantRentSummary() {
 // ==========================================
 
 loadTenantRentSummary();
+// ==========================================
+// DAY 51 - TENANT MAINTENANCE REQUESTS
+// ==========================================
+
+async function loadTenantMaintenance() {
+
+    const maintenanceList =
+        document.getElementById(
+            "tenantMaintenanceList"
+        );
+
+    const maintenanceCount =
+        document.getElementById(
+            "tenantMaintenanceCount"
+        );
+
+
+    if (
+        !maintenanceList ||
+        !maintenanceCount
+    ) {
+        return;
+    }
+
+
+    const token =
+        localStorage.getItem(
+            "renteaseToken"
+        );
+
+
+    if (!token) {
+
+        maintenanceList.innerHTML = `
+            <p>
+                Please login as tenant.
+            </p>
+        `;
+
+        maintenanceCount.textContent =
+            "0 Open";
+
+        return;
+    }
+
+
+    try {
+
+        maintenanceList.innerHTML = `
+            <p>
+                Loading maintenance requests...
+            </p>
+        `;
+
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/api/tenant/maintenance`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            maintenanceList.innerHTML = `
+                <p>
+                    ${
+                        data.message ||
+                        "Failed to load maintenance requests."
+                    }
+                </p>
+            `;
+
+            maintenanceCount.textContent =
+                "0 Open";
+
+            return;
+        }
+
+
+        const complaints =
+            data.complaints || [];
+
+
+        // ==========================================
+        // COUNT OPEN REQUESTS
+        // ==========================================
+
+        const openRequests =
+            complaints.filter(
+                function (complaint) {
+
+                    return (
+                        complaint.status !==
+                        "resolved"
+                    );
+
+                }
+            ).length;
+
+
+        maintenanceCount.textContent =
+            `${openRequests} Open`;
+
+
+        // ==========================================
+        // NO REQUESTS
+        // ==========================================
+
+        if (complaints.length === 0) {
+
+            maintenanceList.innerHTML = `
+                <p>
+                    No maintenance requests found.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        // ==========================================
+        // CLEAR OLD CONTENT
+        // ==========================================
+
+        maintenanceList.innerHTML =
+            "";
+
+
+        // ==========================================
+        // RENDER REQUESTS
+        // ==========================================
+
+        complaints.forEach(
+            function (complaint) {
+
+                const status =
+                    String(
+                        complaint.status ||
+                        "pending"
+                    ).toLowerCase();
+
+
+                let statusLabel =
+                    "Pending";
+
+
+                let statusClass =
+                    "status-pending";
+
+
+                if (
+                    status ===
+                    "in-progress"
+                ) {
+
+                    statusLabel =
+                        "In Progress";
+
+                    statusClass =
+                        "status-progress";
+
+                } else if (
+                    status ===
+                    "resolved"
+                ) {
+
+                    statusLabel =
+                        "Completed";
+
+                    statusClass =
+                        "status-completed";
+                }
+
+
+                // ==========================================
+                // FORMAT DATE
+                // ==========================================
+
+                const reportedDate =
+                    complaint.createdAt
+                        ? new Date(
+                            complaint.createdAt
+                        ).toLocaleDateString(
+                            "en-IN",
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        )
+                        : "Date unavailable";
+
+
+                // ==========================================
+                // CREATE CARD
+                // ==========================================
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "maintenance-item";
+
+
+                item.innerHTML = `
+
+                    <div>
+
+                        <h3>
+                            ${
+                                complaint.title ||
+                                "Maintenance Request"
+                            }
+                        </h3>
+
+                        <p>
+                            Reported:
+                            ${reportedDate}
+                        </p>
+
+                        <p class="maintenance-description">
+                            ${
+                                complaint.description ||
+                                ""
+                            }
+                        </p>
+
+                    </div>
+
+
+                    <span class="${statusClass}">
+                        ${statusLabel}
+                    </span>
+
+                `;
+
+
+                maintenanceList.appendChild(
+                    item
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Tenant maintenance error:",
+            error
+        );
+
+
+        maintenanceList.innerHTML = `
+            <p>
+                Unable to load maintenance requests.
+            </p>
+        `;
+
+
+        maintenanceCount.textContent =
+            "0 Open";
+    }
+}
+
+
+// ==========================================
+// LOAD TENANT MAINTENANCE
+// ==========================================
+
+loadTenantMaintenance();
