@@ -116,7 +116,7 @@
             </div>
 
 
-           <!-- Total Tenants -->
+            <!-- Total Tenants -->
 
             <div class="owner-stat-card">
 
@@ -137,6 +137,7 @@
                 </div>
 
             </div>
+
 
             <!-- Monthly Rent -->
 
@@ -289,39 +290,40 @@
 
                 </div>
 
+            </div>
 
 
-    <!-- ======================================
-        MAINTENANCE
-    ======================================= -->
+            <!-- ======================================
+                 MAINTENANCE
+            ======================================= -->
 
-                <div class="owner-card">
+            <div class="owner-card">
 
-                    <div class="owner-card-header">
+                <div class="owner-card-header">
 
-                        <h2>
-                            🔧 Maintenance Requests
-                        </h2>
+                    <h2>
+                        🔧 Maintenance Requests
+                    </h2>
 
-                        <span
-                            class="owner-request-count"
-                            id="ownerMaintenanceCount"
-                        >
-                            0 Open
-                        </span>
-
-                    </div>
-
-
-                    <div id="ownerMaintenanceList">
-
-                        <p>
-                            Loading maintenance requests...
-                        </p>
-
-                    </div>
+                    <span
+                        class="owner-request-count"
+                        id="ownerMaintenanceCount"
+                    >
+                        0 Open
+                    </span>
 
                 </div>
+
+
+                <div id="ownerMaintenanceList">
+
+                    <p>
+                        Loading maintenance requests...
+                    </p>
+
+                </div>
+
+            </div>
 
 
             <!-- ======================================
@@ -341,6 +343,9 @@
 
                 <div class="owner-quick-actions">
 
+
+                    <!-- Add Property -->
+
                     <button
                         type="button"
                         class="owner-quick-action"
@@ -350,21 +355,29 @@
                     </button>
 
 
+                    <!-- Manage Tenants -->
+
                     <button
                         type="button"
                         class="owner-quick-action"
+                        id="manageTenantsBtn"
                     >
                         👥 Manage Tenants
                     </button>
 
 
+                    <!-- Rent Records -->
+
                     <button
                         type="button"
                         class="owner-quick-action"
+                        id="rentRecordsBtn"
                     >
                         💰 Rent Records
                     </button>
 
+
+                    <!-- Maintenance -->
 
                     <button
                         type="button"
@@ -373,9 +386,11 @@
                         🔧 Maintenance
                     </button>
 
+
                 </div>
 
             </div>
+
 
         </section>
 
@@ -417,6 +432,88 @@
             <div id="ownerApplicationsList">
 
                 <!-- Applications loaded from backend -->
+
+            </div>
+
+        </section>
+
+
+        <!-- ==========================================
+             DAY 47 - MANAGE TENANTS
+        =========================================== -->
+
+        <section
+            class="owner-card owner-tenants-section"
+            id="manage-tenants-section"
+        >
+
+            <div class="owner-card-header">
+
+                <h2>
+                    👥 Manage Tenants
+                </h2>
+
+                <span
+                    class="owner-section-label"
+                    id="ownerTenantSectionCount"
+                >
+                    0 Tenants
+                </span>
+
+            </div>
+
+
+            <p
+                id="ownerTenantsMessage"
+                role="status"
+            >
+                Loading tenants...
+            </p>
+
+
+            <div id="ownerTenantsList">
+
+                <!-- Tenant data loaded from MongoDB -->
+
+            </div>
+
+        </section>
+ <!-- ==========================================
+     DAY 48 - OWNER RENT RECORDS
+=========================================== -->
+
+        <section
+            class="owner-card owner-rent-records-section"
+            id="rent-records-section"
+        >
+
+            <div class="owner-card-header">
+
+                <h2>
+                    💰 Rent Records
+                </h2>
+
+                <span
+                    class="owner-section-label"
+                    id="ownerRentRecordsCount"
+                >
+                    0 Records
+                </span>
+
+            </div>
+
+
+            <p
+                id="ownerRentRecordsMessage"
+                role="status"
+            >
+                Loading rent records...
+            </p>
+
+
+            <div id="ownerRentRecordsList">
+
+                <!-- Rent records loaded from MongoDB -->
 
             </div>
 

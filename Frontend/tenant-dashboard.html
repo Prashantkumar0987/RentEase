@@ -59,7 +59,7 @@
 
                 <div>
                     <p>Monthly Rent</p>
-                    <h2>₹15,000</h2>
+                    <h2 id="tenantMonthlyRent">₹0</h2>
                 </div>
 
             </div>
@@ -71,7 +71,7 @@
 
                 <div>
                     <p>Next Payment</p>
-                    <h2>5 Oct</h2>
+                    <h2 id="tenantNextPayment">--</h2>
                 </div>
 
             </div>
@@ -83,7 +83,7 @@
 
                 <div>
                     <p>Maintenance</p>
-                    <h2>2 Open</h2>
+                    <h2 id="tenantMaintenanceRequests">2 Open</h2>
                 </div>
 
             </div>
@@ -95,7 +95,7 @@
 
                 <div>
                     <p>Rental Status</p>
-                    <h2>Active</h2>
+                    <h2 id="tenantRentalStatus">--</h2>
                 </div>
 
             </div>
@@ -145,29 +145,35 @@
 
                     <div>
                         <span>Monthly Rent</span>
-                        <strong>₹15,000</strong>
+                        <strong id="tenantRentInfoMonthly">₹0</strong>
                     </div>
 
                     <div>
                         <span>Last Payment</span>
-                        <strong>₹15,000</strong>
+                        <strong id="tenantLastPayment">₹0</strong>
                     </div>
 
                     <div>
                         <span>Next Due Date</span>
-                        <strong>5 Oct 2026</strong>
+                        <strong id="tenantNextDueDate">--</strong>
                     </div>
 
                     <div>
                         <span>Status</span>
-                        <strong class="rent-paid">
-                            Paid
+                       <strong
+                            class="rent-paid"
+                            id="tenantRentStatus"
+                        >
+                            --
                         </strong>
                     </div>
 
                 </div>
 
-                <button class="dashboard-action-btn">
+                <button
+                    class="dashboard-action-btn"
+                    id="viewRentHistoryBtn"
+                >
                     View Rent History
                 </button>
 
@@ -181,7 +187,7 @@
 
                     <h2>🔧 Maintenance Requests</h2>
 
-                    <span class="request-count">
+                    <span class="request-count" id="tenantMaintenanceRequests">
                         2 Open
                     </span>
 
@@ -261,6 +267,47 @@
         </section>
 
     </main>
+    <!-- ==========================================
+     DAY 49 - TENANT RENT HISTORY
+========================================== -->
+
+    <section
+        class="tenant-card tenant-rent-history-section"
+        id="rent-history-section"
+    >
+
+        <div class="tenant-card-header">
+
+            <h2>
+                💰 Rent History
+            </h2>
+
+            <span
+                class="tenant-section-label"
+                id="tenantRentHistoryCount"
+            >
+                0 Records
+            </span>
+
+        </div>
+
+
+        <p
+            id="tenantRentHistoryMessage"
+            role="status"
+            aria-live="polite"
+        >
+            Loading rent history...
+        </p>
+
+
+        <div id="tenantRentHistoryList">
+
+            <!-- Rent history loaded from MongoDB -->
+
+        </div>
+
+    </section>
     
 <!-- DAY 38 - TENANT APPLICATIONS -->
 

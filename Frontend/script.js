@@ -3655,3 +3655,1010 @@ async function updateMaintenanceStatus(maintenanceId, newStatus) {
         );
     }
 }
+// ==========================================
+// DAY 47 - OWNER TENANT DETAILS
+// ==========================================
+
+async function loadOwnerTenantDetails() {
+
+    const tenantsList =
+        document.getElementById("ownerTenantsList");
+
+    const tenantsMessage =
+        document.getElementById("ownerTenantsMessage");
+
+    const tenantCount =
+        document.getElementById("ownerTenantSectionCount");
+
+
+    if (
+        !tenantsList ||
+        !tenantsMessage ||
+        !tenantCount
+    ) {
+        return;
+    }
+
+
+    const token =
+        localStorage.getItem("renteaseToken");
+
+
+    if (!token) {
+
+        tenantsMessage.textContent =
+            "Please login as owner.";
+
+        tenantsList.innerHTML = "";
+
+        return;
+    }
+
+
+    try {
+
+        tenantsMessage.textContent =
+            "Loading tenants...";
+
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/owner/tenants/details`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            tenantsMessage.textContent =
+                data.message ||
+                "Failed to load tenants.";
+
+            tenantsList.innerHTML = "";
+
+            return;
+        }
+
+
+        const properties =
+            data.tenants || [];
+
+
+        tenantCount.textContent =
+            `${properties.length} Tenants`;
+
+
+        if (properties.length === 0) {
+
+            tenantsMessage.textContent =
+                "No tenants are currently assigned.";
+
+            tenantsList.innerHTML = "";
+
+            return;
+        }
+
+
+        tenantsMessage.textContent =
+            "";
+
+
+        tenantsList.innerHTML = "";
+
+
+        properties.forEach(function (property) {
+
+            const tenant =
+                property.tenant || {};
+
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "owner-tenant-item";
+
+
+            const rent =
+                Number(property.rent) || 0;
+
+
+            card.innerHTML = `
+
+                <div>
+
+                    <h3>
+                        ${tenant.name || "Unknown Tenant"}
+                    </h3>
+
+                    <p>
+                        📧 ${tenant.email || "Email unavailable"}
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <p>
+                        🏠 ${property.title || "Property"}
+                    </p>
+
+                    <p>
+                        📍 ${property.location || "Location unavailable"}
+                    </p>
+
+                    <strong>
+                        ₹${rent.toLocaleString("en-IN")}/month
+                    </strong>
+
+                </div>
+
+            `;
+
+
+            tenantsList.appendChild(card);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Owner tenant details error:",
+            error
+        );
+
+
+        tenantsMessage.textContent =
+            "Unable to load tenant details.";
+
+        tenantsList.innerHTML = "";
+    }
+}
+loadOwnerTenantDetails();
+// ==========================================
+// DAY 47 - MANAGE TENANTS BUTTON
+// ==========================================
+
+const manageTenantsBtn =
+    document.getElementById("manageTenantsBtn");
+
+const manageTenantsSection =
+    document.getElementById("manage-tenants-section");
+
+
+if (
+    manageTenantsBtn &&
+    manageTenantsSection
+) {
+
+    manageTenantsBtn.addEventListener(
+        "click",
+        function () {
+
+            manageTenantsSection.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+}
+// ==========================================
+// DAY 48 - OWNER RENT RECORDS
+// ==========================================
+
+async function loadOwnerRentRecords() {
+
+    const rentRecordsList =
+        document.getElementById(
+            "ownerRentRecordsList"
+        );
+
+
+    const rentRecordsMessage =
+        document.getElementById(
+            "ownerRentRecordsMessage"
+        );
+
+
+    const rentRecordsCount =
+        document.getElementById(
+            "ownerRentRecordsCount"
+        );
+
+
+    if (
+        !rentRecordsList ||
+        !rentRecordsMessage ||
+        !rentRecordsCount
+    ) {
+        return;
+    }
+
+
+    const token =
+        localStorage.getItem("renteaseToken");
+
+
+    if (!token) {
+
+        rentRecordsMessage.textContent =
+            "Please login as owner.";
+
+        rentRecordsList.innerHTML = "";
+
+        return;
+    }
+
+
+    try {
+
+        rentRecordsMessage.textContent =
+            "Loading rent records...";
+
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/owner/rents`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            rentRecordsMessage.textContent =
+                data.message ||
+                "Failed to load rent records.";
+
+            rentRecordsList.innerHTML = "";
+
+            return;
+        }
+
+
+        const rents =
+            data.rents || [];
+
+
+        rentRecordsCount.textContent =
+            `${rents.length} Records`;
+
+
+        if (rents.length === 0) {
+
+            rentRecordsMessage.textContent =
+                "No rent records found.";
+
+            rentRecordsList.innerHTML = "";
+
+            return;
+        }
+
+
+        rentRecordsMessage.textContent =
+            "";
+
+
+        rentRecordsList.innerHTML = "";
+
+
+        rents.forEach(function (rent) {
+
+            const property =
+                rent.property || {};
+
+
+            const tenant =
+                rent.tenant || {};
+
+
+            const amount =
+                Number(rent.amount) || 0;
+
+
+            const status =
+                String(
+                    rent.status || "pending"
+                ).toLowerCase();
+
+
+            let statusLabel =
+                "Pending";
+
+
+            let statusClass =
+                "owner-pending";
+
+
+            if (status === "paid") {
+
+                statusLabel =
+                    "Paid";
+
+                statusClass =
+                    "owner-completed";
+
+            }
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "owner-rent-record-item";
+
+
+            card.innerHTML = `
+
+                <div>
+
+                    <h3>
+                        ${property.title || "Property"}
+                    </h3>
+
+                    <p>
+                        👤 Tenant:
+                        ${tenant.name || "Unknown Tenant"}
+                    </p>
+
+                    <p>
+                        📍
+                        ${property.location || "Location unavailable"}
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        ₹${amount.toLocaleString("en-IN")}
+                    </strong>
+
+                    <span class="${statusClass}">
+                        ${statusLabel}
+                    </span>
+
+                </div>
+
+            `;
+
+
+            rentRecordsList.appendChild(card);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Owner rent records error:",
+            error
+        );
+
+
+        rentRecordsMessage.textContent =
+            "Unable to load rent records.";
+
+        rentRecordsList.innerHTML = "";
+
+    }
+
+}
+loadOwnerRentRecords();
+// ==========================================
+// DAY 48 - RENT RECORDS BUTTON
+// ==========================================
+
+const rentRecordsBtn =
+    document.getElementById(
+        "rentRecordsBtn"
+    );
+
+
+const rentRecordsSection =
+    document.getElementById(
+        "rent-records-section"
+    );
+
+
+if (
+    rentRecordsBtn &&
+    rentRecordsSection
+) {
+
+    rentRecordsBtn.addEventListener(
+        "click",
+        function () {
+
+            rentRecordsSection.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+}
+// ==========================================
+// DAY 49 - TENANT RENT HISTORY
+// ==========================================
+
+async function loadTenantRentHistory() {
+
+    const rentHistoryList =
+        document.getElementById("tenantRentHistoryList");
+
+    const rentHistoryMessage =
+        document.getElementById("tenantRentHistoryMessage");
+
+    const rentHistoryCount =
+        document.getElementById("tenantRentHistoryCount");
+
+    if (
+        !rentHistoryList ||
+        !rentHistoryMessage ||
+        !rentHistoryCount
+    ) {
+        return;
+    }
+
+    const token =
+        localStorage.getItem("renteaseToken");
+
+    if (!token) {
+
+        rentHistoryMessage.textContent =
+            "Please login as tenant.";
+
+        rentHistoryList.innerHTML = "";
+
+        return;
+    }
+
+
+    try {
+
+        rentHistoryMessage.textContent =
+            "Loading rent history...";
+
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/tenant/rent-history`,
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            rentHistoryMessage.textContent =
+                data.message ||
+                "Failed to load rent history.";
+
+            rentHistoryList.innerHTML = "";
+
+            return;
+        }
+
+
+        const history =
+            data.history || [];
+
+
+        rentHistoryCount.textContent =
+            `${history.length} Records`;
+
+
+        if (history.length === 0) {
+
+            rentHistoryMessage.textContent =
+                "No rent payment records found.";
+
+            rentHistoryList.innerHTML = "";
+
+            return;
+        }
+
+
+        rentHistoryMessage.textContent =
+            "";
+
+
+        rentHistoryList.innerHTML =
+            "";
+
+
+        history.forEach(function (rent) {
+
+            const property =
+                rent.property || {};
+
+
+            const amount =
+                Number(rent.amount) || 0;
+
+
+            const status =
+                String(
+                    rent.status || "pending"
+                ).toLowerCase();
+
+
+            let statusLabel =
+                "Pending";
+
+
+            let statusClass =
+                "owner-pending";
+
+
+            if (status === "paid") {
+
+                statusLabel =
+                    "Paid";
+
+                statusClass =
+                    "owner-completed";
+            }
+
+
+            const dueDate =
+                rent.dueDate
+                    ? new Date(rent.dueDate)
+                        .toLocaleDateString(
+                            "en-IN",
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        )
+                    : "Not available";
+
+
+            const paidDate =
+                rent.paidAt
+                    ? new Date(rent.paidAt)
+                        .toLocaleDateString(
+                            "en-IN",
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        )
+                    : "Not paid";
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "tenant-rent-history-item";
+
+
+            card.innerHTML = `
+
+                <div>
+
+                    <h3>
+                        ${property.title || "Property"}
+                    </h3>
+
+                    <p>
+                        📍
+                        ${property.location || "Location unavailable"}
+                    </p>
+
+                    <p>
+                        📅 Due Date:
+                        ${dueDate}
+                    </p>
+
+                    <p>
+                        💳 Paid On:
+                        ${paidDate}
+                    </p>
+
+                </div>
+
+
+                <div class="tenant-rent-history-right">
+
+                    <strong>
+                        ₹${amount.toLocaleString("en-IN")}
+                    </strong>
+
+                    <span class="${statusClass}">
+                        ${statusLabel}
+                    </span>
+
+                </div>
+
+            `;
+
+
+            rentHistoryList.appendChild(card);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Tenant rent history error:",
+            error
+        );
+
+
+        rentHistoryMessage.textContent =
+            "Unable to load rent history.";
+
+        rentHistoryList.innerHTML = "";
+    }
+}
+
+
+// Load rent history
+loadTenantRentHistory();
+
+
+// ==========================================
+// DAY 49 - VIEW RENT HISTORY BUTTON
+// ==========================================
+
+const viewRentHistoryBtn =
+    document.getElementById(
+        "viewRentHistoryBtn"
+    );
+
+
+const rentHistorySection =
+    document.getElementById(
+        "rent-history-section"
+    );
+
+
+if (
+    viewRentHistoryBtn &&
+    rentHistorySection
+) {
+
+    viewRentHistoryBtn.addEventListener(
+        "click",
+        function () {
+
+            rentHistorySection.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+}
+// ==========================================
+// DAY 50 - TENANT RENT SUMMARY
+// ==========================================
+
+async function loadTenantRentSummary() {
+
+    const monthlyRent =
+        document.getElementById("tenantMonthlyRent");
+
+    const nextPayment =
+        document.getElementById("tenantNextPayment");
+
+    const rentalStatus =
+        document.getElementById("tenantRentalStatus");
+
+    const rentInfoMonthly =
+        document.getElementById("tenantRentInfoMonthly");
+
+    const lastPayment =
+        document.getElementById("tenantLastPayment");
+
+    const nextDueDate =
+        document.getElementById("tenantNextDueDate");
+
+    const rentStatus =
+        document.getElementById("tenantRentStatus");
+
+
+    if (
+        !monthlyRent ||
+        !nextPayment ||
+        !rentalStatus ||
+        !rentInfoMonthly ||
+        !lastPayment ||
+        !nextDueDate ||
+        !rentStatus
+    ) {
+        return;
+    }
+
+
+    const token =
+        localStorage.getItem("renteaseToken");
+
+
+    if (!token) {
+
+        console.log(
+            "Tenant token not found."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        // ==========================================
+        // 1. GET RENT SUMMARY
+        // ==========================================
+
+        const summaryResponse =
+            await fetch(
+                `${API_BASE_URL}/api/tenant/rent-summary`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        const summaryData =
+            await summaryResponse.json();
+
+
+        if (
+            !summaryResponse.ok ||
+            !summaryData.success
+        ) {
+
+            console.error(
+                "Failed to load rent summary:",
+                summaryData.message
+            );
+
+            return;
+        }
+
+
+        const summary =
+            summaryData.summary || {};
+
+
+        const totalRent =
+            Number(summary.totalRent) || 0;
+
+
+        const paidRent =
+            Number(summary.paidRent) || 0;
+
+
+        const pendingRent =
+            Number(summary.pendingRent) || 0;
+
+
+        // ==========================================
+        // 2. UPDATE MONTHLY RENT
+        // ==========================================
+
+        monthlyRent.textContent =
+            `₹${totalRent.toLocaleString("en-IN")}`;
+
+
+        rentInfoMonthly.textContent =
+            `₹${totalRent.toLocaleString("en-IN")}`;
+
+
+        // ==========================================
+        // 3. UPDATE LAST PAYMENT
+        // ==========================================
+
+        lastPayment.textContent =
+            `₹${paidRent.toLocaleString("en-IN")}`;
+
+
+        // ==========================================
+        // 4. UPDATE RENT STATUS
+        // ==========================================
+
+        if (pendingRent > 0) {
+
+            rentStatus.textContent =
+                "Pending";
+
+            rentStatus.className =
+                "rent-pending";
+
+        } else {
+
+            rentStatus.textContent =
+                "Paid";
+
+            rentStatus.className =
+                "rent-paid";
+        }
+
+
+        // ==========================================
+        // 5. RENTAL STATUS
+        // ==========================================
+
+        if (totalRent > 0) {
+
+            rentalStatus.textContent =
+                "Active";
+
+        } else {
+
+            rentalStatus.textContent =
+                "Inactive";
+        }
+
+
+        // ==========================================
+        // 6. GET RENT HISTORY
+        // FOR DUE DATE + LAST PAYMENT DATE
+        // ==========================================
+
+        const historyResponse =
+            await fetch(
+                `${API_BASE_URL}/api/tenant/rent-history`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        const historyData =
+            await historyResponse.json();
+
+
+        if (
+            !historyResponse.ok ||
+            !historyData.success
+        ) {
+
+            console.error(
+                "Failed to load rent history:",
+                historyData.message
+            );
+
+            return;
+        }
+
+
+        const history =
+            historyData.history || [];
+
+
+        if (history.length === 0) {
+
+            nextPayment.textContent =
+                "--";
+
+            nextDueDate.textContent =
+                "--";
+
+            return;
+        }
+
+
+        // ==========================================
+        // 7. FIND LATEST RENT RECORD
+        // ==========================================
+
+        const latestRent =
+            history[0];
+
+
+        // ==========================================
+        // 8. FORMAT DUE DATE
+        // ==========================================
+
+        if (latestRent.dueDate) {
+
+            const dueDate =
+                new Date(
+                    latestRent.dueDate
+                );
+
+
+            const formattedDueDate =
+                dueDate.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric"
+                    }
+                );
+
+
+            nextDueDate.textContent =
+                formattedDueDate;
+
+
+            nextPayment.textContent =
+                dueDate.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day: "numeric",
+                        month: "short"
+                    }
+                );
+
+        } else {
+
+            nextPayment.textContent =
+                "--";
+
+            nextDueDate.textContent =
+                "--";
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Tenant rent summary error:",
+            error
+        );
+
+    }
+}
+
+
+// ==========================================
+// LOAD TENANT RENT SUMMARY
+// ==========================================
+
+loadTenantRentSummary();

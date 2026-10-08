@@ -3026,3 +3026,549 @@ body {
     }
 
 }
+/* ==========================================
+   DAY 47 - MANAGE TENANTS
+========================================== */
+
+.owner-tenants-section {
+    margin-top: 30px;
+}
+
+
+.owner-tenants-section .owner-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+
+.owner-tenants-section .owner-card-header h2 {
+    margin: 0;
+}
+
+
+.owner-section-label {
+    font-size: 16px;
+    color: #5b4b8a;
+    font-weight: 500;
+}
+
+
+/* Tenant list */
+
+#ownerTenantsList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+/* Individual tenant */
+
+.owner-tenant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 20px;
+
+    background: #f8f9fc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    transition: 0.2s ease;
+}
+
+
+.owner-tenant-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Tenant name */
+
+.owner-tenant-item h3 {
+    margin: 0 0 8px 0;
+
+    font-size: 19px;
+}
+
+
+/* Tenant information */
+
+.owner-tenant-item p {
+    margin: 6px 0;
+
+    color: #555;
+
+    font-size: 15px;
+}
+
+
+/* Rent */
+
+.owner-tenant-item strong {
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 17px;
+
+    color: #222;
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .owner-tenant-item {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+}
+/* ==========================================
+   DAY 48 - OWNER RENT RECORDS
+========================================== */
+
+.owner-rent-records-section {
+    margin-top: 30px;
+}
+
+.owner-rent-records-section .owner-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.owner-rent-records-section .owner-card-header h2 {
+    margin: 0;
+}
+
+#ownerRentRecordsList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+/* RENT RECORD CARD */
+
+.owner-rent-record-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 20px;
+
+    background: #f8f9fc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.owner-rent-record-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* LEFT SIDE */
+
+.owner-rent-record-item h3 {
+    margin: 0 0 10px 0;
+
+    font-size: 19px;
+
+    color: #222;
+}
+
+.owner-rent-record-item p {
+    margin: 6px 0;
+
+    color: #555;
+
+    font-size: 15px;
+}
+
+
+/* RIGHT SIDE */
+
+.owner-rent-record-item > div:last-child {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 8px;
+}
+
+.owner-rent-record-item strong {
+    font-size: 20px;
+
+    color: #222;
+}
+
+
+/* STATUS */
+
+.owner-rent-record-item .owner-completed {
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    background: #dcfce7;
+
+    color: #15803d;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.owner-rent-record-item .owner-pending {
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    background: #fef3c7;
+
+    color: #b45309;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   DAY 47 - MANAGE TENANTS
+========================================== */
+
+.owner-tenants-section {
+    margin-top: 30px;
+}
+
+.owner-tenants-section .owner-card-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.owner-tenants-section .owner-card-header h2 {
+    margin: 0;
+}
+
+#ownerTenantsList {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.owner-tenant-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 20px;
+
+    background: #f8f9fc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.owner-tenant-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.owner-tenant-item h3 {
+    margin: 0 0 8px 0;
+
+    font-size: 19px;
+}
+
+.owner-tenant-item p {
+    margin: 6px 0;
+
+    color: #555;
+
+    font-size: 15px;
+}
+
+.owner-tenant-item strong {
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 17px;
+
+    color: #222;
+}
+
+
+/* ==========================================
+   MOBILE RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .owner-rent-record-item {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+    .owner-rent-record-item > div:last-child {
+        align-items: flex-start;
+    }
+
+    .owner-tenant-item {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+}
+/* ==========================================
+   DAY 49 - TENANT RENT HISTORY
+========================================== */
+
+.tenant-rent-history-section {
+    width: calc(100% - 120px);
+    margin: 30px auto 50px;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border-radius: 24px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+
+/* HEADER */
+
+.tenant-rent-history-section .tenant-card-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.tenant-rent-history-section .tenant-card-header h2 {
+    margin: 0;
+
+    font-size: 26px;
+
+    color: #111827;
+}
+
+.tenant-section-label {
+    color: #5b4b8a;
+
+    font-size: 16px;
+
+    font-weight: 600;
+}
+
+
+/* MESSAGE */
+
+#tenantRentHistoryMessage {
+    color: #64748b;
+
+    margin-bottom: 15px;
+}
+
+
+/* HISTORY LIST */
+
+#tenantRentHistoryList {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+
+/* RENT HISTORY CARD */
+
+.tenant-rent-history-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 22px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 16px;
+
+    transition: all 0.2s ease;
+}
+
+.tenant-rent-history-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* PROPERTY DETAILS */
+
+.tenant-rent-history-item h3 {
+    margin: 0 0 12px;
+
+    font-size: 19px;
+
+    color: #111827;
+}
+
+.tenant-rent-history-item p {
+    margin: 7px 0;
+
+    color: #64748b;
+
+    font-size: 15px;
+}
+
+
+/* RIGHT SIDE */
+
+.tenant-rent-history-right {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: 8px;
+}
+
+.tenant-rent-history-right strong {
+    font-size: 21px;
+
+    color: #111827;
+}
+
+
+/* PAID STATUS */
+
+.tenant-rent-history-right .owner-completed {
+    display: inline-block;
+
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    background: #dcfce7;
+
+    color: #15803d;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* PENDING STATUS */
+
+.tenant-rent-history-right .owner-pending {
+    display: inline-block;
+
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    background: #fef3c7;
+
+    color: #b45309;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   MOBILE RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .tenant-rent-history-section {
+        width: calc(100% - 30px);
+
+        padding: 20px;
+    }
+
+    .tenant-rent-history-section
+    .tenant-card-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+    }
+
+    .tenant-rent-history-item {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 18px;
+    }
+
+    .tenant-rent-history-right {
+        align-items: flex-start;
+    }
+
+}

@@ -917,6 +917,135 @@ app.get(
         }
     }
 );
+
+// ==========================================
+// DAY 48 - OWNER RENT RECORDS
+// ==========================================
+
+app.get(
+    "/api/owner/rents",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
+
+        try {
+
+            // Get all properties of logged-in owner
+            const properties = await Property.find({
+                owner: req.user.id
+            }).select("_id title location rent tenant");
+
+
+            // Get property IDs
+            const propertyIds = properties.map(function (property) {
+                return property._id;
+            });
+
+
+            // Get rent records for owner's properties
+            const rents = await Rent.find({
+                property: {
+                    $in: propertyIds
+                }
+            })
+                .populate(
+                    "property",
+                    "title location rent"
+                )
+                .populate(
+                    "tenant",
+                    "name email"
+                )
+                .sort({
+                    createdAt: -1
+                });
+
+
+            res.status(200).json({
+
+                success: true,
+
+                count: rents.length,
+
+                rents: rents
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Owner rent records error:",
+                error
+            );
+
+
+            res.status(500).json({
+
+                success: false,
+
+                message: "Failed to fetch owner rent records",
+
+                error: error.message
+
+            });
+
+        }
+
+    }
+);
+// ==========================================
+// DAY 47 - OWNER TENANT DETAILS
+// ==========================================
+
+app.get(
+    "/api/owner/tenants/details",
+    verifyToken,
+    authorizeRoles("owner"),
+    async function (req, res) {
+
+        try {
+
+            const properties = await Property.find({
+                owner: req.user.id,
+                tenant: {
+                    $exists: true,
+                    $ne: null
+                }
+            })
+                .select(
+                    "_id title location type rent status tenant"
+                )
+                .populate(
+                    "tenant",
+                    "-password"
+                );
+
+
+            res.status(200).json({
+
+                success: true,
+
+                tenants: properties
+
+            });
+
+
+        } catch (error) {
+
+            res.status(500).json({
+
+                success: false,
+
+                message: "Failed to fetch tenant details",
+
+                error: error.message
+
+            });
+
+        }
+    }
+);
 app.get(
     "/api/owner/properties",
     verifyToken,
