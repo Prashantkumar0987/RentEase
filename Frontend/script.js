@@ -4946,8 +4946,195 @@ async function loadTenantMaintenance() {
 }
 
 
-// ==========================================
-// LOAD TENANT MAINTENANCE
-// ==========================================
 
-loadTenantMaintenance();
+/* =========================================
+   DAY 52 - CREATE TENANT MAINTENANCE REQUEST
+========================================= */
+
+(function initTenantMaintenanceForm() {
+    const maintenanceBtn = document.getElementById("maintenanceBtn");
+    const formContainer = document.getElementById("maintenanceFormContainer");
+    const form = document.getElementById("tenantMaintenanceForm");
+    const cancelBtn = document.getElementById("cancelMaintenanceBtn");
+    const titleInput = document.getElementById("maintenanceTitle");
+    const descriptionInput = document.getElementById("maintenanceDescription");
+    const message = document.getElementById("maintenanceFormMessage");
+    const submitBtn = document.getElementById("submitMaintenanceBtn");
+    const summary = document.getElementById("tenantMaintenanceSummary");
+    const maintenanceCount = document.getElementById("tenantMaintenanceCount");
+
+    // Run only when the maintenance form exists on this page.
+    if (
+        !maintenanceBtn ||
+        !formContainer ||
+        !form ||
+        !cancelBtn ||
+        !titleInput ||
+        !descriptionInput ||
+        !message ||
+        !submitBtn
+    ) {
+        return;
+    }
+
+    // Open the form.
+    maintenanceBtn.addEventListener("click", function () {
+        formContainer.hidden = false;
+        message.textContent = "";
+        formContainer.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+        titleInput.focus();
+    });
+
+    // Close the form.
+    cancelBtn.addEventListener("click", function () {
+        formContainer.hidden = true;
+        form.reset();
+        message.textContent = "";
+    });
+
+    // Keep the dashboard summary synchronized with the maintenance card.
+    function syncMaintenanceSummary() {
+        if (summary && maintenanceCount) {
+            summary.textContent = maintenanceCount.textContent;
+        }
+    }
+
+    // Find the real property assigned to the logged-in tenant.
+    async function getTenantAssignedPropertyId(token) {
+        const response = await fetch(
+            `${API_BASE_URL}/api/tenant/applications`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message || "Unable to find your approved property."
+            );
+        }
+
+        const applications = Array.isArray(data.applications)
+            ? data.applications
+            : [];
+
+        const approvedApplication = applications.find(function (application) {
+            return String(application.status || "").toLowerCase() === "approved";
+        });
+
+        if (!approvedApplication) {
+            throw new Error(
+                "You need an approved rental application before reporting an issue."
+            );
+        }
+
+        const propertyId =
+            approvedApplication.property?._id ||
+            approvedApplication.property?.id ||
+            approvedApplication.propertyId;
+
+        // MongoDB ObjectId validation.
+        if (!/^[a-f\d]{24}$/i.test(String(propertyId || ""))) {
+            throw new Error(
+                "A valid assigned property ID could not be found."
+            );
+        }
+
+        return propertyId;
+    }
+
+    // Submit a new maintenance request.
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const token = localStorage.getItem("renteaseToken");
+
+        let user = null;
+
+        try {
+            user = JSON.parse(
+                localStorage.getItem("renteaseUser") || "null"
+            );
+        } catch (error) {
+            user = null;
+        }
+
+        if (!token) {
+            message.textContent = "Please log in as a tenant first.";
+            return;
+        }
+
+        if (!user || String(user.role || "").toLowerCase() !== "tenant") {
+            message.textContent = "Only tenant accounts can report an issue.";
+            return;
+        }
+
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+
+        if (!title || !description) {
+            message.textContent = "Please enter both the issue title and description.";
+            return;
+        }
+
+        try {
+            submitBtn.disabled = true;
+            message.textContent = "Submitting your request...";
+
+            // Get the real assigned property ID.
+            const propertyId = await getTenantAssignedPropertyId(token);
+
+            // Send request to the backend.
+            const response = await fetch(
+                `${API_BASE_URL}/api/maintenance`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        propertyId: propertyId,
+                        title: title,
+                        description: description
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message || "Failed to submit the maintenance request."
+                );
+            }
+
+            message.textContent =
+                data.message || "Maintenance request submitted successfully!";
+
+            form.reset();
+
+            // Refresh the list and the open-request count.
+            await loadTenantMaintenance();
+            syncMaintenanceSummary();
+
+        } catch (error) {
+            console.error("Create maintenance request error:", error);
+            message.textContent = error.message ||
+                "Unable to submit the request. Please try again.";
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Initial load: synchronize the summary after requests are fetched.
+    loadTenantMaintenance().then(syncMaintenanceSummary);
+})();
