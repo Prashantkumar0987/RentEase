@@ -3436,15 +3436,35 @@ async function loadOwnerMaintenance() {
         // COUNT OPEN REQUESTS
         // ======================================
 
-        const openRequests = complaints.filter(function (complaint) {
-
-            return complaint.status !== "resolved";
-
+        // Count maintenance requests by status
+        const pendingCount = complaints.filter(function (complaint) {
+            return (complaint.status || "pending") === "pending";
         }).length;
 
+        const inProgressCount = complaints.filter(function (complaint) {
+            return complaint.status === "in-progress";
+        }).length;
 
-        maintenanceCount.textContent =
-            `${openRequests} Open`;
+        const resolvedCount = complaints.filter(function (complaint) {
+            return complaint.status === "resolved";
+        }).length;
+
+        // Keep the existing Open count
+        const openRequests = pendingCount + inProgressCount;
+
+        maintenanceCount.textContent = `${openRequests} Open`;
+
+        // Update the compact status summary
+        const statusSummary = document.getElementById(
+            "ownerMaintenanceStatusSummary"
+        );
+
+        if (statusSummary) {
+            statusSummary.textContent =
+                `Pending: ${pendingCount} | ` +
+                `In Progress: ${inProgressCount} | ` +
+                `Resolved: ${resolvedCount}`;
+        }
 
 
         // ======================================

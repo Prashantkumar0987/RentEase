@@ -3685,3 +3685,22 @@ body {
     }
 
 }
+/* Day 54 - Owner Maintenance Status Summary */
+.owner-maintenance-summary {
+    margin: 12px 0 16px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+.owner-maintenance-summary {
+    font-size: 13px;
+    padding: 8px 10px;
+    margin: 12px 0 16px;
+    line-height: 1.5;
+}
