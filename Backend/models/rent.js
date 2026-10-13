@@ -34,7 +34,15 @@ const rentSchema = new mongoose.Schema({
     paidAt: {
         type: Date,
         default: null
-    }
+    },
+    paymentOrderId: {
+        type: String,
+        default: null
+    },
+    paymentId: {
+        type: String,
+        default: null
+    },
 
 }, { timestamps: true });
 

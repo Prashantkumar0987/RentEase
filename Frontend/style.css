@@ -3704,3 +3704,53 @@ body {
     margin: 12px 0 16px;
     line-height: 1.5;
 }
+
+/* Day 56 - Tenant My Profile Layout */
+#tenant-profile-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 24px auto;
+    padding: 24px;
+    box-sizing: border-box;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+#tenant-profile-section .tenant-card-header {
+    margin-bottom: 16px;
+}
+
+#tenant-profile-section .form-group {
+    margin-bottom: 20px;
+}
+
+#tenant-profile-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+#tenant-profile-section input {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+#tenant-profile-section button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    #tenant-profile-section {
+        padding: 16px;
+        margin: 16px auto;
+    }
+}

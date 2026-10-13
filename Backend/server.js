@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const express = require("express");
 const bcrypt = require("bcrypt");
@@ -379,6 +381,66 @@ app.get("/api/profile", verifyToken, async function (req, res) {
 // ==========================
 // OWNER ONLY API
 // ==========================
+
+
+/* ==========================================
+   DAY 56 - UPDATE OWN PROFILE
+========================================== */
+
+app.put("/api/profile", verifyToken, async function (req, res) {
+    try {
+        const { name } = req.body;
+
+        // Validate name
+        if (typeof name !== "string" || !name.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Name is required"
+            });
+        }
+
+        if (name.trim().length > 100) {
+            return res.status(400).json({
+                success: false,
+                message: "Name cannot exceed 100 characters"
+            });
+        }
+
+        // Find only the logged-in user
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Update only the allowed field
+        user.name = name.trim();
+        await user.save();
+
+        // Never return the password
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to update profile",
+            error: error.message
+        });
+    }
+});
+
 
 app.get(
     "/api/owner/dashboard",
@@ -794,14 +856,15 @@ app.get(
         }
     }
 );
-app.put(
-    "/api/rents/:id/pay",
+
+/* DAY - RAZORPAY PAYMENT ROUTES */
+
+app.post(
+    "/api/rents/:id/create-order",
     verifyToken,
     authorizeRoles("tenant"),
-    async function(req, res) {
-
+    async function (req, res) {
         try {
-
             const rent = await Rent.findOne({
                 _id: req.params.id,
                 tenant: req.user.id
@@ -821,28 +884,183 @@ app.put(
                 });
             }
 
-            rent.status = "paid";
-            rent.paidAt = new Date();
+            if (!Number.isFinite(rent.amount) || rent.amount <= 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid rent amount"
+                });
+            }
 
+            if (
+                !process.env.RAZORPAY_KEY_ID ||
+                !process.env.RAZORPAY_KEY_SECRET
+            ) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Razorpay keys are not configured"
+                });
+            }
+
+            const razorpay = new Razorpay({
+                key_id: process.env.RAZORPAY_KEY_ID,
+                key_secret: process.env.RAZORPAY_KEY_SECRET
+            });
+
+            const order = await razorpay.orders.create({
+                amount: Math.round(rent.amount * 100),
+                currency: "INR",
+                receipt: `rent_${rent._id}`
+            });
+
+            rent.paymentOrderId = order.id;
             await rent.save();
 
-            res.status(200).json({
+            return res.status(201).json({
                 success: true,
-                message: "Rent marked as paid successfully",
-                rent: rent
+                message: "Payment order created",
+                keyId: process.env.RAZORPAY_KEY_ID,
+                orderId: order.id,
+                amount: order.amount,
+                currency: order.currency,
+                rentId: rent._id
             });
-
         } catch (error) {
+            console.error("Create payment order error:", error);
 
-            res.status(400).json({
+            return res.status(500).json({
                 success: false,
-                message: "Failed to update rent",
-                error: error.message
+                message: "Could not create payment order"
             });
-
         }
     }
 );
+
+
+app.post(
+    "/api/rents/:id/verify-payment",
+    verifyToken,
+    authorizeRoles("tenant"),
+    async function (req, res) {
+        try {
+            const {
+                razorpay_order_id,
+                razorpay_payment_id,
+                razorpay_signature
+            } = req.body;
+
+            if (
+                !razorpay_order_id ||
+                !razorpay_payment_id ||
+                !razorpay_signature
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Payment details are missing"
+                });
+            }
+
+            const rent = await Rent.findOne({
+                _id: req.params.id,
+                tenant: req.user.id
+            });
+
+            if (!rent) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Rent record not found"
+                });
+            }
+
+            if (rent.status === "paid") {
+                if (rent.paymentId === razorpay_payment_id) {
+                    return res.status(200).json({
+                        success: true,
+                        message: "Payment already verified",
+                        rent
+                    });
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    message: "Rent is already paid"
+                });
+            }
+
+            if (rent.paymentOrderId !== razorpay_order_id) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Order does not match this rent"
+                });
+            }
+
+            const expectedSignature = crypto
+                .createHmac(
+                    "sha256",
+                    process.env.RAZORPAY_KEY_SECRET
+                )
+                .update(
+                    `${razorpay_order_id}|${razorpay_payment_id}`
+                )
+                .digest("hex");
+
+            const received = Buffer.from(razorpay_signature, "hex");
+            const expected = Buffer.from(expectedSignature, "hex");
+
+            if (
+                received.length !== expected.length ||
+                !crypto.timingSafeEqual(received, expected)
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid payment signature"
+                });
+            }
+
+            // Confirm payment directly with Razorpay.
+            const razorpay = new Razorpay({
+                key_id: process.env.RAZORPAY_KEY_ID,
+                key_secret: process.env.RAZORPAY_KEY_SECRET
+            });
+
+            const payment = await razorpay.payments.fetch(
+                razorpay_payment_id
+            );
+
+            if (
+                payment.order_id !== razorpay_order_id ||
+                payment.status !== "captured" ||
+                payment.amount !== Math.round(rent.amount * 100) ||
+                payment.currency !== "INR"
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Payment is not captured or does not match this rent"
+                });
+            }
+
+            // Update only after server-side verification.
+            rent.status = "paid";
+            rent.paidAt = new Date();
+            rent.paymentId = razorpay_payment_id;
+
+            await rent.save();
+
+            return res.status(200).json({
+                success: true,
+                message: "Payment verified successfully",
+                rent
+            });
+        } catch (error) {
+            console.error("Payment verification error:", error);
+
+            return res.status(500).json({
+                success: false,
+                message: "Payment verification failed"
+            });
+        }
+    }
+);
+
 // ==========================================
 // DAY 45 - OWNER RENT SUMMARY
 // ==========================================

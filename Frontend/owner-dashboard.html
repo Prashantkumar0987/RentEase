@@ -379,6 +379,17 @@
                     >
                         💰 Rent Records
                     </button>
+                    
+<!-- My Profile -->
+
+                    <button
+                        type="button"
+                        class="owner-quick-action"
+                        id="quickMyProfileBtn"
+                    >
+                        👤 My Profile
+                    </button>
+
 
 
                     <!-- Maintenance -->
@@ -397,6 +408,57 @@
 
 
         </section>
+        
+<!-- ==========================================
+     DAY 56 - MY PROFILE
+=========================================== -->
+
+        <section
+            class="owner-card"
+            id="owner-profile-section"
+            style="display: none;"
+        >
+            <div class="owner-card-header">
+                <h2>👤 My Profile</h2>
+            </div>
+
+            <p id="ownerProfileMessage" role="status" aria-live="polite"></p>
+
+            <form id="ownerProfileForm">
+                <div class="owner-form-field">
+                    <label for="ownerProfileName">Full Name</label>
+                    <input
+                        type="text"
+                        id="ownerProfileName"
+                        required
+                        maxlength="100"
+                    >
+                </div>
+
+                <div class="owner-form-field">
+                    <label for="ownerProfileEmail">Email</label>
+                    <input
+                        type="email"
+                        id="ownerProfileEmail"
+                        readonly
+                    >
+                </div>
+
+                <div class="owner-form-field">
+                    <label for="ownerProfileRole">Role</label>
+                    <input
+                        type="text"
+                        id="ownerProfileRole"
+                        readonly
+                    >
+                </div>
+
+                <button type="submit" class="owner-submit-property">
+                    Save Changes
+                </button>
+            </form>
+        </section>
+
 
 
         <!-- ==========================================

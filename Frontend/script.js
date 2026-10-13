@@ -5158,3 +5158,190 @@ async function loadTenantMaintenance() {
     // Initial load: synchronize the summary after requests are fetched.
     loadTenantMaintenance().then(syncMaintenanceSummary);
 })();
+
+/* DAY 55 - TENANT QUICK ACTIONS */
+
+// Report Issue: open the existing maintenance form
+document
+    .getElementById("quickReportIssueBtn")
+    ?.addEventListener("click", function () {
+        document.getElementById("maintenanceFormContainer")?.removeAttribute("hidden");
+
+        document.getElementById("maintenanceFormContainer")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+// Rent History: scroll to the existing rent history section
+document
+    .getElementById("quickRentHistoryBtn")
+    ?.addEventListener("click", function () {
+        document.getElementById("rent-history-section")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    
+/* ==========================================
+   DAY 56 - MY PROFILE (TENANT + OWNER)
+=========================================== */
+
+(function initMyProfile() {
+    const profileButton = document.getElementById("quickMyProfileBtn");
+
+    const profileSection =
+        document.getElementById("tenant-profile-section") ||
+        document.getElementById("owner-profile-section");
+
+    console.log("Day 56 profile button:", profileButton);
+    console.log("Day 56 profile section:", profileSection);
+
+    if (!profileButton || !profileSection) {
+        console.error(
+            "Day 56 stopped: profile button or profile section is missing."
+        );
+        return;
+    }
+
+    const profileForm = profileSection.querySelector("form");
+    const nameInput =
+        profileSection.querySelector("#tenantProfileName") ||
+        profileSection.querySelector("#ownerProfileName");
+
+    const emailInput =
+        profileSection.querySelector("#tenantProfileEmail") ||
+        profileSection.querySelector("#ownerProfileEmail");
+
+    const roleInput =
+        profileSection.querySelector("#tenantProfileRole") ||
+        profileSection.querySelector("#ownerProfileRole");
+
+    const message =
+        profileSection.querySelector("#tenantProfileMessage") ||
+        profileSection.querySelector("#ownerProfileMessage");
+
+    if (!profileForm || !nameInput || !emailInput || !roleInput || !message) {
+        console.error("My Profile HTML elements are missing.");
+        return;
+    }
+
+    async function loadMyProfile() {
+        const token = localStorage.getItem("renteaseToken");
+
+        if (!token) {
+            message.textContent = "Please log in to view your profile.";
+            return;
+        }
+
+        try {
+            message.textContent = "Loading profile...";
+            profileButton.disabled = true;
+
+            const response = await fetch(`${API_BASE_URL}/api/profile`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success || !data.user) {
+                throw new Error(data.message || "Unable to load your profile.");
+            }
+
+            nameInput.value = data.user.name || "";
+            emailInput.value = data.user.email || "";
+            roleInput.value = data.user.role || "";
+
+            message.textContent = "Profile loaded successfully.";
+        } catch (error) {
+            console.error("Load profile error:", error);
+            message.textContent = error.message;
+        } finally {
+            profileButton.disabled = false;
+        }
+    }
+
+    profileButton.addEventListener("click", async function () {
+        profileSection.style.display = "";
+        profileSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        await loadMyProfile();
+    });
+
+    profileForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const token = localStorage.getItem("renteaseToken");
+        const name = nameInput.value.trim();
+
+        if (!token) {
+            message.textContent = "Please log in again.";
+            return;
+        }
+
+        if (!name) {
+            message.textContent = "Name is required.";
+            nameInput.focus();
+            return;
+        }
+
+        try {
+            const saveButton = profileForm.querySelector(
+                'button[type="submit"]'
+            );
+
+            if (saveButton) saveButton.disabled = true;
+            message.textContent = "Saving profile...";
+
+            const response = await fetch(`${API_BASE_URL}/api/profile`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ name })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Unable to update profile.");
+            }
+
+            nameInput.value = data.user?.name || name;
+
+            // Keep the cached user name in sync with the backend.
+            try {
+                const cachedUser = JSON.parse(
+                    localStorage.getItem("renteaseUser") || "null"
+                );
+
+                if (cachedUser) {
+                    cachedUser.name = nameInput.value;
+                    localStorage.setItem(
+                        "renteaseUser",
+                        JSON.stringify(cachedUser)
+                    );
+                }
+            } catch (cacheError) {
+                console.warn("Could not update cached user details.");
+            }
+
+            message.textContent =
+                data.message || "Profile updated successfully.";
+        } catch (error) {
+            console.error("Update profile error:", error);
+            message.textContent = error.message;
+        } finally {
+            const saveButton = profileForm.querySelector(
+                'button[type="submit"]'
+            );
+
+            if (saveButton) saveButton.disabled = false;
+        }
+    });
+})();
+
