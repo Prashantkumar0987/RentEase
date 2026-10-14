@@ -442,6 +442,98 @@ app.put("/api/profile", verifyToken, async function (req, res) {
 });
 
 
+/* ==========================================
+   DAY 57 - CHANGE PASSWORD
+========================================== */
+
+app.put("/api/change-password", verifyToken, async function (req, res) {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        // Validate required fields
+        if (
+            typeof currentPassword !== "string" ||
+            typeof newPassword !== "string" ||
+            !currentPassword ||
+            !newPassword
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password and new password are required"
+            });
+        }
+
+        // Validate new password length
+        if (newPassword.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be at least 8 characters long"
+            });
+        }
+
+        if (newPassword.length > 72) {
+            return res.status(400).json({
+                success: false,
+                message: "New password cannot exceed 72 characters"
+            });
+        }
+
+        // Find the logged-in user
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Verify the current password
+        const isPasswordCorrect = await bcrypt.compare(
+            currentPassword,
+            user.password
+        );
+
+        if (!isPasswordCorrect) {
+            return res.status(401).json({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        // Prevent setting the same password again
+        const isSamePassword = await bcrypt.compare(
+            newPassword,
+            user.password
+        );
+
+        if (isSamePassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be different from current password"
+            });
+        }
+
+        // Hash and save the new password
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password changed successfully"
+        });
+
+    } catch (error) {
+        console.error("Change password error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to change password"
+        });
+    }
+});
+
+
 app.get(
     "/api/owner/dashboard",
     verifyToken,
