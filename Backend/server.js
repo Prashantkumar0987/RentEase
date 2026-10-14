@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
 const Property = require("./models/property");
-const User = require("./models/User");
+const User = require("./models/user");
 const Maintenance = require("./models/Maintenance");
 const RentalApplication = require("./models/RentalApplication");
 const Rent = require("./models/rent");
