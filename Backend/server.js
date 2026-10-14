@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
-const Property = require("./models/Property");
+const Property = require("./models/property");
 const User = require("./models/User");
 const Maintenance = require("./models/Maintenance");
 const RentalApplication = require("./models/RentalApplication");
