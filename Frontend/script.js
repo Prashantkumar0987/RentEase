@@ -5235,7 +5235,7 @@ document
             message.textContent = "Loading profile...";
             profileButton.disabled = true;
 
-            const response = await fetch(`${API_BASE_URL}/api/profile`, {
+            const response = await fetch("https://rentease-cma0.onrender.com/api/profile", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
