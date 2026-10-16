@@ -906,7 +906,7 @@ if (signupForm) {
             signupMessage.textContent = "Creating your account...";
 
             const response = await fetch(
-                `${API_BASE_URL}/api/users/register`,
+                `$https://rentease-cma0.onrender.com/api/users/register`,
                 {
                     method: "POST",
                     headers: {
