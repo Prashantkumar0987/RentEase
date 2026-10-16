@@ -302,12 +302,9 @@ app.post("/api/users/login", async function (req, res) {
         }
 
         // Check password
-        const isPasswordCorrect = await bcrypt.compare(
-            password,
-            user.password
-        );
+        const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
 
-        if (!isPasswordCorrect) {
+        if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid password"
