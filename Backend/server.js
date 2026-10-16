@@ -302,7 +302,7 @@ app.post("/api/users/login", async function (req, res) {
         }
 
         // Check password
-        const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
             return res.status(401).json({
