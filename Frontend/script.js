@@ -872,149 +872,75 @@ if (loginForm) {
     });
 }
 
-const signupForm =
-    document.querySelector("#signupForm");
+
+const signupForm = document.querySelector("#signupForm");
 
 if (signupForm) {
+    signupForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    signupForm.addEventListener(
-        "submit",
-        function (event) {
+        const name = document.querySelector("#signupName").value.trim();
+        const email = document.querySelector("#signupEmail").value.trim();
+        const password = document.querySelector("#signupPassword").value;
+        const confirmPassword = document.querySelector("#confirmPassword").value;
+        const role = document.querySelector("#userRole").value;
+        const signupMessage = document.querySelector("#signupMessage");
 
-            event.preventDefault();
+        if (!name || !email || !password || !confirmPassword || !role) {
+            signupMessage.textContent = "Please fill in all fields.";
+            return;
+        }
 
+        if (password !== confirmPassword) {
+            signupMessage.textContent = "Passwords do not match.";
+            return;
+        }
 
-            const name =
-                document.querySelector("#signupName")
-                    .value
-                    .trim();
+        if (password.length < 6) {
+            signupMessage.textContent =
+                "Password must be at least 6 characters long.";
+            return;
+        }
 
-            const email =
-                document.querySelector("#signupEmail")
-                    .value
-                    .trim();
+        try {
+            signupMessage.textContent = "Creating your account...";
 
-            const password =
-                document.querySelector("#signupPassword")
-                    .value
-                    .trim();
-
-            const confirmPassword =
-                document.querySelector("#confirmPassword")
-                    .value
-                    .trim();
-
-            const role =
-                document.querySelector("#userRole")
-                    .value;
-
-            const signupMessage =
-                document.querySelector("#signupMessage");
-
-
-            if (name === "") {
-
-                signupMessage.textContent =
-                    "Please enter your name.";
-
-                return;
-
-            }
-
-
-            if (name.length < 3) {
-
-                signupMessage.textContent =
-                    "Name must be at least 3 characters.";
-
-                return;
-
-            }
-
-
-            if (email === "") {
-
-                signupMessage.textContent =
-                    "Please enter your email.";
-
-                return;
-
-            }
-
-
-            if (!email.includes("@")) {
-
-                signupMessage.textContent =
-                    "Please enter a valid email.";
-
-                return;
-
-            }
-
-
-            if (password === "") {
-
-                signupMessage.textContent =
-                    "Please enter a password.";
-
-                return;
-
-            }
-
-
-            if (password.length < 6) {
-
-                signupMessage.textContent =
-                    "Password must be at least 6 characters.";
-
-                return;
-
-            }
-
-
-            if (password !== confirmPassword) {
-
-                signupMessage.textContent =
-                    "Passwords do not match.";
-
-                return;
-
-            }
-
-
-            if (role === "") {
-
-                signupMessage.textContent =
-                    "Please select your role.";
-
-                return;
-
-            }
-
-
-            const userData = {
-
-                name: name,
-                email: email,
-                password: password,
-                role: role
-
-            };
-
-
-            localStorage.setItem(
-                "renteaseUser",
-                JSON.stringify(userData)
+            const response = await fetch(
+                `${API_BASE_URL}/api/users/register`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        role
+                    })
+                }
             );
 
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Registration failed.");
+            }
 
             signupMessage.textContent =
-                "Account created successfully!";
+                "Account created successfully! Please log in.";
 
+            // Do not store the plain-text password in localStorage.
+            signupForm.reset();
+
+        } catch (error) {
+            console.error("Signup error:", error);
+            signupMessage.textContent =
+                error.message || "Unable to connect to the backend.";
         }
-    );
-
+    });
 }
+
 
 
 // ======================================================
@@ -5235,7 +5161,7 @@ document
             message.textContent = "Loading profile...";
             profileButton.disabled = true;
 
-            const response = await fetch("https://rentease-cma0.onrender.com/api/profile", {
+            const response = await fetch("https://rentease-cma0.onrender.com/api/auth/profile", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -5296,7 +5222,7 @@ document
             if (saveButton) saveButton.disabled = true;
             message.textContent = "Saving profile...";
 
-            const response = await fetch(`${API_BASE_URL}/api/profile`, {
+            const response = await fetch(`https://rentease-frontend-pa0l.onrender.com/api/auth/profile`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
