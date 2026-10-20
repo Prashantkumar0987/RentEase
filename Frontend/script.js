@@ -814,6 +814,15 @@ if (propertyDetails) {
 
 //LOGIN AND SIGNUP
 
+
+/* =========================================
+   RENT EASE - LOGIN
+========================================= */
+
+// Add this constant only once in script.js.
+// If already declared, do not declare it again.
+const API_BASE_URL = "https://rentease-cma0.onrender.com";
+
 const loginForm = document.querySelector("#loginForm");
 
 if (loginForm) {
@@ -821,7 +830,7 @@ if (loginForm) {
         event.preventDefault();
 
         const email = document.querySelector("#loginEmail").value.trim();
-        const password = document.querySelector("#loginPassword").value.trim();
+        const password = document.querySelector("#loginPassword").value;
         const loginMessage = document.querySelector("#loginMessage");
 
         if (!email || !password) {
@@ -832,13 +841,16 @@ if (loginForm) {
         try {
             loginMessage.textContent = "Logging in...";
 
-            const response = await fetch("https://rentease-cma0.onrender.com/api/users/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email, password })
-            });
+            const response = await fetch(
+                `${API_BASE_URL}/api/users/login`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                }
+            );
 
             const data = await response.json();
 
@@ -846,15 +858,16 @@ if (loginForm) {
                 throw new Error(data.message || "Login failed.");
             }
 
-            // Save the real backend JWT
+            // Store the backend JWT and public user details.
             localStorage.setItem("renteaseToken", data.token);
-
-            // Preserve user details for existing frontend features
-            localStorage.setItem("renteaseUser", JSON.stringify(data.user));
+            localStorage.setItem(
+                "renteaseUser",
+                JSON.stringify(data.user)
+            );
 
             loginMessage.textContent = "Login successful! Redirecting...";
 
-            const role = String(data.user.role || "").toLowerCase();
+            const role = String(data.user?.role || "").toLowerCase();
 
             setTimeout(function () {
                 if (role === "owner" || role === "property owner") {
@@ -866,12 +879,17 @@ if (loginForm) {
 
         } catch (error) {
             console.error("Login error:", error);
-            loginMessage.textContent = error.message ||
-                "Unable to connect to the backend.";
+            loginMessage.textContent =
+                error.message || "Unable to connect to the backend.";
         }
     });
 }
 
+
+
+/* =========================================
+   RENT EASE - SIGNUP
+========================================= */
 
 const signupForm = document.querySelector("#signupForm");
 
@@ -882,7 +900,8 @@ if (signupForm) {
         const name = document.querySelector("#signupName").value.trim();
         const email = document.querySelector("#signupEmail").value.trim();
         const password = document.querySelector("#signupPassword").value;
-        const confirmPassword = document.querySelector("#confirmPassword").value;
+        const confirmPassword =
+            document.querySelector("#confirmPassword").value;
         const role = document.querySelector("#userRole").value;
         const signupMessage = document.querySelector("#signupMessage");
 
@@ -906,7 +925,7 @@ if (signupForm) {
             signupMessage.textContent = "Creating your account...";
 
             const response = await fetch(
-                "https://rentease-cma0.onrender.com/api/users/register",
+                `${API_BASE_URL}/api/users/register`,
                 {
                     method: "POST",
                     headers: {
@@ -930,16 +949,17 @@ if (signupForm) {
             signupMessage.textContent =
                 "Account created successfully! Please log in.";
 
-            // Do not store the plain-text password in localStorage.
             signupForm.reset();
 
         } catch (error) {
             console.error("Signup error:", error);
+
             signupMessage.textContent =
                 error.message || "Unable to connect to the backend.";
         }
     });
 }
+
 
 
 
