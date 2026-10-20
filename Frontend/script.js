@@ -264,7 +264,7 @@ const sortProperties =
 // DAY 35 - BACKEND PROPERTY SEARCH
 // ==========================================
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://rentease-cma0.onrender.com";
 
 let currentPage = 1;
 const propertiesPerPage = 6;
@@ -536,7 +536,7 @@ if (propertyDetails) {
     const urlParams = new URLSearchParams(window.location.search);
     const propertyId = urlParams.get("id");
 
-    const PROPERTY_DETAILS_API_URL = "http://localhost:5000";
+    const PROPERTY_DETAILS_API_URL = "https://rentease-cma0.onrender.com";
     const fallbackImage =
         "https://images.unsplash.com/photo-1564013799919-ab600027ffc6";
 
@@ -721,7 +721,7 @@ if (propertyDetails) {
                     applicationStatus.textContent = "Submitting application...";
 
                     const response = await fetch(
-                        "http://localhost:5000/api/applications",
+                        `${PROPERTY_DETAILS_API_URL}/api/applications`,
                         {
                             method: "POST",
                             headers: {
@@ -821,7 +821,6 @@ if (propertyDetails) {
 
 // Add this constant only once in script.js.
 // If already declared, do not declare it again.
-const API_BASE_URL = "https://rentease-cma0.onrender.com";
 
 const loginForm = document.querySelector("#loginForm");
 
@@ -2045,7 +2044,7 @@ if (ownerPropertyList) {
     // Run only on tenant dashboard
     if (!applicationsList) return;
 
-    const API_BASE_URL = "http://localhost:5000";
+    const API_BASE_URL = "https://rentease-cma0.onrender.com";
 
     const messageElement = document.querySelector(
         "#tenantApplicationsMessage"
@@ -2312,7 +2311,7 @@ if (ownerPropertyList) {
     // Run only on Owner Dashboard
     if (!applicationsList) return;
 
-    const API_URL = "http://localhost:5000";
+    const API_URL = "https://rentease-cma0.onrender.com";
     const messageElement = document.querySelector(
         "#ownerApplicationsMessage"
     );
@@ -2940,7 +2939,7 @@ if (ownerPropertyList) {
     // Run only on tenant dashboard
     if (!propertyContent) return;
 
-    const API_URL = "http://localhost:5000";
+    const API_URL = "https://rentease-cma0.onrender.com";
 
     async function loadCurrentProperty() {
 
@@ -5181,7 +5180,7 @@ document
             message.textContent = "Loading profile...";
             profileButton.disabled = true;
 
-            const response = await fetch("https://rentease-cma0.onrender.com/api/auth/profile", {
+            const response = await fetch(`${API_BASE_URL}/api/profile`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -5242,7 +5241,7 @@ document
             if (saveButton) saveButton.disabled = true;
             message.textContent = "Saving profile...";
 
-            const response = await fetch(`https://rentease-frontend-pa0l.onrender.com/api/auth/profile`, {
+            const response = await fetch(`${API_BASE_URL}/api/profile`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -5290,4 +5289,3 @@ document
         }
     });
 })();
-
