@@ -21,6 +21,17 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
+function findUserByEmail(email) {
+    const escapedEmail = email.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    return User.findOne({
+        email: {
+            $regex: `^${escapedEmail}$`,
+            $options: "i"
+        }
+    });
+}
+
 
 // ==========================
 // MIDDLEWARE
@@ -234,11 +245,25 @@ app.post("/api/users/register", async function (req, res) {
 
     try {
 
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role } = req.body || {};
+        const normalizedEmail =
+            typeof email === "string" ? email.trim().toLowerCase() : "";
 
-        const existingUser = await User.findOne({
-            email: email
-        });
+        if (!name || !normalizedEmail || typeof password !== "string" || !password || !role) {
+            return res.status(400).json({
+                success: false,
+                message: "Name, email, password, and role are required"
+            });
+        }
+
+        if (!process.env.JWT_SECRET) {
+            return res.status(503).json({
+                success: false,
+                message: "Authentication is not configured on the server. Set the JWT_SECRET environment variable."
+            });
+        }
+
+        const existingUser = await findUserByEmail(normalizedEmail);
 
         if (existingUser) {
 
@@ -254,7 +279,7 @@ app.post("/api/users/register", async function (req, res) {
 
         const user = await User.create({
             name: name,
-            email: email,
+            email: normalizedEmail,
             password: hashedPassword,
             role: role
         });
@@ -289,10 +314,26 @@ app.post("/api/users/register", async function (req, res) {
 
 app.post("/api/users/login", async function (req, res) {
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.body || {};
+        const normalizedEmail =
+            typeof email === "string" ? email.trim().toLowerCase() : "";
+
+        if (!normalizedEmail || typeof password !== "string" || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
+        }
+
+        if (!process.env.JWT_SECRET) {
+            return res.status(503).json({
+                success: false,
+                message: "Authentication is not configured on the server. Set the JWT_SECRET environment variable."
+            });
+        }
 
         // Find user
-        const user = await User.findOne({ email: email });
+        const user = await findUserByEmail(normalizedEmail);
 
         if (!user) {
             return res.status(404).json({
@@ -337,10 +378,10 @@ app.post("/api/users/login", async function (req, res) {
         });
 
     } catch (error) {
+        console.error("Login error:", error);
         res.status(500).json({
             success: false,
-            message: "Login failed",
-            error: error.message
+            message: "Login failed due to a server error"
         });
     }
 });
